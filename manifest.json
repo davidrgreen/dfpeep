@@ -9,6 +9,18 @@
 			// "background.js"
 		]
 	},
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"js": ["page/insert-scripts.js"],
+			"run_at": "document_start"
+		}
+	],
+	"web_accessible_resources": [
+		"page/collect-data.js"
+	],
 	"permissions": [
 		"tabs",
 		"http://*/*",
