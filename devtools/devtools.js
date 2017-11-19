@@ -17,10 +17,10 @@ chrome.devtools.panels.create(
 		port.onMessage.addListener(function(msg) {
 			// Write information to the panel, if exists.
 			// If we don't have a panel reference (yet), queue the data.
-			if (_window) {
-				_window.do_something(msg);
+			if ( _window ) {
+				_window.handleIncomingMessage( msg );
 			} else {
-				data.push(msg);
+				data.push( msg );
 			}
 		});
 
@@ -31,8 +31,9 @@ chrome.devtools.panels.create(
 
 			// Release queued data
 			var msg;
-			while (msg = data.shift())
-				_window.do_something(msg);
+			while ( msg = data.shift() ) {
+				_window.handleIncomingMessage( msg );
+			}
 			// Just to show that it's easy to talk to pass a message back:
 			_window.sendToBackground = function(msg) {
 				port.postMessage(msg);

@@ -1,12 +1,30 @@
 /* global chrome */
 
-function do_something(msg) {
+function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
 	console.log( msg );
-    document.body.textContent += '\n' + msg; // Stupid example, PoC
+	if ( msg.data && msg.data.data && msg.data.data.action ) {
+		switch ( msg.data.data.action ) {
+			case 'newPageLoad':
+				handleNewPageLoad();
+				break;
+			default:
+				outputDataToScreen( msg );
+				break;
+		}
+	} else {
+		outputDataToScreen( msg );
+	}
 }
-document.documentElement.onclick = function() {
-    // No need to check for the existence of `respond`, because
-    // the panel can only be clicked when it's visible...
-    sendToBackground('Another stupid example!');
-};
+
+function outputDataToScreen( data ) {
+	document.body.innerHTML += '<br><br>' + JSON.stringify( data , null, 4 );
+}
+
+function handleNewPageLoad() {
+	document.body.innerHTML = 'New Page Load:<br><br>';
+}
+
+// document.documentElement.onclick = function() {
+//     sendToBackground('Another stupid example!');
+// };

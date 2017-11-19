@@ -9,6 +9,7 @@ var DFPeep = ( function() {
 		refreshHistory = [];
 
 	var init = function() {
+		sendDataToDevTools( { action: 'newPageLoad' } );
 		wrapGPTFunctions();
 	};
 
