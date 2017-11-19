@@ -5,11 +5,10 @@ var DFPeep = ( function() {
 	window.googletag = window.googletag || {};
 	window.googletag.cmd = window.googletag.cmd || [];
 
-	var slots = {},
+	var slots = {}, // slot objects hold arrays of objects, so each refresh of a slot adds to the array
 		refreshHistory = [];
 
 	var init = function() {
-		console.log( 'init' );
 		wrapGPTFunctions();
 	};
 
@@ -31,10 +30,18 @@ var DFPeep = ( function() {
 				refreshData.slotIds.push( refreshed[ i ].getSlotElementId() );
 			}
 			refreshHistory.push( refreshData );
-			console.log( refreshHistory );
+			sendDataToDevTools( refreshHistory );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
+	};
+
+	var sendDataToDevTools = function( data ) {
+		var toSend = {
+			from: 'DFPeep',
+			data: data
+		};
+		window.postMessage( toSend, '*' );
 	};
 
 	return {
