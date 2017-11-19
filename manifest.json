@@ -3,10 +3,10 @@
 	"manifest_version": 2,
 	"version": "0.1",
 	"description": "Analyze ads served from DFP.",
-	"devtools_page": "devtools.html",
+	"devtools_page": "devtools/devtools.html",
 	"background": {
 		"scripts": [
-			"background.js"
+			// "background.js"
 		]
 	},
 	"permissions": [
