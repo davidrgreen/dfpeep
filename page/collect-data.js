@@ -1,3 +1,4 @@
+/* global googletag */
 var DFPeep = ( function() {
 	'use strict';
 
