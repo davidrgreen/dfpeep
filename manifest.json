@@ -1,0 +1,17 @@
+{
+	"name": "DFPeep",
+	"manifest_version": 2,
+	"version": "0.1",
+	"description": "Analyze ads served from DFP.",
+	"devtools_page": "devtools.html",
+	"background": {
+		"scripts": [
+			"background.js"
+		]
+	},
+	"permissions": [
+		"tabs",
+		"http://*/*",
+		"https://*/*"
+	]
+}
