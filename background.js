@@ -9,7 +9,7 @@ chrome.runtime.onConnect.addListener(function (port) {
 		console.log( message );
 		if ( panelPort ) {
 			console.log( 'panel exists' );
-			panelPort.postMessage( { message } );
+			panelPort.postMessage( message );
 		}
 		// port.postMessage( message );
 	}
