@@ -3,9 +3,7 @@
 var currentScreen,
 	contentElement,
 	menuElement,
-	adData = {
-		refreshes: []
-	};
+	adData;
 
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
@@ -13,6 +11,7 @@ function handleIncomingMessage( msg ) {
 	if ( msg.payload && msg.payload.action ) {
 		switch ( msg.payload.action ) {
 			case 'newPageLoad':
+				setupVariables();
 				changeScreen( 'init' );
 				break;
 			case 'GPTRefresh':
@@ -26,6 +25,12 @@ function handleIncomingMessage( msg ) {
 	} else {
 		outputDataToScreen( msg );
 	}
+}
+
+function setupVariables() {
+	adData = {
+		refreshes: []
+	};
 }
 
 function getMenuElement() {
@@ -74,7 +79,7 @@ function changeScreen( screen ) {
 		case 'refreshes':
 			displayContent( generateRefreshInfo() );
 			break;
-			case 'slots':
+		case 'slots':
 			displayContent( generateSlotInfo() );
 			break;
 		case 'overview':
@@ -83,7 +88,6 @@ function changeScreen( screen ) {
 		default:
 			changeScreen( 'overview' );
 			return;
-			break;
 	}
 	nextScreen = nextScreen ? nextScreen : screen;
 	changeSelectedMenuItem( nextScreen );
