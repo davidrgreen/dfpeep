@@ -2,7 +2,10 @@
 
 var currentScreen,
 	contentElement,
-	menuElement;
+	menuElement,
+	adData = {
+		refreshes: []
+	};
 
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
@@ -13,6 +16,7 @@ function handleIncomingMessage( msg ) {
 				changeScreen( 'init' );
 				break;
 			case 'GPTRefresh':
+				adData.refreshes.push( msg.payload.data );
 				changeScreen( 'refreshes' );
 				break;
 			default:
@@ -44,11 +48,11 @@ function setupMenuEventListeners() {
 }
 
 function outputDataToScreen( data ) {
-	document.body.innerHTML += '<br><br>' + JSON.stringify( data , null, 4 );
+	document.body.innerHTML += 'No incoming message handler for the following data:<br><br>' + JSON.stringify( data, null, 4 );
 }
 
 function generateRefreshInfo() {
-	return 'refresh info here';
+	return 'History of refreshes:<br><br><pre>' + JSON.stringify( adData.refreshes, null, 4 ) + '</pre>';
 }
 
 function generateSlotInfo() {
@@ -61,31 +65,29 @@ function generateOverview() {
 
 function changeScreen( screen ) {
 	var nextScreen;
-	if ( screen !== currentScreen ) {
-		switch( screen ) {
-			case 'init':
-				nextScreen = 'overview';
-				setupMenuEventListeners();
-				displayContent( generateOverview() );
-				break;
-			case 'refreshes':
-				displayContent( generateRefreshInfo() );
-				break;
-				case 'slots':
-				displayContent( generateSlotInfo() );
-				break;
-			case 'overview':
-				displayContent( generateOverview() );
-				break;
-			default:
-				changeScreen( 'overview' );
-				return;
-				break;
-		}
-		nextScreen = nextScreen ? nextScreen : screen;
-		changeSelectedMenuItem( nextScreen );
-		currentScreen = nextScreen;
+	switch ( screen ) {
+		case 'init':
+			nextScreen = 'overview';
+			setupMenuEventListeners();
+			displayContent( generateOverview() );
+			break;
+		case 'refreshes':
+			displayContent( generateRefreshInfo() );
+			break;
+			case 'slots':
+			displayContent( generateSlotInfo() );
+			break;
+		case 'overview':
+			displayContent( generateOverview() );
+			break;
+		default:
+			changeScreen( 'overview' );
+			return;
+			break;
 	}
+	nextScreen = nextScreen ? nextScreen : screen;
+	changeSelectedMenuItem( nextScreen );
+	currentScreen = nextScreen;
 }
 
 function changeSelectedMenuItem( menuItem ) {
