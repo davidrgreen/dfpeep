@@ -66,24 +66,33 @@ function generateSlotInfo() {
 	return 'Slot info';
 }
 
+function generateOverview() {
+	return 'This is the overview. There will be more here later.';
+}
+
 function changeScreen( screen ) {
 	if ( screen !== currentScreen ) {
 		switch( screen ) {
 			case 'init':
-				currentScreen = screen;
+				currentScreen = 'overview';
 				generateNewPanel();
 				setupMenuEventListeners();
+				displayContent( generateOverview() );
 				break;
 			case 'refreshes':
 				currentScreen = screen;
 				displayContent( generateRefreshInfo() );
 				break;
-			case 'slots':
+				case 'slots':
 				currentScreen = screen;
 				displayContent( generateSlotInfo() );
 				break;
+			case 'overview':
+				currentScreen = screen;
+				displayContent( generateOverview() );
+				break;
 			default:
-				changeScreen( 'init' );
+				changeScreen( 'overview' );
 				break;
 		}
 	}
