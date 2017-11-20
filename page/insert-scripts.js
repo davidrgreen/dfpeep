@@ -19,7 +19,8 @@ window.addEventListener( 'message', function( event ) {
 	}
 
 	if ( event.data.from && 'DFPeep' === event.data.from ) {
-		console.log("Content script received message: " + event.data.data);
+		console.log( 'Content script received message: ' );
+		console.log( event.data );
 		port.postMessage( { payload: event.data } );
 		// chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
 			// console.log(response.farewell);
@@ -35,11 +36,6 @@ window.addEventListener( 'message', function( event ) {
 //   });
 
 
-var port = chrome.runtime.connect({name:"DFPeepFromContent"});
-port.onMessage.addListener(function(message,sender){
-	// alert( 'content script received message via port.onMessage' );
-	// alert( message.message );
-  if(message.greeting === "hello"){
-    alert(message.greeting);
-  }
-});
+var port = chrome.runtime.connect( { name: 'DFPeepFromContent' } );
+port.onMessage.addListener( function( message, sender ) {
+} );

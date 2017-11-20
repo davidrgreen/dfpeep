@@ -3,41 +3,39 @@ chrome.devtools.panels.create(
 	'', // Icon location.
 	'devtools/panel/panel.html',
 	function(extensionPanel) {
-		/*
-		 window.DFPeepPort = chrome.extension.connect({name:"DFPeepFromPanel"});
-		chrome.extension.onMessage.addListener(function(message,sender){
-			console.log( 'panel received message via port.onMessage' );
-		});
-		*/
-
-		var _window; // Going to hold the reference to panel.html's `window`
+		var panelWindow; // Reference to the panel's window object.
 
 		var data = [];
-		var port = chrome.runtime.connect({name: 'DFPeepFromPanel'});
+		var port = chrome.runtime.connect( { name: 'DFPeepFromPanel'} );
 		port.onMessage.addListener(function(msg) {
 			// Write information to the panel, if exists.
 			// If we don't have a panel reference (yet), queue the data.
-			if ( _window ) {
-				_window.handleIncomingMessage( msg );
+			if ( panelWindow ) {
+				panelWindow.handleIncomingMessage( msg );
 			} else {
 				data.push( msg );
 			}
 		});
 
-		extensionPanel.onShown.addListener( function tmp( panelWindow ) {
-			extensionPanel.onShown.removeListener(tmp); // Run once only
-			_window = panelWindow;
+		extensionPanel.onShown.addListener( function firstRun( _window ) {
+			// Remove to show only once.
+			extensionPanel.onShown.removeListener( listen );
+
+			panelWindow = _window;
 			panelWindow.backgroundPort = port;
-			_window.changeScreen( 'init' );
-			// Release queued data
+			panelWindow.changeScreen( 'init' );
+
+			// Release queued data one-by-one.
 			var msg;
 			while ( msg = data.shift() ) {
-				_window.handleIncomingMessage( msg );
+				panelWindow.handleIncomingMessage( msg );
 			}
-			// Just to show that it's easy to talk to pass a message back:
-			_window.sendToBackground = function(msg) {
-				port.postMessage(msg);
+
+			// Add a function to the panel to easily send a message
+			// back to the background page.
+			panelWindow.sendToBackground = function( msg ) {
+				port.postMessage( msg );
 			};
-		});
+		} );
 	}
 );
