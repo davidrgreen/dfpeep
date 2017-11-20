@@ -24,11 +24,11 @@ chrome.devtools.panels.create(
 			}
 		});
 
-		extensionPanel.onShown.addListener(function tmp(panelWindow) {
+		extensionPanel.onShown.addListener( function tmp( panelWindow ) {
 			extensionPanel.onShown.removeListener(tmp); // Run once only
 			_window = panelWindow;
 			panelWindow.backgroundPort = port;
-
+			_window.changeScreen( 'init' );
 			// Release queued data
 			var msg;
 			while ( msg = data.shift() ) {

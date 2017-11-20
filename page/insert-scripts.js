@@ -20,7 +20,7 @@ window.addEventListener( 'message', function( event ) {
 
 	if ( event.data.from && 'DFPeep' === event.data.from ) {
 		console.log("Content script received message: " + event.data.data);
-		port.postMessage( { data: event.data } );
+		port.postMessage( { payload: event.data } );
 		// chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
 			// console.log(response.farewell);
 		//   });

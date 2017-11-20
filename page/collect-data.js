@@ -9,7 +9,7 @@ var DFPeep = ( function() {
 		refreshHistory = [];
 
 	var init = function() {
-		sendDataToDevTools( { action: 'newPageLoad' } );
+		sendDataToDevTools( 'newPageLoad', {} );
 		wrapGPTFunctions();
 	};
 
@@ -24,6 +24,7 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().refresh;
 		googletag.pubads().refresh = function() {
 			var refreshData = {
+				timestamp: getTimestamp(),
 				slotIds: []
 			};
 			var refreshed = arguments[0];
@@ -31,18 +32,23 @@ var DFPeep = ( function() {
 				refreshData.slotIds.push( refreshed[ i ].getSlotElementId() );
 			}
 			refreshHistory.push( refreshData );
-			sendDataToDevTools( refreshHistory );
+			sendDataToDevTools( 'GPTRefresh', refreshData );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
 	};
 
-	var sendDataToDevTools = function( data ) {
+	var sendDataToDevTools = function( action, data ) {
 		var toSend = {
 			from: 'DFPeep',
+			action: action,
 			data: data
 		};
 		window.postMessage( toSend, '*' );
+	};
+
+	var getTimestamp = function() {
+		return Math.floor( Date.now() );
 	};
 
 	return {
