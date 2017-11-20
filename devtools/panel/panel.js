@@ -57,7 +57,13 @@ function outputDataToScreen( data ) {
 }
 
 function generateRefreshInfo() {
-	return 'History of refreshes:<br><br><pre>' + JSON.stringify( adData.refreshes, null, 4 ) + '</pre>';
+	var toReturn = 'History of refreshes:<br><br><pre>';
+	if ( adData.refreshes ) {
+		toReturn += JSON.stringify( adData.refreshes, null, 4 );
+	}
+	toReturn += '</pre>';
+
+	return toReturn;
 }
 
 function generateSlotInfo() {
