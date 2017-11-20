@@ -19,7 +19,7 @@ chrome.devtools.panels.create(
 
 		extensionPanel.onShown.addListener( function firstRun( _window ) {
 			// Remove to show only once.
-			extensionPanel.onShown.removeListener( listen );
+			extensionPanel.onShown.removeListener( firstRun );
 
 			panelWindow = _window;
 			panelWindow.backgroundPort = port;
