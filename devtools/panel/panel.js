@@ -1,7 +1,8 @@
 /* global chrome */
 
 var currentScreen,
-	contentElement;
+	contentElement,
+	menuElement;
 
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
@@ -23,13 +24,17 @@ function handleIncomingMessage( msg ) {
 	}
 }
 
+function getMenuElement() {
+	return menuElement ? menuElement : document.getElementById( 'menu' );
+}
+
 function setupMenuEventListeners() {
-	var menu = document.getElementById( 'menu' );
-	if ( ! menu ) {
+	menuElement = getMenuElement();
+	if ( ! menuElement ) {
 		console.error( 'no menu' );
 		return;
 	}
-	menu.addEventListener( 'click', function( e ) {
+	menuElement.addEventListener( 'click', function( e ) {
 		if ( e.target && 'A' === e.target.nodeName ) {
 			e.preventDefault();
 			var targetScreen = e.target.hash.replace( '#', '' );
@@ -71,31 +76,49 @@ function generateOverview() {
 }
 
 function changeScreen( screen ) {
+	var nextScreen;
 	if ( screen !== currentScreen ) {
 		switch( screen ) {
 			case 'init':
-				currentScreen = 'overview';
+				nextScreen = 'overview';
 				generateNewPanel();
 				setupMenuEventListeners();
 				displayContent( generateOverview() );
 				break;
 			case 'refreshes':
-				currentScreen = screen;
 				displayContent( generateRefreshInfo() );
 				break;
 				case 'slots':
-				currentScreen = screen;
 				displayContent( generateSlotInfo() );
 				break;
 			case 'overview':
-				currentScreen = screen;
 				displayContent( generateOverview() );
 				break;
 			default:
 				changeScreen( 'overview' );
+				return;
 				break;
 		}
+		nextScreen = nextScreen ? nextScreen : screen;
+		changeSelectedMenuItem( nextScreen );
+		currentScreen = nextScreen;
 	}
+}
+
+function changeSelectedMenuItem( menuItem ) {
+	menuElement = getMenuElement();
+	if ( ! menuElement ) {
+		console.error( 'no menu' );
+		return;
+	}
+
+	var selected = menuElement.querySelector( '.selected' );
+	if ( selected ) {
+		selected.classList.remove( 'selected' );
+	}
+
+	var newlySelected = menuElement.querySelector( 'a[href="#' + menuItem + '"]' );
+	newlySelected.classList.add( 'selected' );
 }
 
 function displayContent( content ) {
