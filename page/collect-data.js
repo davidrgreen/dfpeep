@@ -25,11 +25,24 @@ var DFPeep = ( function() {
 		googletag.pubads().refresh = function() {
 			var refreshData = {
 				timestamp: getTimestamp(),
-				slotIds: []
+				slots: []
 			};
-			var refreshed = arguments[0];
-			for ( var i = 0, length = refreshed.length; i < length; i++ ) {
-				refreshData.slotIds.push( refreshed[ i ].getSlotElementId() );
+			var slotData,
+				targetingKeys,
+				i, length, t, tlength;
+			var slotsRefreshed = arguments[0];
+			for ( i = 0, length = slotsRefreshed.length; i < length; i++ ) {
+				slotData = {
+					adUnitPath: slotsRefreshed[ i ].getAdUnitPath(),
+					elementId: slotsRefreshed[ i ].getSlotElementId(),
+					targeting: {}
+				};
+				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
+				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
+					slotData.targeting[ targetingKeys[ t ] ] = slotsRefreshed[ i ].getTargeting( targetingKeys[ t ] );
+				}
+
+				refreshData.slots.push( slotData );
 			}
 			refreshHistory.push( refreshData );
 			sendDataToDevTools( 'GPTRefresh', refreshData );
