@@ -47,22 +47,6 @@ function outputDataToScreen( data ) {
 	document.body.innerHTML += '<br><br>' + JSON.stringify( data , null, 4 );
 }
 
-function generateNewPanel() {
-	contentElement = null;
-	document.body.innerHTML = generateMenu() + '<div id="content"></div>';
-}
-
-function generateMenu() {
-	return `
-		<nav id="menu">
-			<ul>
-				<li><a href="#overview">Overview</a></li>
-				<li><a href="#refreshes">Refreshes</a></li>
-				<li><a href="#slots">Slots</a></li>
-			</ul>
-		</nav>`;
-}
-
 function generateRefreshInfo() {
 	return 'refresh info here';
 }
@@ -81,7 +65,6 @@ function changeScreen( screen ) {
 		switch( screen ) {
 			case 'init':
 				nextScreen = 'overview';
-				generateNewPanel();
 				setupMenuEventListeners();
 				displayContent( generateOverview() );
 				break;
