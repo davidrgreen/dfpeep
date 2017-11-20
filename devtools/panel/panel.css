@@ -1,3 +1,36 @@
-a.selected {
-	font-weight: 700;
+* {
+	box-sizing: border-box;
+}
+
+#menu ul {
+	list-style: none;
+	padding: 0;
+}
+
+#menu li {
+	display: inline-block;
+	padding: 0 12px;
+	border-right: solid 1px #ccc;
+}
+
+#menu li:first-of-type {
+	padding-left: 0;
+}
+
+#menu li:last-of-type {
+	border-right: none;
+	padding-right: 0;
+}
+
+#menu a {
+	padding: 2px 5px;
+	text-decoration: none;
+}
+
+#menu a:hover {
+	text-decoration: underline;
+}
+
+#menu a.selected {
+	text-decoration: underline;
 }
