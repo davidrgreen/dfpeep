@@ -20,6 +20,7 @@ var DFPeep = ( function() {
 		googletag.cmd.push(
 			function() {
 				wrapGPTRefresh();
+				wrapGPTEnableServices();
 		} );
 	};
 
@@ -49,6 +50,15 @@ var DFPeep = ( function() {
 			}
 			refreshHistory.push( refreshData );
 			sendDataToDevTools( 'GPTRefresh', refreshData );
+			var result = oldVersion.apply( this, arguments );
+			return result;
+		};
+	};
+
+	var wrapGPTEnableServices = function() {
+		var oldVersion = googletag.enableServices;
+		googletag.enableServices = function() {
+			sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};

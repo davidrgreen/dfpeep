@@ -19,6 +19,11 @@ function handleIncomingMessage( msg ) {
 				adData.refreshes.push( msg.payload.data );
 				changeScreen( 'refreshes' );
 				break;
+			case 'GPTEnableServices':
+				if ( msg.payload.data.time ) {
+					adData.enabledServices.push( msg.payload.data.time );
+				}
+				break;
 			default:
 				outputDataToScreen( msg );
 				break;
@@ -33,7 +38,8 @@ function setupVariables( data ) {
 		pageLoadTimestamp = data.pageLoadTimestamp;
 	}
 	adData = {
-		refreshes: []
+		refreshes: [],
+		enabledServices: []
 	};
 }
 
@@ -62,7 +68,7 @@ function outputDataToScreen( data ) {
 
 function generateRefreshInfo() {
 	var toReturn = 'History of refreshes:<br><br><pre>';
-	if ( adData.refreshes ) {
+	if ( adData && adData.refreshes ) {
 		toReturn += JSON.stringify( adData.refreshes, null, 4 );
 	}
 	toReturn += '</pre>';
