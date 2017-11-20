@@ -3,6 +3,7 @@
 var currentScreen,
 	contentElement,
 	menuElement,
+	pageLoadTimestamp,
 	adData;
 
 function handleIncomingMessage( msg ) {
@@ -11,7 +12,7 @@ function handleIncomingMessage( msg ) {
 	if ( msg.payload && msg.payload.action ) {
 		switch ( msg.payload.action ) {
 			case 'newPageLoad':
-				setupVariables();
+				setupVariables( msg.payload.data );
 				changeScreen( 'init' );
 				break;
 			case 'GPTRefresh':
@@ -27,7 +28,10 @@ function handleIncomingMessage( msg ) {
 	}
 }
 
-function setupVariables() {
+function setupVariables( data ) {
+	if ( data.pageLoadTimestamp ) {
+		pageLoadTimestamp = data.pageLoadTimestamp;
+	}
 	adData = {
 		refreshes: []
 	};
