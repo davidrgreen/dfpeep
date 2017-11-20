@@ -34,7 +34,7 @@ function handleIncomingMessage( msg ) {
 }
 
 function setupVariables( data ) {
-	if ( data.pageLoadTimestamp ) {
+	if ( data && data.pageLoadTimestamp ) {
 		pageLoadTimestamp = data.pageLoadTimestamp;
 	}
 	adData = {

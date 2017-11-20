@@ -6,7 +6,8 @@ var DFPeep = ( function() {
 	window.googletag.cmd = window.googletag.cmd || [];
 
 	var slots = {}, // slot objects hold arrays of objects, so each refresh of a slot adds to the array
-		refreshHistory = [];
+		refreshHistory = [],
+		wrappedSlotFunctions;
 
 	var init = function() {
 		sendDataToDevTools(
@@ -21,6 +22,7 @@ var DFPeep = ( function() {
 			function() {
 				wrapGPTRefresh();
 				wrapGPTEnableServices();
+				wrapGPTDefineSlot();
 		} );
 	};
 
@@ -60,6 +62,36 @@ var DFPeep = ( function() {
 		googletag.enableServices = function() {
 			sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
 			var result = oldVersion.apply( this, arguments );
+			return result;
+		};
+	};
+
+	var wrapGPTDefineSlot = function() {
+		var oldVersion = googletag.defineSlot;
+		googletag.defineSlot = function() {
+			console.log( 'defined slot with following arguments:' );
+			console.log( arguments );
+			// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+			var result = oldVersion.apply( this, arguments );
+			if ( ! wrappedSlotFunctions ) {
+				wrappedSlotFunctions = 1;
+				var proto = Object.getPrototypeOf( result );
+				( function( proto ) {
+					var oldVersion = proto.setTargeting;
+					proto.setTargeting = function() {
+						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+						console.log( 'setTargeting called' );
+						console.log( arguments );
+						console.log( 'Called by ' + this.getAdUnitPath() );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+			}
+			console.log( 'result:' );
+			console.log( result );
+			console.log( Object.getPrototypeOf( result ).defineSizeMapping );
+			console.log( result.__proto__ );
 			return result;
 		};
 	};
