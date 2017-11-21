@@ -9,11 +9,19 @@ var DFPeep = ( function() {
 		refreshHistory = [],
 		wrappedSlotFunctions;
 
+	var adData = {
+		pageLoadTimestamp: null,
+		slots: {},
+		refreshHistory: []
+	};
+
 	var init = function() {
+		var timestamp = getTimestamp();
 		sendDataToDevTools(
 			'newPageLoad',
-			{ pageLoadTimestamp: getTimestamp() }
+			{ pageLoadTimestamp: timestamp }
 		);
+		adData.pageLoadTimestamp = timestamp;
 		wrapGPTFunctions();
 	};
 
@@ -35,13 +43,15 @@ var DFPeep = ( function() {
 			};
 			var slotData,
 				targetingKeys,
-				i, length, t, tlength;
+				i, length, t, tlength, slotElementId;
 			var slotsRefreshed = arguments[0];
 			for ( i = 0, length = slotsRefreshed.length; i < length; i++ ) {
+				slotElementId = slotsRefreshed[ i ].getSlotElementId();
 				slotData = {
 					adUnitPath: slotsRefreshed[ i ].getAdUnitPath(),
-					elementId: slotsRefreshed[ i ].getSlotElementId(),
-					targeting: {}
+					elementId: slotElementId,
+					targeting: {},
+					storedData: adData.slots[ slotElementId ]
 				};
 				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
 				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
@@ -50,7 +60,7 @@ var DFPeep = ( function() {
 
 				refreshData.slots.push( slotData );
 			}
-			refreshHistory.push( refreshData );
+			adData.refreshHistory.push( refreshData );
 			sendDataToDevTools( 'GPTRefresh', refreshData );
 			var result = oldVersion.apply( this, arguments );
 			return result;
@@ -67,32 +77,55 @@ var DFPeep = ( function() {
 	};
 
 	var wrapGPTDefineSlot = function() {
-		var oldVersion = googletag.defineSlot;
+		var oldDefineVersion = googletag.defineSlot;
 		googletag.defineSlot = function() {
 			console.log( 'defined slot with following arguments:' );
 			console.log( arguments );
 			// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
-			var result = oldVersion.apply( this, arguments );
+			var definedSlot = oldDefineVersion.apply( this, arguments );
+			var elementId = definedSlot.getSlotElementId();
+			if ( ! adData.slots[ elementId ] ) {
+				adData.slots[ elementId ] = {};
+			}
 			if ( ! wrappedSlotFunctions ) {
 				wrappedSlotFunctions = 1;
-				var proto = Object.getPrototypeOf( result );
-				( function( proto ) {
-					var oldVersion = proto.setTargeting;
-					proto.setTargeting = function() {
+				var proto = Object.getPrototypeOf( definedSlot );
+
+				// googletag.Slot.setTargeting
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.setTargeting;
+					obPrototype.setTargeting = function() {
 						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
-						console.log( 'setTargeting called' );
-						console.log( arguments );
-						console.log( 'Called by ' + this.getAdUnitPath() );
+						// console.log( 'setTargeting called' );
+						// console.log( arguments );
+						// console.log( 'Called by ' + this.getAdUnitPath() );
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
 				} )( proto );
+				// End googletag.Slot.setTargeting
+
+				// googletag.Slot.defineSizeMapping
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.defineSizeMapping;
+					obPrototype.defineSizeMapping = function() {
+						var slotElement = this.getSlotElementId();
+						if ( ! adData.slots[ slotElement ].sizeMappings ) {
+							adData.slots[ slotElement ].sizeMappings = [ arguments[0] ];
+						} else {
+							adData.slots[ slotElement ].sizeMappings.push( arguments[0] );
+						}
+						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+						console.log( 'defineSizeMapping called' );
+						console.log( arguments );
+						console.log( 'Called by ' + slotElement );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End // googletag.Slot.defineSizeMapping
 			}
-			console.log( 'result:' );
-			console.log( result );
-			console.log( Object.getPrototypeOf( result ).defineSizeMapping );
-			console.log( result.__proto__ );
-			return result;
+			return definedSlot;
 		};
 	};
 
