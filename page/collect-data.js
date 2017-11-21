@@ -154,8 +154,13 @@ var DFPeep = ( function() {
 		return Math.floor( Date.now() );
 	};
 
+	var getAdData = function() {
+		return adData;
+	};
+
 	return {
-		init: init
+		init: init,
+		getAdData: getAdData
 	};
 } )();
 DFPeep.init();
