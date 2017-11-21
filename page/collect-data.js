@@ -11,6 +11,7 @@ var DFPeep = ( function() {
 
 	var adData = {
 		pageLoadTimestamp: null,
+		disabledInitialLoad: [],
 		slots: {},
 		refreshHistory: []
 	};
@@ -62,6 +63,17 @@ var DFPeep = ( function() {
 			}
 			adData.refreshHistory.push( refreshData );
 			sendDataToDevTools( 'GPTRefresh', refreshData );
+			var result = oldVersion.apply( this, arguments );
+			return result;
+		};
+	};
+
+	var wrapGPTDisableInitialLoad = function() {
+		var oldVersion = googletag.pubads().disabledInitialLoad;
+		googletag.pubads().disabledInitialLoad = function() {
+			var timestamp = getTimestamp();
+			adData.disabledInitialLoad.push( timestamp );
+			// sendDataToDevTools( 'GPTDisableInitialLoad', { time: timestamp } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
