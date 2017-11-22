@@ -70,7 +70,8 @@ function generateRefreshInfo() {
 	if ( ! adData || ! adData.refreshes ) {
 		return 'No ad refreshes have occurred yet.';
 	}
-	var i, length, s, slots, slotCount, j, jlength, sizeMappings, l, llength;
+	var i, length, s, slots, slotCount, j, jlength, sizeMappings, l,
+		llength, target;
 	var toReturn = '<h3>History of refreshes:</h3>';
 	toReturn += '<ul class="tree-list">';
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
@@ -86,6 +87,18 @@ function generateRefreshInfo() {
 			toReturn += '<li>Ad Unit: ' + slots[ s ].adUnitPath + '</li>';
 			toReturn += '<li>Slot\'s previous refreshes: #</li>';
 			toReturn += '<li>Element ID: ' + slots[ s ].elementId + '</li>';
+			if ( slots[ s ].targeting ) {
+				toReturn += '<li>Targeting: <ul>';
+
+				for ( target in slots[ s ].targeting ) {
+					if ( slots[ s ].targeting.hasOwnProperty( target ) ) {
+						toReturn += '<li>' + target + ': ' +
+							slots[ s ].targeting[ target ] + '</li>';
+					}
+				}
+
+				toReturn += '</ul></li>';
+			}
 			//adUnitPath, elementId, storedData.sizeMappings(array), targeting(objects)
 			if ( slots[ s ].storedData && slots[ s ].storedData.sizeMappings ) {
 				toReturn += '<li>Size Mappings: <ul>';
