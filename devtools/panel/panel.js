@@ -71,10 +71,16 @@ function generateRefreshInfo() {
 		return 'No ad refreshes have occurred yet.';
 	}
 	var i, length, s, slots, slotCount, j, jlength, sizeMappings, l,
-		llength, target, t, tlength;
+		llength, target, t, tlength, timeDiff;
 	var toReturn = '<h3>History of refreshes:</h3>';
 	toReturn += '<ul class="tree-list">';
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
+
+		if ( i > 0 ) {
+			timeDiff = adData.refreshes[ i ].timestamp - adData.refreshes[ i - 1 ].timestamp;
+			toReturn += '<li class="tree-time-diff">' + timeDiff + 'ms pass</li>';
+		}
+
 		slots = adData.refreshes[ i ].slots;
 		slotCount = slots.length;
 		toReturn += '<li><b>Refresh #' + ( i + 1 ) + ' (' +
