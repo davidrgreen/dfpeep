@@ -77,11 +77,11 @@ function generateRefreshInfo() {
 		slots = adData.refreshes[ i ].slots;
 		slotCount = slots.length;
 		toReturn += '<li><b>Refresh #' + ( i + 1 ) + ' (' +
-			slotCount + ' slots)</b>';
+			slotCount + ' slots)</b><ul>';
 
 		// Begin list of slots.
 		for ( s = 0; s < slotCount; s++ ) {
-			toReturn += '<ul><li>Slot: ' + slots[ s ].elementId;
+			toReturn += '<li>Slot: ' + slots[ s ].elementId;
 			toReturn += '<ul>';
 			toReturn += '<li>Ad Unit: ' + slots[ s ].adUnitPath + '</li>';
 			toReturn += '<li>Slot\'s previous refreshes: #</li>';
@@ -93,7 +93,6 @@ function generateRefreshInfo() {
 				for ( j = 0, jlength = sizeMappings.length; j < jlength; j++ ) {
 					// Iterating over list of sizes containing rules.
 					toReturn += '<li>' + sizeMappings[ j ][0][0] + 'x' + sizeMappings[ j ][0][1] + '<ul>';
-					console.log( sizeMappings[ j ][1] );
 					if ( ! Array.isArray( sizeMappings[ j ][1][0] ) ) {
 						toReturn += '<li>' + sizeMappings[ j ][1][0] + 'x' +
 							sizeMappings[ j ][1][1] + '</li>';
@@ -109,13 +108,13 @@ function generateRefreshInfo() {
 				toReturn += '</ul></li>';
 			}
 			toReturn += '</ul>';
-			toReturn += '</li></ul>';
+			toReturn += '</li>';
 		}
 
-		toReturn += '</li>';
+		toReturn += '</li></ul>';
 	}
 
-	return toReturn + '</ul>';
+	return toReturn + '</ul></ul>';
 }
 
 function buildIndividualRefreshInfo( count, data ) {
