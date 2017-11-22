@@ -13,7 +13,8 @@ var DFPeep = ( function() {
 		pageLoadTimestamp: null,
 		disabledInitialLoad: [],
 		slots: {},
-		refreshHistory: []
+		refreshHistory: [],
+		pageTargeting: {}
 	};
 
 	var init = function() {
@@ -32,6 +33,7 @@ var DFPeep = ( function() {
 				wrapGPTRefresh();
 				wrapGPTEnableServices();
 				wrapGPTDefineSlot();
+				wrapGPTSetTargeting();
 		} );
 	};
 
@@ -79,8 +81,18 @@ var DFPeep = ( function() {
 		};
 	};
 
+	var wrapGPTSetTargeting = function() {
+		var oldVersion = googletag.pubads().setTargeting;
+		googletag.pubads().setTargeting = function() {
+			adData.pageTargeting[ arguments[0] ] = arguments[1];
+			// sendDataToDevTools( 'GPTSetTargeting', { time: getTimestamp() } );
+			var result = oldVersion.apply( this, arguments );
+			return result;
+		};
+	};
+
 	var wrapGPTEnableServices = function() {
-		var oldVersion = googletag.enableServices;
+		var oldVersion = googletag.pubads().enableServices;
 		googletag.enableServices = function() {
 			sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
 			var result = oldVersion.apply( this, arguments );
