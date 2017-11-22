@@ -67,14 +67,60 @@ function outputDataToScreen( data ) {
 }
 
 function generateRefreshInfo() {
-	var toReturn = 'History of refreshes:<br><br><pre>';
-	if ( adData && adData.refreshes ) {
-		toReturn += JSON.stringify( adData.refreshes, null, 4 );
+	if ( ! adData || ! adData.refreshes ) {
+		return 'No ad refreshes have occurred yet.';
 	}
-	toReturn += '</pre>';
+	var i, length, s, slots, slotCount, j, jlength, sizeMappings, l, llength;
+	var toReturn = '<h3>History of refreshes:</h3>';
+	toReturn += '<ul class="tree-list">';
+	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
+		slots = adData.refreshes[ i ].slots;
+		slotCount = slots.length;
+		toReturn += '<li><b>Refresh #' + ( i + 1 ) + ' (' +
+			slotCount + ' slots)</b>';
 
-	return toReturn;
+		// Begin list of slots.
+		for ( s = 0; s < slotCount; s++ ) {
+			toReturn += '<ul><li>Slot: ' + slots[ s ].elementId;
+			toReturn += '<ul>';
+			toReturn += '<li>Ad Unit: ' + slots[ s ].adUnitPath + '</li>';
+			toReturn += '<li>Slot\'s previous refreshes: #</li>';
+			toReturn += '<li>Element ID: ' + slots[ s ].elementId + '</li>';
+			//adUnitPath, elementId, storedData.sizeMappings(array), targeting(objects)
+			if ( slots[ s ].storedData && slots[ s ].storedData.sizeMappings ) {
+				toReturn += '<li>Size Mappings: <ul>';
+				sizeMappings = slots[ s ].storedData.sizeMappings[0];
+				for ( j = 0, jlength = sizeMappings.length; j < jlength; j++ ) {
+					// Iterating over list of sizes containing rules.
+					toReturn += '<li>' + sizeMappings[ j ][0][0] + 'x' + sizeMappings[ j ][0][1] + '<ul>';
+					console.log( sizeMappings[ j ][1] );
+					if ( ! Array.isArray( sizeMappings[ j ][1][0] ) ) {
+						toReturn += '<li>' + sizeMappings[ j ][1][0] + 'x' +
+							sizeMappings[ j ][1][1] + '</li>';
+					} else {
+						for ( l = 0, llength = sizeMappings[ j ][1].length; l < llength; l++ ) {
+							toReturn += '<li>' + sizeMappings[ j ][1][ l ][0] + 'x' +
+								sizeMappings[ j ][1][ l ][1] + '</li>';
+						}
+					}
+					toReturn += '</ul>';
+						// Iterating over all ad sizes for this size.
+				}
+				toReturn += '</ul></li>';
+			}
+			toReturn += '</ul>';
+			toReturn += '</li></ul>';
+		}
+
+		toReturn += '</li>';
+	}
+
+	return toReturn + '</ul>';
 }
+
+function buildIndividualRefreshInfo( count, data ) {
+}
+
 
 function generateSlotInfo() {
 	return 'Slot info';
