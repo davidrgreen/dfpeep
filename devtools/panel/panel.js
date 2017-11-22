@@ -71,7 +71,7 @@ function generateRefreshInfo() {
 		return 'No ad refreshes have occurred yet.';
 	}
 	var i, length, s, slots, slotCount, j, jlength, sizeMappings, l,
-		llength, target;
+		llength, target, t, tlength;
 	var toReturn = '<h3>History of refreshes:</h3>';
 	toReturn += '<ul class="tree-list">';
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
@@ -92,8 +92,17 @@ function generateRefreshInfo() {
 
 				for ( target in slots[ s ].targeting ) {
 					if ( slots[ s ].targeting.hasOwnProperty( target ) ) {
-						toReturn += '<li>' + target + ': ' +
-							slots[ s ].targeting[ target ] + '</li>';
+						if ( ! Array.isArray( slots[ s ].targeting[ target ] ) ||
+								1 === slots[ s ].targeting[ target ].length ) {
+							toReturn += '<li>' + target + ': ' +
+								slots[ s ].targeting[ target ] + '</li>';
+						} else {
+							toReturn += '<li>' + target + ':<ul>';
+							for ( t = 0, tlength = slots[ s ].targeting[ target ].length; t < tlength; t++ ) {
+								toReturn += '<li>' + slots[ s ].targeting[ target ][ t ] + '</li>';
+							}
+							toReturn += '</ul></li>';
+						}
 					}
 				}
 
