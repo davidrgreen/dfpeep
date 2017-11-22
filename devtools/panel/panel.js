@@ -17,6 +17,7 @@ function handleIncomingMessage( msg ) {
 				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
+				menuElement.querySelector( 'a[href="#refreshes"]' ).innerText = 'Refreshes (' + adData.refreshes.length + ')';
 				changeScreen( 'refreshes' );
 				break;
 			case 'GPTEnableServices':
