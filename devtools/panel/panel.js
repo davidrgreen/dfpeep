@@ -88,7 +88,7 @@ function generateRefreshInfo() {
 			toReturn += '<li>Slot\'s previous refreshes: #</li>';
 			toReturn += '<li>Element ID: ' + slots[ s ].elementId + '</li>';
 			if ( slots[ s ].targeting ) {
-				toReturn += '<li>Targeting: <ul>';
+				toReturn += '<li>Key-Value Targeting: <ul>';
 
 				for ( target in slots[ s ].targeting ) {
 					if ( slots[ s ].targeting.hasOwnProperty( target ) ) {
