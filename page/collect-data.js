@@ -46,7 +46,8 @@ var DFPeep = ( function() {
 			};
 			var slotData,
 				targetingKeys,
-				i, length, t, tlength, slotElementId;
+				i, length, t, tlength, slotElementId,
+				pageTarget;
 			var slotsRefreshed = arguments[0];
 			for ( i = 0, length = slotsRefreshed.length; i < length; i++ ) {
 				slotElementId = slotsRefreshed[ i ].getSlotElementId();
@@ -59,6 +60,12 @@ var DFPeep = ( function() {
 				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
 				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
 					slotData.targeting[ targetingKeys[ t ] ] = slotsRefreshed[ i ].getTargeting( targetingKeys[ t ] );
+				}
+
+				for ( pageTarget in adData.pageTargeting ) {
+					if ( adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
+						slotData.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
+					}
 				}
 
 				refreshData.slots.push( slotData );
@@ -92,7 +99,7 @@ var DFPeep = ( function() {
 	};
 
 	var wrapGPTEnableServices = function() {
-		var oldVersion = googletag.pubads().enableServices;
+		var oldVersion = googletag.enableServices;
 		googletag.enableServices = function() {
 			sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
 			var result = oldVersion.apply( this, arguments );
