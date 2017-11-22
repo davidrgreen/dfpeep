@@ -34,3 +34,26 @@
 #menu a.selected {
 	text-decoration: underline;
 }
+
+ul.tree-list,
+.tree-list ul {
+	list-style-type: none;
+	background: url(img/vline.png) repeat-y;
+	margin: 0;
+	padding: 0;
+}
+
+ul.tree-list ul {
+	margin-left: 10px;
+}
+
+ul.tree-list li {
+	margin: 0;
+	padding: 0 12px;
+	line-height: 20px;
+	background: url(img/node.png) no-repeat;
+}
+
+ul.tree-list li:last-child {
+	background: #fff url(img/lastnode.png) no-repeat;
+  }
