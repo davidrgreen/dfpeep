@@ -171,7 +171,7 @@ function buildTimeIntervalListItem( refreshes, i ) {
 
 	// Show time passed between refreshes.
 	timeDiffMs = adData.refreshes[ i ].timestamp - adData.refreshes[ i - 1 ].timestamp;
-	timeDiffSecs = Math.round( timeDiffMs * 100 ) / 100;
+	timeDiffSecs = Math.round( timeDiffMs / 1000 * 100 ) / 100;
 	if ( 0 !== timeDiffMs % 1000 ) {
 		timeDiffText = timeDiffSecs + ' seconds (' + timeDiffMs + 'ms)';
 	} else {
@@ -179,18 +179,18 @@ function buildTimeIntervalListItem( refreshes, i ) {
 	}
 
 	// Unicode for mdash html entity.
-	timeDiffText += ' \u2014 ';
+	timeDiffText += ' later \u2014 ';
 
 	// Time since page load.
 	pageTimeDiffMs = adData.refreshes[ i ].timestamp - pageLoadTimestamp;
-	pageTimeDiffSecs = Math.round( pageTimeDiffMs * 100 ) / 100;
+	pageTimeDiffSecs = Math.round( pageTimeDiffMs / 1000 * 100 ) / 100;
 	if ( 0 !== pageTimeDiffMs % 1000 ) {
-		timeDiffText =+ pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
+		timeDiffText += pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
 	} else {
-		timeDiffText =+ pageTimeDiffSecs + ' seconds';
+		timeDiffText += pageTimeDiffSecs + ' seconds';
 	}
 	// Might should change to since GPT loaded.
-	timeDiffText + ' since page load.'
+	timeDiffText += ' since page load.';
 
 	timeListItem = document.createElement( 'li' );
 	timeListItem.className = 'tree-time-diff';
