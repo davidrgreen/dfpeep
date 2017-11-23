@@ -106,7 +106,6 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().setTargeting;
 		googletag.pubads().setTargeting = function() {
 			adData.pageTargeting[ arguments[0] ] = arguments[1];
-			// sendDataToDevTools( 'GPTSetTargeting', { time: getTimestamp() } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
@@ -119,6 +118,10 @@ var DFPeep = ( function() {
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
+	};
+
+	var sendSlotDataToDevTools = function( slotName, data ) {
+		sendDataToDevTools( 'slotData', { name: slotName, data: data } );
 	};
 
 	var wrapGPTDisplay = function() {
@@ -170,11 +173,12 @@ var DFPeep = ( function() {
 						} else {
 							adData.slots[ slotElement ].sizeMappings.push( arguments[0] );
 						}
+						sendSlotDataToDevTools( slotElement, adData.slots[ slotElement ] );
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
 				} )( proto );
-				// End // googletag.Slot.defineSizeMapping
+				// End googletag.Slot.defineSizeMapping
 			}
 			return definedSlot;
 		};
