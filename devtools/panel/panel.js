@@ -132,6 +132,19 @@ function generateRefreshInfo() {
 		refreshListItem = document.createElement( 'li' );
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
+		// Unicode for mdash html entity.
+		text += ' \u2014 ';
+
+		// Time since page load.
+		pageTimeDiffMs = adData.refreshes[ i ].timestamp - pageLoadTimestamp;
+		pageTimeDiffSecs = Math.round( pageTimeDiffMs / 1000 * 100 ) / 100;
+		if ( 0 !== pageTimeDiffMs % 1000 ) {
+			text += pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
+		} else {
+			text += pageTimeDiffSecs + ' seconds';
+		}
+		// Might should change to since GPT loaded.
+		text += ' after page load.';
 		refreshLabel.appendChild( document.createTextNode( text ) );
 		refreshListItem.appendChild( refreshLabel );
 
@@ -211,19 +224,7 @@ function buildTimeIntervalListItem( refreshes, i ) {
 		timeDiffText = timeDiffSecs + ' seconds';
 	}
 
-	// Unicode for mdash html entity.
-	timeDiffText += ' later \u2014 ';
-
-	// Time since page load.
-	pageTimeDiffMs = adData.refreshes[ i ].timestamp - pageLoadTimestamp;
-	pageTimeDiffSecs = Math.round( pageTimeDiffMs / 1000 * 100 ) / 100;
-	if ( 0 !== pageTimeDiffMs % 1000 ) {
-		timeDiffText += pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
-	} else {
-		timeDiffText += pageTimeDiffSecs + ' seconds';
-	}
-	// Might should change to since GPT loaded.
-	timeDiffText += ' since page load.';
+	timeDiffText += ' passed';
 
 	timeListItem = document.createElement( 'li' );
 	timeListItem.className = 'tree-time-diff';
