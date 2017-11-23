@@ -35,6 +35,14 @@ function handleIncomingMessage( msg ) {
 					adData.disabledInitialLoad.push( msg.payload.data.time );
 				}
 				break;
+			case 'slotData':
+				if ( msg.payload.data.name && msg.payload.data.data ) {
+					if ( ! adData.slots[ msg.payload.data.name ] ) {
+						adData.slots[ msg.payload.data.name ] = {};
+					}
+					adData.slots[ msg.payload.data.name ] = msg.payload.data.data;
+				}
+				break;
 			default:
 				outputDataToScreen( msg );
 				break;
@@ -49,9 +57,11 @@ function setupVariables( data ) {
 		pageLoadTimestamp = data.pageLoadTimestamp;
 	}
 	adData = {
+		slots: {},
 		refreshes: [],
 		enabledServices: [],
-		disabledInitialLoad: []
+		disabledInitialLoad: [],
+		enabledSingleRequest: []
 	};
 }
 
