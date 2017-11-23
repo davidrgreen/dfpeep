@@ -25,6 +25,11 @@ function handleIncomingMessage( msg ) {
 					adData.enabledServices.push( msg.payload.data.time );
 				}
 				break;
+			case 'GPTDisableInitialLoad':
+				if ( msg.payload.data.time ) {
+					adData.disabledInitialLoad.push( msg.payload.data.time );
+				}
+				break;
 			default:
 				outputDataToScreen( msg );
 				break;
@@ -40,7 +45,8 @@ function setupVariables( data ) {
 	}
 	adData = {
 		refreshes: [],
-		enabledServices: []
+		enabledServices: [],
+		disabledInitialLoad: []
 	};
 }
 

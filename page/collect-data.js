@@ -85,7 +85,7 @@ var DFPeep = ( function() {
 		googletag.pubads().disabledInitialLoad = function() {
 			var timestamp = getTimestamp();
 			adData.disabledInitialLoad.push( timestamp );
-			// sendDataToDevTools( 'GPTDisableInitialLoad', { time: timestamp } );
+			sendDataToDevTools( 'GPTDisableInitialLoad', { time: timestamp } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
