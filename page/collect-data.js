@@ -34,6 +34,7 @@ var DFPeep = ( function() {
 				wrapGPTDefineSlot();
 				wrapGPTSetTargeting();
 				wrapGPTEnableSingleRequest();
+				wrapGPTDisplay();
 		} );
 	};
 
@@ -113,6 +114,19 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.enableServices;
 		googletag.enableServices = function() {
 			sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+			var result = oldVersion.apply( this, arguments );
+			return result;
+		};
+	};
+
+	var wrapGPTDisplay = function() {
+		var oldVersion = googletag.display;
+		googletag.display = function() {
+			var elementId = arguments[0];
+			if ( ! adData.slots[ elementId ] ) {
+				adData.slots[ elementId ] = {};
+			}
+			adData.slots[ elementId ].displayCallTimestamp = getTimestamp();
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
