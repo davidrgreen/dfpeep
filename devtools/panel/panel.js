@@ -69,93 +69,222 @@ function outputDataToScreen( data ) {
 
 function generateRefreshInfo() {
 	if ( ! adData || ! adData.refreshes ) {
-		return 'No ad refreshes have occurred yet.';
+		var noRefreshes = document.createElement( 'p' );
+		var explanation = document.createTextNode( 'No ad refreshes yet.' );
+		noRefreshes.appendChild( explanation );
+		return noRefreshes;
 	}
-	var i, length, s, slots, slotCount, j, jlength, sizeMappings, l,
-		llength, target, t, tlength, timeDiff;
-	var toReturn = '<h3>History of refreshes:</h3>';
-	toReturn += '<ul class="tree-list">';
+	var i, length, s, slots, slotCount, sizeMappings, target, refreshListItem, refreshLabel, text, refreshSlotList;
+
+	var toReturn = document.createDocumentFragment();
+
+	var title = document.createElement( 'h2' );
+	title.appendChild( document.createTextNode( 'History of Refreshes:' ) );
+	toReturn.appendChild( title );
+
+	var refreshList = document.createElement( 'ul' );
+	refreshList.className = 'tree-list';
+
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 
 		if ( i > 0 ) {
-			timeDiff = adData.refreshes[ i ].timestamp - adData.refreshes[ i - 1 ].timestamp;
-			toReturn += '<li class="tree-time-diff">' + timeDiff + 'ms pass</li>';
+			refreshList.appendChild(
+				buildTimeIntervalListItem( adData.refreshes, i )
+			);
 		}
 
 		slots = adData.refreshes[ i ].slots;
 		slotCount = slots.length;
-		toReturn += '<li><b>Refresh #' + ( i + 1 ) + ' (' +
-			slotCount + ' slots)</b><ul>';
 
-		// Begin list of slots.
+		refreshListItem = document.createElement( 'li' );
+		refreshLabel = document.createElement( 'b' );
+		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
+		refreshLabel.appendChild( document.createTextNode( text ) );
+		refreshListItem.appendChild( refreshLabel );
+
+		refreshSlotList = document.createElement( 'ul' );
+		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
-			toReturn += '<li>Slot: ' + slots[ s ].elementId;
-			toReturn += '<ul>';
-			toReturn += '<li>Ad Unit: ' + slots[ s ].adUnitPath + '</li>';
-			toReturn += '<li>Slot\'s previous refreshes: #</li>';
-			toReturn += '<li>Element ID: ' + slots[ s ].elementId + '</li>';
-			if ( slots[ s ].targeting ) {
-				toReturn += '<li>Key-Value Targeting: <ul>';
-
-				for ( target in slots[ s ].targeting ) {
-					if ( slots[ s ].targeting.hasOwnProperty( target ) ) {
-						if ( ! Array.isArray( slots[ s ].targeting[ target ] ) ||
-								1 === slots[ s ].targeting[ target ].length ) {
-							toReturn += '<li>' + target + ': ' +
-								slots[ s ].targeting[ target ] + '</li>';
-						} else {
-							toReturn += '<li>' + target + ':<ul>';
-							for ( t = 0, tlength = slots[ s ].targeting[ target ].length; t < tlength; t++ ) {
-								toReturn += '<li>' + slots[ s ].targeting[ target ][ t ] + '</li>';
-							}
-							toReturn += '</ul></li>';
-						}
-					}
-				}
-
-				toReturn += '</ul></li>';
-			}
-			//adUnitPath, elementId, storedData.sizeMappings(array), targeting(objects)
-			if ( slots[ s ].storedData && slots[ s ].storedData.sizeMappings ) {
-				toReturn += '<li>Size Mappings: <ul>';
-				sizeMappings = slots[ s ].storedData.sizeMappings[0];
-				for ( j = 0, jlength = sizeMappings.length; j < jlength; j++ ) {
-					// Iterating over list of sizes containing rules.
-					toReturn += '<li>' + sizeMappings[ j ][0][0] + 'x' + sizeMappings[ j ][0][1] + '<ul>';
-					if ( ! Array.isArray( sizeMappings[ j ][1][0] ) ) {
-						toReturn += '<li>' + sizeMappings[ j ][1][0] + 'x' +
-							sizeMappings[ j ][1][1] + '</li>';
-					} else {
-						for ( l = 0, llength = sizeMappings[ j ][1].length; l < llength; l++ ) {
-							toReturn += '<li>' + sizeMappings[ j ][1][ l ][0] + 'x' +
-								sizeMappings[ j ][1][ l ][1] + '</li>';
-						}
-					}
-					toReturn += '</ul>';
-						// Iterating over all ad sizes for this size.
-				}
-				toReturn += '</ul></li>';
-			}
-			toReturn += '</ul>';
-			toReturn += '</li>';
+			refreshSlotList.appendChild( buildSlotListItem( slots[ s ] ) );
 		}
+		refreshListItem.appendChild( refreshSlotList );
 
-		toReturn += '</li></ul>';
+		refreshList.appendChild( refreshListItem );
 	}
 
-	return toReturn + '</ul></ul>';
+	toReturn.appendChild( refreshList );
+
+	return toReturn;
 }
 
-function buildIndividualRefreshInfo( count, data ) {
+function buildSlotListItem( slot ) {
+	var text;
+
+	var slotListItem = document.createElement( 'li' );
+
+	var slotName = 'Slot: ' + slot.elementId;
+	slotListItem.appendChild( document.createTextNode( slotName ) );
+
+	var slotInfoList = document.createElement( 'ul' );
+
+	var adUnit = document.createElement( 'li' );
+	text = 'Ad Unit: ' + slot.adUnitPath;
+	adUnit.appendChild( document.createTextNode( text ) );
+	slotInfoList.appendChild( adUnit );
+
+	var elementId = document.createElement( 'li' );
+	text = 'DOM Element ID: ' + slot.elementId;
+	elementId.appendChild( document.createTextNode( text ) );
+	slotInfoList.appendChild( elementId );
+
+	var previousRefreshes = document.createElement( 'li' );
+	text = 'Total times refreshed: #';
+	previousRefreshes.appendChild( document.createTextNode( text ) );
+	slotInfoList.appendChild( previousRefreshes );
+
+	if ( slot.targeting ) {
+		var targeting = document.createElement( 'li' );
+		text = 'Key-Value Targeting:';
+		targeting.appendChild( document.createTextNode( text ) );
+		targeting.appendChild( buildKeyTargetingList( slot.targeting ) );
+		slotInfoList.appendChild( targeting );
+	}
+
+	if ( slot.storedData && slot.storedData.sizeMappings ) {
+		var sizeMapping = document.createElement( 'li' );
+		text = 'Size Mapping:';
+		sizeMapping.appendChild( document.createTextNode( text ) );
+		sizeMapping.appendChild(
+			buildSizeMappingList( slot.storedData.sizeMappings[0] )
+		);
+		slotInfoList.appendChild( sizeMapping );
+	}
+
+	slotListItem.appendChild( slotInfoList );
+
+	return slotListItem;
+}
+
+function buildTimeIntervalListItem( refreshes, i ) {
+	var timeDiffMs, timeDiffSecs, timeDiffText, timeListItem,
+		pageTimeDiffMs, pageTimeDiffSecs;
+
+	// Show time passed between refreshes.
+	timeDiffMs = adData.refreshes[ i ].timestamp - adData.refreshes[ i - 1 ].timestamp;
+	timeDiffSecs = Math.round( timeDiffMs / 1000 * 100 ) / 100;
+	if ( 0 !== timeDiffMs % 1000 ) {
+		timeDiffText = timeDiffSecs + ' seconds (' + timeDiffMs + 'ms)';
+	} else {
+		timeDiffText = timeDiffSecs + ' seconds';
+	}
+
+	// Unicode for mdash html entity.
+	timeDiffText += ' later \u2014 ';
+
+	// Time since page load.
+	pageTimeDiffMs = adData.refreshes[ i ].timestamp - pageLoadTimestamp;
+	pageTimeDiffSecs = Math.round( pageTimeDiffMs / 1000 * 100 ) / 100;
+	if ( 0 !== pageTimeDiffMs % 1000 ) {
+		timeDiffText += pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
+	} else {
+		timeDiffText += pageTimeDiffSecs + ' seconds';
+	}
+	// Might should change to since GPT loaded.
+	timeDiffText += ' since page load.';
+
+	timeListItem = document.createElement( 'li' );
+	timeListItem.className = 'tree-time-diff';
+	timeListItem.appendChild( document.createTextNode( timeDiffText ) );
+
+	return timeListItem;
+}
+
+/**
+ * Build a nested list from targeting data passed into it.
+ */
+function buildKeyTargetingList( targets ) {
+	var targetingList = document.createElement( 'ul' ),
+		targetingItem, text, valueList, valueItem,
+		i, length;
+
+	for ( var target in targets ) {
+		if ( targets.hasOwnProperty( target ) ) {
+			targetingItem = document.createElement( 'li' );
+
+			if ( ! Array.isArray( targets[ target ] ) ||
+					1 === targets[ target ].length ) {
+				text = target + ': ' + targets[ target ];
+				targetingItem.appendChild( document.createTextNode( text ) );
+			} else {
+				text = target + ': ';
+				targetingItem.appendChild( document.createTextNode( text ) );
+
+				valueList = document.createElement( 'ul' );
+				for ( i = 0, length = targets[ target ].length; i < length; i++ ) {
+					valueItem = document.createElement( 'li' );
+					valueItem.appendChild(
+						document.createTextNode( targets[ target ][ i ] )
+					);
+					valueList.appendChild( valueItem );
+				}
+
+				targetingItem.appendChild( valueList );
+			}
+
+			targetingList.appendChild( targetingItem );
+		}
+	}
+
+	return targetingList;
+}
+
+function buildSizeMappingList( sizeMapping ) {
+	var screenSizeList = document.createElement( 'ul' ),
+		screenSizeItem, screenSize, adSize, adSizeList, adSizeItem;
+
+	for ( var j = 0, jlength = sizeMapping.length; j < jlength; j++ ) {
+		screenSizeItem = document.createElement( 'li' );
+		screenSize = sizeMapping[ j ][0][0] + 'x' + sizeMapping[ j ][0][1] + ':';
+		screenSizeItem.appendChild( document.createTextNode( screenSize ) );
+
+		adSizeList = document.createElement( 'ul' );
+		if ( ! Array.isArray( sizeMapping[ j ][1][0] ) ) {
+			adSizeItem = document.createElement( 'li' );
+			adSize = sizeMapping[ j ][1][0] + 'x' + sizeMapping[ j ][1][1];
+			adSizeItem.appendChild( document.createTextNode( adSize ) );
+			adSizeList.appendChild( adSizeItem );
+		} else {
+			for ( var l = 0, llength = sizeMapping[ j ][1].length; l < llength; l++ ) {
+				adSizeItem = document.createElement( 'li' );
+				adSize = sizeMapping[ j ][1][ l ][0] + 'x' + sizeMapping[ j ][1][ l ][1];
+				adSizeItem.appendChild( document.createTextNode( adSize ) );
+				adSizeList.appendChild( adSizeItem );
+			}
+		}
+		screenSizeItem.appendChild( adSizeList );
+		screenSizeList.appendChild( screenSizeItem );
+	}
+
+	return screenSizeList;
 }
 
 
 function generateSlotInfo() {
-	return 'Slot info';
+	var toReturn = document.createDocumentFragment();
+	var intro = document.createElement( 'p' );
+	var text = 'Slot info will go here';
+	intro.appendChild( document.createTextNode( text ) );
+	return toReturn;
 }
 
 function generateOverview() {
-	return 'This is the overview. There will be more here later.';
+	var overview = document.createDocumentFragment();
+	var intro = document.createElement( 'p' );
+	var text = 'This is the overview. There will be more here later.';
+	intro.appendChild( document.createTextNode( text ) );
+	overview.appendChild( intro );
+
+	return overview;
 }
 
 function changeScreen( screen ) {
@@ -212,7 +341,14 @@ function displayContent( content ) {
 			return;
 		}
 	}
-	contentElement.innerHTML = content;
+	emptyElement( contentElement );
+	contentElement.appendChild( content );
+}
+
+function emptyElement( element ) {
+	while ( element.firstChild ) {
+		element.removeChild( element.firstChild );
+	}
 }
 
 // document.documentElement.onclick = function() {
