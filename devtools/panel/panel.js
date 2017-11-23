@@ -306,9 +306,32 @@ function buildSizeMappingList( sizeMapping ) {
 
 function generateSlotInfo() {
 	var toReturn = document.createDocumentFragment();
-	var intro = document.createElement( 'p' );
-	var text = 'Slot info will go here';
-	intro.appendChild( document.createTextNode( text ) );
+
+	if ( ! adData || ! adData.slots || 0 === adData.slots.length ) {
+		var noSlots = document.createElement( 'p' );
+		var explanation = document.createTextNode( 'No slot data received yet.' );
+		noSlots.appendChild( explanation );
+		return noSlots;
+	}
+
+	var title = document.createElement( 'h2' );
+	title.appendChild( document.createTextNode( 'Slots:' ) );
+	toReturn.appendChild( title );
+
+
+	var slotList = document.createElement( 'ul' );
+	slotList.className = 'tree-list';
+
+	var slotNames = Object.keys( adData.slots ).sort();
+
+	for ( var i = 0, length = slotNames.length; i < length; i++ ) {
+		slotList.appendChild(
+			buildSlotListItem( adData.slots[ slotNames[ i ] ] )
+		);
+	}
+
+	toReturn.appendChild( slotList );
+
 	return toReturn;
 }
 
