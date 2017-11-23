@@ -74,7 +74,7 @@ function generateRefreshInfo() {
 		noRefreshes.appendChild( explanation );
 		return noRefreshes;
 	}
-	var i, length, s, slots, slotCount, sizeMappings, target, refreshListItem, refreshLabel, text;
+	var i, length, s, slots, slotCount, sizeMappings, target, refreshListItem, refreshLabel, text, refreshSlotList;
 
 	var toReturn = document.createDocumentFragment();
 
@@ -102,10 +102,12 @@ function generateRefreshInfo() {
 		refreshLabel.appendChild( document.createTextNode( text ) );
 		refreshListItem.appendChild( refreshLabel );
 
+		refreshSlotList = document.createElement( 'ul' );
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
-			refreshListItem.appendChild( buildSlotListItem( slots[ s ] ) );
+			refreshSlotList.appendChild( buildSlotListItem( slots[ s ] ) );
 		}
+		refreshListItem.appendChild( refreshSlotList );
 
 		refreshList.appendChild( refreshListItem );
 	}
@@ -116,10 +118,11 @@ function generateRefreshInfo() {
 }
 
 function buildSlotListItem( slot ) {
-	var slotName, text;
+	var text;
 
 	var slotListItem = document.createElement( 'li' );
-	slotName = 'Slot: ' + slot.elementId;
+
+	var slotName = 'Slot: ' + slot.elementId;
 	slotListItem.appendChild( document.createTextNode( slotName ) );
 
 	var slotInfoList = document.createElement( 'ul' );
