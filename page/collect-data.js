@@ -64,9 +64,11 @@ var DFPeep = ( function() {
 				}
 
 				for ( pageTarget in adData.pageTargeting ) {
-					if ( adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
-						slotData.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
+					if ( ! adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
+						continue;
 					}
+
+					slotData.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
 				}
 
 				refreshData.slots.push( slotData );

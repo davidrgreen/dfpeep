@@ -208,31 +208,33 @@ function buildKeyTargetingList( targets ) {
 		i, length;
 
 	for ( var target in targets ) {
-		if ( targets.hasOwnProperty( target ) ) {
-			targetingItem = document.createElement( 'li' );
+		if ( ! targets.hasOwnProperty( target ) ) {
+			continue;
+		}
 
-			if ( ! Array.isArray( targets[ target ] ) ||
-					1 === targets[ target ].length ) {
-				text = target + ': ' + targets[ target ];
-				targetingItem.appendChild( document.createTextNode( text ) );
-			} else {
-				text = target + ': ';
-				targetingItem.appendChild( document.createTextNode( text ) );
+		targetingItem = document.createElement( 'li' );
 
-				valueList = document.createElement( 'ul' );
-				for ( i = 0, length = targets[ target ].length; i < length; i++ ) {
-					valueItem = document.createElement( 'li' );
-					valueItem.appendChild(
-						document.createTextNode( targets[ target ][ i ] )
-					);
-					valueList.appendChild( valueItem );
-				}
+		if ( ! Array.isArray( targets[ target ] ) ||
+				1 === targets[ target ].length ) {
+			text = target + ': ' + targets[ target ];
+			targetingItem.appendChild( document.createTextNode( text ) );
+		} else {
+			text = target + ': ';
+			targetingItem.appendChild( document.createTextNode( text ) );
 
-				targetingItem.appendChild( valueList );
+			valueList = document.createElement( 'ul' );
+			for ( i = 0, length = targets[ target ].length; i < length; i++ ) {
+				valueItem = document.createElement( 'li' );
+				valueItem.appendChild(
+					document.createTextNode( targets[ target ][ i ] )
+				);
+				valueList.appendChild( valueItem );
 			}
 
-			targetingList.appendChild( targetingItem );
+			targetingItem.appendChild( valueList );
 		}
+
+		targetingList.appendChild( targetingItem );
 	}
 
 	return targetingList;
