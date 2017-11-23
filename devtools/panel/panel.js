@@ -155,7 +155,7 @@ function buildSlotListItem( slot ) {
 		text = 'Size Mapping:';
 		sizeMapping.appendChild( document.createTextNode( text ) );
 		sizeMapping.appendChild(
-			buildSizeMappingList( slot.storedData.sizeMappings )
+			buildSizeMappingList( slot.storedData.sizeMappings[0] )
 		);
 		slotInfoList.appendChild( sizeMapping );
 	}
@@ -207,7 +207,7 @@ function buildKeyTargetingList( targets ) {
 		targetingItem, text, valueList, valueItem,
 		i, length;
 
-	for ( target in targets ) {
+	for ( var target in targets ) {
 		if ( targets.hasOwnProperty( target ) ) {
 			targetingItem = document.createElement( 'li' );
 
