@@ -17,6 +17,10 @@ function handleIncomingMessage( msg ) {
 				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
+				var slots = msg.payload.data.slots;
+				for ( var i = 0, length = slots.length; i < length; i++ ) {
+					updateSlotInfo( slots[ i ].elementId, slots[ i ] );
+				}
 				menuElement.querySelector( 'a[href="#refreshes"]' ).innerText = 'Refreshes (' + adData.refreshes.length + ')';
 				changeScreen( 'refreshes' );
 				break;
@@ -37,10 +41,7 @@ function handleIncomingMessage( msg ) {
 				break;
 			case 'slotData':
 				if ( msg.payload.data.name && msg.payload.data.data ) {
-					if ( ! adData.slots[ msg.payload.data.name ] ) {
-						adData.slots[ msg.payload.data.name ] = {};
-					}
-					adData.slots[ msg.payload.data.name ] = msg.payload.data.data;
+					updateSlotInfo( msg.payload.data.name, msg.payload.data.data );
 				}
 				break;
 			default:
@@ -50,6 +51,17 @@ function handleIncomingMessage( msg ) {
 	} else {
 		outputDataToScreen( msg );
 	}
+}
+
+function updateSlotInfo( name, data ) {
+	if ( ! name || ! data ) {
+		return;
+	}
+
+	if ( ! adData.slots[ name ] ) {
+		adData.slots[ name ] = {};
+	}
+	adData.slots[ name ] = data;
 }
 
 function setupVariables( data ) {
