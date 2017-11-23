@@ -5,14 +5,13 @@ var DFPeep = ( function() {
 	window.googletag = window.googletag || {};
 	window.googletag.cmd = window.googletag.cmd || [];
 
-	var slots = {}, // slot objects hold arrays of objects, so each refresh of a slot adds to the array
-		refreshHistory = [],
-		wrappedSlotFunctions;
+	var wrappedSlotFunctions;
 
 	var adData = {
 		pageLoadTimestamp: null,
+		enabledSingleRequest: [],
 		disabledInitialLoad: [],
-		slots: {},
+		slots: {}, // Make each slot an array to contain instance data for each refresh
 		refreshHistory: [],
 		pageTargeting: {}
 	};
@@ -34,6 +33,7 @@ var DFPeep = ( function() {
 				wrapGPTEnableServices();
 				wrapGPTDefineSlot();
 				wrapGPTSetTargeting();
+				wrapGPTEnableSingleRequest();
 		} );
 	};
 
@@ -88,6 +88,17 @@ var DFPeep = ( function() {
 		};
 	};
 
+	var wrapGPTEnableSingleRequest = function() {
+		var oldVersion = googletag.pubads().enableSingleRequest;
+		googletag.pubads().enableSingleRequest = function() {
+			var timestamp = getTimestamp();
+			adData.enabledSingleRequest.push( timestamp );
+			// sendDataToDevTools( 'GPTDisableInitialLoad', { time: timestamp } );
+			var result = oldVersion.apply( this, arguments );
+			return result;
+		};
+	};
+
 	var wrapGPTSetTargeting = function() {
 		var oldVersion = googletag.pubads().setTargeting;
 		googletag.pubads().setTargeting = function() {
@@ -127,9 +138,6 @@ var DFPeep = ( function() {
 					var oldVersion = obPrototype.setTargeting;
 					obPrototype.setTargeting = function() {
 						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
-						// console.log( 'setTargeting called' );
-						// console.log( arguments );
-						// console.log( 'Called by ' + this.getAdUnitPath() );
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
@@ -146,10 +154,6 @@ var DFPeep = ( function() {
 						} else {
 							adData.slots[ slotElement ].sizeMappings.push( arguments[0] );
 						}
-						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
-						console.log( 'defineSizeMapping called' );
-						console.log( arguments );
-						console.log( 'Called by ' + slotElement );
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
