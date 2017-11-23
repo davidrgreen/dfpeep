@@ -25,6 +25,11 @@ function handleIncomingMessage( msg ) {
 					adData.enabledServices.push( msg.payload.data.time );
 				}
 				break;
+			case 'GPTEnableSingleRequest':
+				if ( msg.payload.data.time ) {
+					adData.enabledSingleRequest.push( msg.payload.data.time );
+				}
+				break;
 			case 'GPTDisableInitialLoad':
 				if ( msg.payload.data.time ) {
 					adData.disabledInitialLoad.push( msg.payload.data.time );

@@ -96,7 +96,7 @@ var DFPeep = ( function() {
 		googletag.pubads().enableSingleRequest = function() {
 			var timestamp = getTimestamp();
 			adData.enabledSingleRequest.push( timestamp );
-			// sendDataToDevTools( 'GPTDisableInitialLoad', { time: timestamp } );
+			sendDataToDevTools( 'GPTEnableSingleRequest', { time: timestamp } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
