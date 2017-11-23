@@ -167,7 +167,7 @@ function buildSlotListItem( slot ) {
 
 function buildTimeIntervalListItem( refreshes, i ) {
 	var timeDiffMs, timeDiffSecs, timeDiffText, timeListItem,
-	pageTimeDiffMs, pageTimeDiffSecs;
+		pageTimeDiffMs, pageTimeDiffSecs;
 
 	// Show time passed between refreshes.
 	timeDiffMs = adData.refreshes[ i ].timestamp - adData.refreshes[ i - 1 ].timestamp;
@@ -242,7 +242,7 @@ function buildSizeMappingList( sizeMapping ) {
 	var screenSizeList = document.createElement( 'ul' ),
 		screenSizeItem, screenSize, adSize, adSizeList, adSizeItem;
 
-	for ( j = 0, jlength = sizeMapping.length; j < jlength; j++ ) {
+	for ( var j = 0, jlength = sizeMapping.length; j < jlength; j++ ) {
 		screenSizeItem = document.createElement( 'li' );
 		screenSize = sizeMapping[ j ][0][0] + 'x' + sizeMapping[ j ][0][1] + ':';
 		screenSizeItem.appendChild( document.createTextNode( screenSize ) );
@@ -254,7 +254,7 @@ function buildSizeMappingList( sizeMapping ) {
 			adSizeItem.appendChild( document.createTextNode( adSize ) );
 			adSizeList.appendChild( adSizeItem );
 		} else {
-			for ( l = 0, llength = sizeMapping[ j ][1].length; l < llength; l++ ) {
+			for ( var l = 0, llength = sizeMapping[ j ][1].length; l < llength; l++ ) {
 				adSizeItem = document.createElement( 'li' );
 				adSize = sizeMapping[ j ][1][ l ][0] + 'x' + sizeMapping[ j ][1][ l ][1];
 				adSizeItem.appendChild( document.createTextNode( adSize ) );
