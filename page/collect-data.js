@@ -61,6 +61,9 @@ var DFPeep = ( function() {
 				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
 				slot.elementId = slotElementId;
 				slot.targeting = {};
+				// Use length here, no length-1, because this refresh's data
+				// has not been pushed to the adData.refreshes array yet.
+				slot.partOfRefresh = adData.refreshes.length;
 
 				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
 				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
