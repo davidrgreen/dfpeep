@@ -194,9 +194,13 @@ function buildSlotListItem( slot ) {
 	var text;
 
 	var slotListItem = document.createElement( 'li' );
+	slotListItem.className = 'tree-with-children';
 
-	var slotName = 'Slot: ' + slot.elementId;
-	slotListItem.appendChild( document.createTextNode( slotName ) );
+	var plusSign = document.createElement( 'span' );
+	plusSign.className = 'tree-plus-sign';
+	slotListItem.appendChild( plusSign );
+	var slotName = document.createTextNode( 'Slot: ' + slot.elementId );
+	slotListItem.appendChild( slotName );
 
 	var slotInfoList = document.createElement( 'ul' );
 
@@ -384,21 +388,21 @@ function generateOverview() {
 }
 
 function changeScreen( screen ) {
-	var nextScreen;
+	var nextScreen = screen;
 	switch ( screen ) {
 		case 'init':
 			nextScreen = 'overview';
 			setupMenuEventListeners();
-			displayContent( generateOverview() );
+			displayContent( generateOverview(), nextScreen );
 			break;
 		case 'refreshes':
-			displayContent( generateRefreshInfo() );
+			displayContent( generateRefreshInfo(), nextScreen );
 			break;
 		case 'slots':
-			displayContent( generateSlotInfo() );
+			displayContent( generateSlotInfo(), nextScreen );
 			break;
 		case 'overview':
-			displayContent( generateOverview() );
+			displayContent( generateOverview(), nextScreen );
 			break;
 		default:
 			changeScreen( 'overview' );
@@ -425,25 +429,54 @@ function changeSelectedMenuItem( menuItem ) {
 	newlySelected.classList.add( 'selected' );
 }
 
-function displayContent( content ) {
+function displayContent( content, screen ) {
 	if ( ! content ) {
 		console.error( 'No content passed to displayContent' );
 		return;
 	}
 	if ( ! contentElement ) {
-		contentElement = document.getElementById( 'content' );
+		setupContentArea();
 		if ( ! contentElement ) {
 			console.error( 'No content element to write to.' );
 			return;
 		}
 	}
 	emptyElement( contentElement );
+	makeCollapsible( content, screen );
 	contentElement.appendChild( content );
+}
+
+function setupContentArea() {
+	contentElement = document.getElementById( 'content' );
+	if ( ! contentElement ) {
+		console.error( 'No content element to write to.' );
+		return;
+	}
+	contentElement.addEventListener( 'click', function( e ) {
+		if ( e.target && 'SPAN' === e.target.nodeName && e.target.classList.contains( 'tree-plus-sign' ) ) {
+			e.preventDefault();
+			e.target.classList.toggle( 'tree-plus-sign--expanded' );
+			var parentToggle = e.target.parentElement.querySelector( 'ul' );
+			if ( parentToggle ) {
+				parentToggle.classList.toggle( 'tree-hidden' );
+			}
+		}
+	} );
 }
 
 function emptyElement( element ) {
 	while ( element.firstChild ) {
 		element.removeChild( element.firstChild );
+	}
+}
+
+function makeCollapsible( dom ) {
+	if ( ! dom ) {
+		dom = document;
+	}
+	var listsToHide = dom.querySelectorAll( '.tree-with-children' );
+	for ( var i = 0, length = listsToHide.length; i < length; i++ ) {
+		listsToHide[ i ].querySelector( 'ul' ).classList.add( 'tree-hidden' );
 	}
 }
 

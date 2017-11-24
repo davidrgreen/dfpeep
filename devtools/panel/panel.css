@@ -4,6 +4,7 @@
 
 body {
 	font-family: sans-serif;
+	padding-bottom: 50px;
 }
 
 #menu ul {
@@ -52,7 +53,7 @@ ul.tree-list ul {
 }
 
 ul.tree-list li {
-	margin: 0;
+	margin: 0 0 3px;
 	padding: 0 12px;
 	line-height: 20px;
 	background: url(img/node.png) no-repeat;
@@ -64,8 +65,56 @@ ul.tree-list li:last-child {
 
 ul.tree-list li.tree-time-diff {
 	background: url(img/vline.png) repeat-y;
-	padding-top: 50px;
-	padding-bottom: 50px;
+	padding-top: 35px;
+	padding-bottom: 35px;
 	font-size: 110%;
 	font-style: italic;
+}
+
+/* ul.tree-list li ul li > ul {
+	display: none;
+} */
+
+.tree-hidden {
+	display: none;
+}
+
+.tree-plus-sign {
+	cursor: pointer;
+	display: inline-block;
+	margin: 0 4px 0 2px;
+	border-radius: 50%;
+	width: 16px;
+	height: 16px;
+	background-color: rgb(44, 108, 128);
+	position: relative;
+	top: 2px;
+}
+.tree-plus-sign::after {
+	content: " ";
+	position: absolute;
+	display: block;
+	background-color: #fff;
+	height: 12px;
+	width: 2px;
+	margin-top: -6px;
+	top: 50%;
+	left: 7px;
+	z-index: 9;
+}
+.tree-plus-sign::before {
+	content: " ";
+	position: absolute;
+	display: block;
+	background-color: #fff;
+	width: 12px;
+	height: 2px;
+	margin-left: -6px;
+	left: 50%;
+	top: 7px;
+	z-index: 9;
+}
+
+.tree-plus-sign--expanded::after {
+	display: none;
 }
