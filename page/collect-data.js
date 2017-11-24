@@ -29,6 +29,36 @@ var DFPeep = ( function() {
 		);
 		adData.pageLoadTimestamp = timestamp;
 		wrapGPTFunctions();
+		addGPTListeners();
+	};
+
+	var addGPTListeners = function() {
+		googletag.cmd.push(
+			function() {
+				listenImpressionViewable();
+			}
+		);
+	};
+
+	var listenImpressionViewable = function() {
+		googletag.pubads().addEventListener(
+			'impressionViewable',
+			processImpressionViewable
+		);
+		googletag.companionAds().addEventListener(
+			'impressionViewable',
+			processImpressionViewable
+		);
+		googletag.content().addEventListener(
+			'impressionViewable',
+			processImpressionViewable
+		);
+	};
+
+	var processImpressionViewable = function( viewed ) {
+		var slotName = viewed.slot.getSlotElementId();
+		adData.slots[ slotName ].viewed = 1;
+		sendSlotDataToDevTools( slotName, adData.slots[ slotName ] );
 	};
 
 	var wrapGPTFunctions = function() {
