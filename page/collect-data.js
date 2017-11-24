@@ -153,6 +153,9 @@ var DFPeep = ( function() {
 			if ( ! adData.slots[ elementId ] ) {
 				adData.slots[ elementId ] = {};
 			}
+			if ( arguments[1] ) {
+				adData.slots[ elementId ].fallbackSize = arguments[1];
+			}
 			if ( ! wrappedSlotFunctions ) {
 				wrappedSlotFunctions = 1;
 				var proto = Object.getPrototypeOf( definedSlot );
