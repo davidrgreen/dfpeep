@@ -21,7 +21,8 @@
 	],
 	"web_accessible_resources": [
 		"page/collect-data.js",
-		"page/page.css"
+		"page/page.css",
+		"img/*"
 	],
 	"permissions": [
 		"tabs",

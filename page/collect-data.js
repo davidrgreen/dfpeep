@@ -276,7 +276,7 @@ var DFPeep = ( function() {
 			function() {
 				element.classList.remove( 'dfpeep-ad--show' );
 			},
-			850
+			950
 		);
 	};
 
