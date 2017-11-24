@@ -10,8 +10,14 @@ function injectJS( link ) {
 	document.documentElement.appendChild( script );
 }
 
+function preloadImages() {
+	var img = document.createElement( 'img' );
+	img.src = chrome.extension.getURL( 'img/dfpeep.png' );
+}
+
 function init() {
 	injectJS( chrome.extension.getURL( 'page/collect-data.js' ) );
+	preloadImages();
 }
 init();
 
@@ -42,5 +48,8 @@ window.addEventListener( 'message', function( event ) {
 
 
 var port = chrome.runtime.connect( { name: 'DFPeepFromContent' } );
-port.onMessage.addListener( function( message, sender ) {
-} );
+port.onMessage.addListener(
+	function( message, sender ) {
+		// Message from background page.
+	}
+);
