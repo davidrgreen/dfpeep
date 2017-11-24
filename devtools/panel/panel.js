@@ -4,7 +4,11 @@ var currentScreen,
 	contentElement,
 	menuElement,
 	pageLoadTimestamp,
-	adData;
+	adData,
+	UIState = {
+		refreshesShown: 0,
+		slotsShown: 0
+	};
 
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
@@ -21,7 +25,8 @@ function handleIncomingMessage( msg ) {
 				for ( var i = 0, length = slots.length; i < length; i++ ) {
 					updateSlotInfo( slots[ i ].elementId, slots[ i ] );
 				}
-				menuElement.querySelector( 'a[href="#refreshes"]' ).innerText = 'Refreshes (' + adData.refreshes.length + ')';
+				maybeUpdateMenuText( 'refreshes' );
+				maybeUpdateMenuText( 'slots' );
 				changeScreen( 'refreshes' );
 				break;
 			case 'GPTEnableServices':
@@ -43,6 +48,7 @@ function handleIncomingMessage( msg ) {
 				if ( msg.payload.data.name && msg.payload.data.data ) {
 					updateSlotInfo( msg.payload.data.name, msg.payload.data.data );
 				}
+				maybeUpdateMenuText( 'slots' );
 				break;
 			default:
 				outputDataToScreen( msg );
@@ -50,6 +56,27 @@ function handleIncomingMessage( msg ) {
 		}
 	} else {
 		outputDataToScreen( msg );
+	}
+}
+
+function maybeUpdateMenuText( item ) {
+	var toUpdate,
+		currentLength;
+	if ( 'refreshes' === item ) {
+		currentLength = adData.refreshes.length;
+		if ( ! UIState.refreshesShown ||
+				UIState.refreshesShown !== currentLength ) {
+			UIState.refreshesShown = currentLength;
+			toUpdate = menuElement.querySelector( 'a[href="#refreshes"]' );
+			toUpdate.innerText = 'Refreshes (' + currentLength + ')';
+		}
+	} else if ( 'slots' === item ) {
+		currentLength = Object.keys( adData.slots ).length;
+		if ( ! UIState.slotsShown || UIState.slotsShown !== currentLength ) {
+			UIState.slotsShown = currentLength;
+			toUpdate = menuElement.querySelector( 'a[href="#slots"]' );
+			toUpdate.innerText = 'Slots (' + currentLength + ')';
+		}
 	}
 }
 
@@ -308,7 +335,7 @@ function buildSizeMappingList( sizeMapping ) {
 function generateSlotInfo() {
 	var toReturn = document.createDocumentFragment();
 
-	if ( ! adData || ! adData.slots || 0 === adData.slots.length ) {
+	if ( ! adData || ! adData.slots || 0 === Object.keys( adData.slots ).length ) {
 		var noSlots = document.createElement( 'p' );
 		var explanation = document.createTextNode( 'No slot data received yet.' );
 		noSlots.appendChild( explanation );
