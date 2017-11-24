@@ -33,15 +33,9 @@
 	left: 0;
 	height: 100%;
 	width: 100%;
-	background: url('chrome-extension://__MSG_@@extension_id__/img/dfpeep.png') center center no-repeat;
+	background: url('chrome-extension://__MSG_@@extension_id__/img/dfpeep.png') no-repeat;
+	background-position: center 50px;
 	background-size: 150px;
-	/* top: calc( 50% - 10px );
-	left: calc(50% - 84px ); */
-	/* font-size: 24px;
-	font-weight: bold; */
-	/* color: #fff; */
-	/* text-shadow: -1px -1px #000; */
-	/* font-family: sans-serif; */
 	transition: opacity .5s ease-in-out;
 	transition-delay: 0.25s;
 }
