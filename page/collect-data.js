@@ -54,7 +54,13 @@ var DFPeep = ( function() {
 				targetingKeys,
 				i, length, t, tlength, slotElementId,
 				pageTarget;
+
 			var slotsRefreshed = arguments[0];
+			if ( ! slotsRefreshed ) {
+				// In case no argument was passed and all slots were refreshed.
+				slotsRefreshed = googletag.pubads().getSlots();
+			}
+
 			for ( i = 0, length = slotsRefreshed.length; i < length; i++ ) {
 				slotElementId = slotsRefreshed[ i ].getSlotElementId();
 				slot = adData.slots[ slotElementId ];
