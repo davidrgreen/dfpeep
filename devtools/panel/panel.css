@@ -2,6 +2,10 @@
 	box-sizing: border-box;
 }
 
+body {
+	font-family: sans-serif;
+}
+
 #menu ul {
 	list-style: none;
 	padding: 0;
