@@ -223,12 +223,12 @@ function buildSlotListItem( slot ) {
 		slotInfoList.appendChild( targeting );
 	}
 
-	if ( slot.storedData && slot.storedData.sizeMappings ) {
+	if ( slot.sizeMappings ) {
 		var sizeMapping = document.createElement( 'li' );
 		text = 'Size Mapping:';
 		sizeMapping.appendChild( document.createTextNode( text ) );
 		sizeMapping.appendChild(
-			buildSizeMappingList( slot.storedData.sizeMappings[0] )
+			buildSizeMappingList( slot.sizeMappings[0] )
 		);
 		slotInfoList.appendChild( sizeMapping );
 	}

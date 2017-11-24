@@ -50,22 +50,21 @@ var DFPeep = ( function() {
 				timestamp: getTimestamp(),
 				slots: []
 			};
-			var slotData,
+			var slot,
 				targetingKeys,
 				i, length, t, tlength, slotElementId,
 				pageTarget;
 			var slotsRefreshed = arguments[0];
 			for ( i = 0, length = slotsRefreshed.length; i < length; i++ ) {
 				slotElementId = slotsRefreshed[ i ].getSlotElementId();
-				slotData = {
-					adUnitPath: slotsRefreshed[ i ].getAdUnitPath(),
-					elementId: slotElementId,
-					targeting: {},
-					storedData: adData.slots[ slotElementId ]
-				};
+				slot = adData.slots[ slotElementId ];
+				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
+				slot.elementId = slotElementId;
+				slot.targeting = {};
+
 				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
 				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
-					slotData.targeting[ targetingKeys[ t ] ] = slotsRefreshed[ i ].getTargeting( targetingKeys[ t ] );
+					slot.targeting[ targetingKeys[ t ] ] = slotsRefreshed[ i ].getTargeting( targetingKeys[ t ] );
 				}
 
 				for ( pageTarget in adData.pageTargeting ) {
@@ -73,10 +72,10 @@ var DFPeep = ( function() {
 						continue;
 					}
 
-					slotData.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
+					slot.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
 				}
 
-				refreshData.slots.push( slotData );
+				refreshData.slots.push( slot );
 			}
 			adData.refreshes.push( refreshData );
 			sendDataToDevTools( 'GPTRefresh', refreshData );
