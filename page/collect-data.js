@@ -63,7 +63,7 @@ var DFPeep = ( function() {
 				slot.targeting = {};
 				// Use length here, no length-1, because this refresh's data
 				// has not been pushed to the adData.refreshes array yet.
-				slot.partOfRefresh = adData.refreshes.length;
+				slot.refreshedIndexes.push( adData.refreshes.length );
 
 				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
 				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
@@ -136,7 +136,9 @@ var DFPeep = ( function() {
 		googletag.display = function() {
 			var elementId = arguments[0];
 			if ( ! adData.slots[ elementId ] ) {
-				adData.slots[ elementId ] = {};
+				adData.slots[ elementId ] = {
+					refreshedIndexes: []
+				};
 			}
 			adData.slots[ elementId ].displayCallTimestamp = getTimestamp();
 			var result = oldVersion.apply( this, arguments );
@@ -153,7 +155,9 @@ var DFPeep = ( function() {
 			var definedSlot = oldDefineVersion.apply( this, arguments );
 			var elementId = definedSlot.getSlotElementId();
 			if ( ! adData.slots[ elementId ] ) {
-				adData.slots[ elementId ] = {};
+				adData.slots[ elementId ] = {
+					refreshedIndexes: []
+				};
 			}
 			if ( arguments[1] ) {
 				adData.slots[ elementId ].fallbackSize = arguments[1];
