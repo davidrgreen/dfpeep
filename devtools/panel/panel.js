@@ -210,10 +210,20 @@ function buildSlotListItem( slot ) {
 	elementId.appendChild( document.createTextNode( text ) );
 	slotInfoList.appendChild( elementId );
 
-	var previousRefreshes = document.createElement( 'li' );
-	text = 'Total times refreshed: #';
-	previousRefreshes.appendChild( document.createTextNode( text ) );
-	slotInfoList.appendChild( previousRefreshes );
+	if ( slot.refreshedIndexes ) {
+		var previousRefreshes = document.createElement( 'li' );
+
+		if ( 1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
+			text = 'Fetches: 1';
+		} else {
+			text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
+				adData.slots[ slot.elementId ].refreshedIndexes.length +
+				' total.';
+		}
+
+		previousRefreshes.appendChild( document.createTextNode( text ) );
+		slotInfoList.appendChild( previousRefreshes );
+	}
 
 	if ( slot.targeting ) {
 		var targeting = document.createElement( 'li' );
