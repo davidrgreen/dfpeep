@@ -259,9 +259,31 @@ var DFPeep = ( function() {
 		return adData;
 	};
 
+	var highlightElement = function( id ) {
+		if ( ! id ) {
+			return;
+		}
+
+		var element = document.getElementById( id );
+		if ( ! element ) {
+			return;
+		}
+
+		element.scrollIntoView( 1 );
+		element.classList.add( 'dfpeep-ad' );
+		element.classList.add( 'dfpeep-ad--show' );
+		setTimeout(
+			function() {
+				element.classList.remove( 'dfpeep-ad--show' );
+			},
+			850
+		);
+	};
+
 	return {
 		init: init,
-		getAdData: getAdData
+		getAdData: getAdData,
+		highlightElement: highlightElement
 	};
 } )();
 DFPeep.init();
