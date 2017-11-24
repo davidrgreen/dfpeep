@@ -1,3 +1,5 @@
+/* global chrome */
+
 /**
  * Insert a script into the page.
  */
@@ -8,7 +10,10 @@ function injectJS( link ) {
 	document.documentElement.appendChild( script );
 }
 
-injectJS( chrome.extension.getURL( 'page/collect-data.js' ) );
+function init() {
+	injectJS( chrome.extension.getURL( 'page/collect-data.js' ) );
+}
+init();
 
 /**
  * Listen for messages from the page.

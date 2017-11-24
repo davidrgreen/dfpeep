@@ -15,11 +15,13 @@
 				"<all_urls>"
 			],
 			"js": ["page/insert-scripts.js"],
+			"css": ["page/page.css"],
 			"run_at": "document_start"
 		}
 	],
 	"web_accessible_resources": [
-		"page/collect-data.js"
+		"page/collect-data.js",
+		"page/page.css"
 	],
 	"permissions": [
 		"tabs",
