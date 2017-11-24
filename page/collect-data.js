@@ -62,6 +62,10 @@ var DFPeep = ( function() {
 			}
 
 			for ( i = 0, length = slotsRefreshed.length; i < length; i++ ) {
+				if ( ! slotsRefreshed[ i ].getSlotElementId ) {
+					// Not a valid slot object.
+					continue;
+				}
 				slotElementId = slotsRefreshed[ i ].getSlotElementId();
 				slot = adData.slots[ slotElementId ];
 				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
