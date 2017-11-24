@@ -5,18 +5,23 @@ var DFPeep = ( function() {
 	window.googletag = window.googletag || {};
 	window.googletag.cmd = window.googletag.cmd || [];
 
-	var wrappedSlotFunctions;
+	var wrappedSlotFunctions,
+		inited;
 
 	var adData = {
 		pageLoadTimestamp: null,
 		enabledSingleRequest: [],
 		disabledInitialLoad: [],
 		slots: {}, // Make each slot an array to contain instance data for each refresh
-		refreshHistory: [],
+		refreshes: [],
 		pageTargeting: {}
 	};
 
 	var init = function() {
+		if ( inited ) {
+			return;
+		}
+		inited = 1;
 		var timestamp = getTimestamp();
 		sendDataToDevTools(
 			'newPageLoad',
@@ -73,7 +78,7 @@ var DFPeep = ( function() {
 
 				refreshData.slots.push( slotData );
 			}
-			adData.refreshHistory.push( refreshData );
+			adData.refreshes.push( refreshData );
 			sendDataToDevTools( 'GPTRefresh', refreshData );
 			var result = oldVersion.apply( this, arguments );
 			return result;
