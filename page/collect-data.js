@@ -57,7 +57,7 @@ var DFPeep = ( function() {
 
 	var processImpressionViewable = function( viewed ) {
 		var slotName = viewed.slot.getSlotElementId();
-		adData.slots[ slotName ].viewed = 1;
+		adData.slots[ slotName ].viewed[ adData.slots[ slotName ].viewed.length - 1 ] = 1;
 		sendSlotDataToDevTools( slotName, adData.slots[ slotName ] );
 	};
 
@@ -101,6 +101,7 @@ var DFPeep = ( function() {
 				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
 				slot.elementId = slotElementId;
 				slot.targeting = {};
+				slot.viewed.push( 0 );
 				// Use length here, no length-1, because this refresh's data
 				// has not been pushed to the adData.refreshes array yet.
 				slot.refreshedIndexes.push( adData.refreshes.length );
@@ -176,13 +177,18 @@ var DFPeep = ( function() {
 		googletag.display = function() {
 			var elementId = arguments[0];
 			if ( ! adData.slots[ elementId ] ) {
-				adData.slots[ elementId ] = {
-					refreshedIndexes: []
-				};
+				setupNewSlotData( elementId );
 			}
 			adData.slots[ elementId ].displayCallTimestamp = getTimestamp();
 			var result = oldVersion.apply( this, arguments );
 			return result;
+		};
+	};
+
+	var setupNewSlotData = function( name ) {
+		adData.slots[ name ] = {
+			refreshedIndexes: [],
+			viewed: []
 		};
 	};
 
@@ -195,9 +201,7 @@ var DFPeep = ( function() {
 			var definedSlot = oldDefineVersion.apply( this, arguments );
 			var elementId = definedSlot.getSlotElementId();
 			if ( ! adData.slots[ elementId ] ) {
-				adData.slots[ elementId ] = {
-					refreshedIndexes: []
-				};
+				setupNewSlotData( elementId );
 			}
 			if ( arguments[1] ) {
 				adData.slots[ elementId ].fallbackSize = arguments[1];
