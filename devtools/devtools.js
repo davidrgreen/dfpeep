@@ -21,10 +21,10 @@ chrome.devtools.panels.create(
 			// Remove to show only once.
 			extensionPanel.onShown.removeListener( firstRun );
 
-			extensionPanel.onShown.addListener( function() {
-				// Probably need a second listener for this.
-				port.postMessage( 'resend data' );
-			} );
+			// extensionPanel.onShown.addListener( function() {
+			// 	// Probably need a second listener for this.
+			// 	port.postMessage( 'resend data' );
+			// } );
 
 			panelWindow = _window;
 			panelWindow.backgroundPort = port;
