@@ -54,8 +54,20 @@ chrome.extension.onConnect.addListener( function( port ) {
 		console.log( 'background page heard from panel' );
 		console.log( message );
 		console.log( sender );
+		var tabId;
+		if ( sender.sender.tab && sender.sender.tab.id ) {
+			tabId = sender.sender.tab.id;
+		} else {
+			chrome.tabs.query(
+				{ active: true, currentWindow: true },
+				function( tabs ) {
+					tabId = tabs[0].id;
+				}
+			);
+		}
+
 		if ( contentPorts[ sender.sender.tab.id ] ) {
-			contentPorts[ sender.sender.tab.id ].postMessage( message );
+			contentPorts[ tabId ].postMessage( message );
 		}
 	};
 
