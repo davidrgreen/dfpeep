@@ -203,6 +203,8 @@ var DFPeep = ( function() {
 			if ( ! adData.slots[ elementId ] ) {
 				setupNewSlotData( elementId );
 			}
+			adData.slots[ elementId ].elementId = elementId;
+			adData.slots[ elementId ].adUnitPath = definedSlot.getAdUnitPath();
 			if ( arguments[1] ) {
 				adData.slots[ elementId ].fallbackSize = arguments[1];
 			}
