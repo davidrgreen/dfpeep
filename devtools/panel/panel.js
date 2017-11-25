@@ -3,7 +3,6 @@
 var currentScreen,
 	contentElement,
 	menuElement,
-	pageLoadTimestamp,
 	adData,
 	UIState = {
 		refreshesShown: 0,
@@ -102,9 +101,6 @@ function updateSlotInfo( name, data ) {
 }
 
 function setupVariables( data ) {
-	if ( data && data.pageLoadTimestamp ) {
-		pageLoadTimestamp = data.pageLoadTimestamp;
-	}
 	adData = {
 		slots: {},
 		refreshes: [],
@@ -112,6 +108,9 @@ function setupVariables( data ) {
 		disabledInitialLoad: [],
 		enabledSingleRequest: []
 	};
+	if ( data && data.pageLoadTimestamp ) {
+		adData.pageLoadTimestamp = data.pageLoadTimestamp;
+	}
 }
 
 function getMenuElement() {
@@ -144,7 +143,8 @@ function generateRefreshInfo() {
 		noRefreshes.appendChild( explanation );
 		return noRefreshes;
 	}
-	var i, length, s, slots, slotCount, sizeMappings, target, refreshListItem, refreshLabel, text, refreshSlotList;
+	var i, length, s, slots, slotCount, sizeMappings, target, refreshListItem,
+		refreshLabel, text, refreshSlotList, pageTimeDiffMs, pageTimeDiffSecs;
 
 	var toReturn = document.createDocumentFragment();
 
@@ -173,7 +173,7 @@ function generateRefreshInfo() {
 		text += ' \u2014 ';
 
 		// Time since page load.
-		pageTimeDiffMs = adData.refreshes[ i ].timestamp - pageLoadTimestamp;
+		pageTimeDiffMs = adData.refreshes[ i ].timestamp - adData.pageLoadTimestamp;
 		pageTimeDiffSecs = Math.round( pageTimeDiffMs / 1000 * 100 ) / 100;
 		if ( 0 !== pageTimeDiffMs % 1000 ) {
 			text += pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
