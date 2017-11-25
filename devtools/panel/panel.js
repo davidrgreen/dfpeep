@@ -13,12 +13,16 @@ var currentScreen,
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
 	console.log( msg );
-	sendToBackground( 'TESTING' );
 	if ( msg.payload && msg.payload.action ) {
 		switch ( msg.payload.action ) {
 			case 'newPageLoad':
 				setupVariables( msg.payload.data );
 				changeScreen( 'init' );
+				break;
+			case 'fullSync':
+				if ( msg.payload.data ) {
+					adData = msg.payload.data;
+				}
 				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
