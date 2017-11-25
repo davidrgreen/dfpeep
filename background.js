@@ -58,6 +58,10 @@ chrome.extension.onConnect.addListener( function( port ) {
 		if ( sender.sender.tab && sender.sender.tab.id ) {
 			tabId = sender.sender.tab.id;
 		} else {
+			// NOTE: This may be a bad idea because if the panel passively sends
+			// a request on a timeout then the user may have changed to another
+			// tab, resulting in the messaging going the wrong page.
+			// Right now with what I need it should be fine.
 			chrome.tabs.query(
 				{ active: true, currentWindow: true },
 				function( tabs ) {
@@ -66,7 +70,9 @@ chrome.extension.onConnect.addListener( function( port ) {
 			);
 		}
 
-		if ( contentPorts[ sender.sender.tab.id ] ) {
+		if ( contentPorts[ tabId ] ) {
+			console.log( 'Sending a message to ' + tabId );
+			console.log( contentPorts[ tabId ] );
 			contentPorts[ tabId ].postMessage( message );
 		}
 	};

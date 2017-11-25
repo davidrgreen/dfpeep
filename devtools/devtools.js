@@ -7,6 +7,8 @@ chrome.devtools.panels.create(
 
 		var data = [];
 		var port = chrome.runtime.connect( { name: 'DFPeepFromPanel'} );
+		console.log( 'dev panel created new port' );
+		console.log( port );
 		port.onMessage.addListener(function(msg) {
 			// Write information to the panel, if exists.
 			// If we don't have a panel reference (yet), queue the data.
@@ -21,10 +23,7 @@ chrome.devtools.panels.create(
 			// Remove to show only once.
 			extensionPanel.onShown.removeListener( firstRun );
 
-			extensionPanel.onShown.addListener( function() {
-				// Probably need a second listener for this.
-				port.postMessage( 'resend data' );
-			} );
+			port.postMessage( 'resend data' );
 
 			panelWindow = _window;
 			panelWindow.backgroundPort = port;
