@@ -53,10 +53,12 @@ chrome.extension.onConnect.addListener( function( port ) {
 		// Sent from panel, pass along to content script.
 		console.log( 'background page heard from panel' );
 		console.log( message );
-		console.log( sender );
 		var tabId;
 		if ( sender.sender.tab && sender.sender.tab.id ) {
 			tabId = sender.sender.tab.id;
+			if ( contentPorts[ tabId ] ) {
+				contentPorts[ tabId ].postMessage( message );
+			}
 		} else {
 			// NOTE: This may be a bad idea because if the panel passively sends
 			// a request on a timeout then the user may have changed to another
@@ -66,14 +68,11 @@ chrome.extension.onConnect.addListener( function( port ) {
 				{ active: true, currentWindow: true },
 				function( tabs ) {
 					tabId = tabs[0].id;
+					if ( contentPorts[ tabId ] ) {
+						contentPorts[ tabId ].postMessage( message );
+					}
 				}
 			);
-		}
-
-		if ( contentPorts[ tabId ] ) {
-			console.log( 'Sending a message to ' + tabId );
-			console.log( contentPorts[ tabId ] );
-			contentPorts[ tabId ].postMessage( message );
 		}
 	};
 

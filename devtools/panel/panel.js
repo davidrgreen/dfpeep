@@ -20,6 +20,8 @@ function handleIncomingMessage( msg ) {
 				changeScreen( 'init' );
 				break;
 			case 'fullSync':
+				console.log( 'full sync!' );
+				console.log( msg.payload.data );
 				if ( msg.payload.data ) {
 					adData = msg.payload.data;
 				}
