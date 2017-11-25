@@ -43,7 +43,7 @@ body {
 ul.tree-list,
 .tree-list ul {
 	list-style-type: none;
-	background: url(img/vline.png) repeat-y;
+	background: url(img/vline.svg) repeat-y;
 	margin: 0;
 	padding: 0;
 }
@@ -56,12 +56,17 @@ ul.tree-list li {
 	margin: 0 0 3px;
 	padding: 0 12px;
 	line-height: 20px;
-	background: url(img/node.png) no-repeat;
+	background: url(img/node.svg) no-repeat;
+	background-position: top left -1px;
 }
 
+
 ul.tree-list li:last-child {
-	background: #fff url(img/lastnode.png) no-repeat;
+	background: #fff url(img/lastnode.svg) no-repeat;
+	background-position: left top -17px;
 }
+
+ul.tree-list
 
 ul.tree-list li.tree-time-diff {
 	background: url(img/vline.png) repeat-y;
@@ -75,6 +80,14 @@ ul.tree-list li.tree-time-diff {
 	display: none;
 } */
 
+ul.tree-list li.tree-with-children {
+	background-position: -1px 7px;
+}
+
+ul.tree-list li.tree-with-children:last-child {
+	background-position: left top -10px;
+}
+
 .tree-hidden {
 	display: none;
 }
@@ -82,39 +95,49 @@ ul.tree-list li.tree-time-diff {
 .tree-plus-sign {
 	cursor: pointer;
 	display: inline-block;
-	margin: 0 4px 0 2px;
-	border-radius: 50%;
-	width: 16px;
-	height: 16px;
-	background-color: rgb(44, 108, 128);
+	margin: 0 4px 0 0;
+	/* border-radius: 50%; */
+	width: 18px;
+	height: 24px;
+	/* background-color: rgb(44, 108, 128);
+	-webkit-border-radius: 63px 63px 63px 63px / 108px 108px 72px 72px;
+	border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; */
+	background: url(img/egg-plus.svg);
+	background-size: 18px 24px;
 	position: relative;
-	top: 2px;
+	top: 3px;
 }
-.tree-plus-sign::after {
-	content: " ";
-	position: absolute;
-	display: block;
-	background-color: #fff;
-	height: 12px;
-	width: 2px;
-	margin-top: -6px;
-	top: 50%;
-	left: 7px;
-	z-index: 9;
+
+.tree-plus-sign.tree-plus-sign--expanded {
+	background-image: url(img/egg-minus.svg);
 }
-.tree-plus-sign::before {
+
+/* .tree-plus-sign::before {
 	content: " ";
 	position: absolute;
 	display: block;
 	background-color: #fff;
 	width: 12px;
-	height: 2px;
+	height: 4px;
 	margin-left: -6px;
 	left: 50%;
-	top: 7px;
+	top: 14px;
 	z-index: 9;
 }
 
-.tree-plus-sign--expanded::after {
+.tree-plus-sign::after {
+	content: " ";
+	position: absolute;
+	display: block;
+	background-color: #fff;
+	height: 14px;
+	width: 4px;
+	margin-top: -6px;
+	top: 50%;
+	left: 9px;
+	z-index: 9;
+} */
+
+/* .tree-plus-sign--expanded::after {
 	display: none;
-}
+} */
