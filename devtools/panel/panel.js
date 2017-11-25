@@ -19,6 +19,13 @@ function handleIncomingMessage( msg ) {
 				setupVariables( msg.payload.data );
 				changeScreen( 'init' );
 				break;
+			case 'fullSync':
+				console.log( 'full sync!' );
+				console.log( msg.payload.data );
+				if ( msg.payload.data ) {
+					adData = msg.payload.data;
+				}
+				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
 				var slots = msg.payload.data.slots;

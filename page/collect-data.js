@@ -6,7 +6,8 @@ var DFPeep = ( function() {
 	window.googletag.cmd = window.googletag.cmd || [];
 
 	var wrappedSlotFunctions,
-		inited;
+		inited,
+		debug = 1;
 
 	var adData = {
 		pageLoadTimestamp: null,
@@ -23,6 +24,7 @@ var DFPeep = ( function() {
 		}
 		inited = 1;
 		var timestamp = getTimestamp();
+		listenForMessagesFromPanel();
 		sendDataToDevTools(
 			'newPageLoad',
 			{ pageLoadTimestamp: timestamp }
@@ -195,9 +197,6 @@ var DFPeep = ( function() {
 	var wrapGPTDefineSlot = function() {
 		var oldDefineVersion = googletag.defineSlot;
 		googletag.defineSlot = function() {
-			console.log( 'defined slot with following arguments:' );
-			console.log( arguments );
-			// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
 			var definedSlot = oldDefineVersion.apply( this, arguments );
 			var elementId = definedSlot.getSlotElementId();
 			if ( ! adData.slots[ elementId ] ) {
@@ -251,6 +250,28 @@ var DFPeep = ( function() {
 			data: data
 		};
 		window.postMessage( toSend, '*' );
+	};
+
+	var listenForMessagesFromPanel = function(){
+		window.addEventListener( 'message', function( event ) {
+			if ( window !== event.source ) {
+				return;
+			}
+
+			if ( event.data.from && 'DFPeepFromPanel' === event.data.from ) {
+				if ( debug ) {
+					console.log( 'Page received message from content script: ' );
+					console.log( event.data );
+				}
+				if ( 'resend data' === event.data.data ) {
+					sendAllAdData();
+				}
+			}
+		} );
+	};
+
+	var sendAllAdData = function() {
+		sendDataToDevTools( 'fullSync', adData );
 	};
 
 	var getTimestamp = function() {
