@@ -262,6 +262,16 @@ function buildSlotListItem( slot ) {
 		slotInfoList.appendChild( sizeMapping );
 	}
 
+	if ( slot.fallbackSize ) {
+		var fallbackSizes = document.createElement( 'li' );
+		text = 'Fallback sizes:';
+		fallbackSizes.appendChild( document.createTextNode( text ) );
+		fallbackSizes.appendChild(
+			buildFallbackSizeList( slot.fallbackSize )
+		);
+		slotInfoList.appendChild( fallbackSizes );
+	}
+
 	slotListItem.appendChild( slotInfoList );
 
 	return slotListItem;
@@ -328,6 +338,25 @@ function buildKeyTargetingList( targets ) {
 	}
 
 	return targetingList;
+}
+
+function buildFallbackSizeList( sizes ) {
+	var sizeList = document.createElement( 'ul' ),
+		sizeItem, size;
+
+	for ( var i = 0, length = sizes.length; i < length; i++ ) {
+		sizeItem = document.createElement( 'li' );
+		if ( ! Array.isArray( sizes[ i ] ) ) {
+			size = sizes[ i ];
+		} else {
+			size = sizes[ i ][0] + 'x' + sizes[ i ][1];
+		}
+		sizeItem.appendChild( document.createTextNode( size ) );
+
+		sizeList.appendChild( sizeItem );
+	}
+
+	return sizeList;
 }
 
 function buildSizeMappingList( sizeMapping ) {
@@ -494,7 +523,3 @@ function makeCollapsible( dom ) {
 		listsToHide[ i ].querySelector( 'ul' ).classList.add( 'tree-hidden' );
 	}
 }
-
-// document.documentElement.onclick = function() {
-//     sendToBackground('Another stupid example!');
-// };
