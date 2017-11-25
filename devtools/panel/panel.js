@@ -20,11 +20,11 @@ function handleIncomingMessage( msg ) {
 				changeScreen( 'init' );
 				break;
 			case 'fullSync':
-				console.log( 'full sync!' );
-				console.log( msg.payload.data );
 				if ( msg.payload.data ) {
 					adData = msg.payload.data;
 				}
+				maybeUpdateMenuText();
+				changeScreen( 'overview' );
 				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
@@ -69,7 +69,8 @@ function handleIncomingMessage( msg ) {
 function maybeUpdateMenuText( item ) {
 	var toUpdate,
 		currentLength;
-	if ( 'refreshes' === item ) {
+
+	if ( ! item || 'refreshes' === item ) {
 		currentLength = adData.refreshes.length;
 		if ( ! UIState.refreshesShown ||
 				UIState.refreshesShown !== currentLength ) {
@@ -77,7 +78,9 @@ function maybeUpdateMenuText( item ) {
 			toUpdate = menuElement.querySelector( 'a[href="#refreshes"]' );
 			toUpdate.innerText = 'Refreshes (' + currentLength + ')';
 		}
-	} else if ( 'slots' === item ) {
+	}
+
+	if ( ! item || 'slots' === item ) {
 		currentLength = Object.keys( adData.slots ).length;
 		if ( ! UIState.slotsShown || UIState.slotsShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
