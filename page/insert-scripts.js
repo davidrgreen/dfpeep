@@ -48,9 +48,14 @@ window.addEventListener( 'message', function( event ) {
 
 
 var DFPort = chrome.runtime.connect( { name: 'DFPeepFromContent' } );
-console.log( DFPort );
 DFPort.onMessage.addListener(
 	function( message, sender ) {
-		// Message from background page.
+		console.log( 'content script got message from panel:' );
+		console.log( message );
+		var toSend = {
+			from: 'DFPeepFromPanel',
+			data: message
+		};
+		window.postMessage( toSend, '*' );
 	}
 );

@@ -13,6 +13,7 @@ var currentScreen,
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
 	console.log( msg );
+	sendToBackground( 'TESTING' );
 	if ( msg.payload && msg.payload.action ) {
 		switch ( msg.payload.action ) {
 			case 'newPageLoad':

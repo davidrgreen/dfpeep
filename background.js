@@ -13,7 +13,9 @@ chrome.runtime.onConnect.addListener( function ( port ) {
 		console.log( 'background page received:' );
 		console.log( message );
 		var i = contentPorts.indexOf( port );
-		panelPorts[ i ].postMessage( message );
+		if ( panelPorts[ i ] ) {
+			panelPorts[ i ].postMessage( message );
+		}
 		// port.postMessage( message );
 	};
 
@@ -39,11 +41,11 @@ chrome.extension.onConnect.addListener( function( port ) {
 	console.log( panelPorts[ panelPorts.length - 1 ] );
 
 	var extensionListener = function( message, sender, sendResponse ) {
-		// Sent from panel.
+		// Sent from panel, pass along to content script.
 		console.log( 'background page heard from panel' );
 		console.log( message );
 		var i = panelPorts.indexOf( port );
-		contentPorts[ i ].postMessage( { data:'your panel rang' } );
+		contentPorts[ i ].postMessage( { data: message } );
 	};
 
 	// Listens to messages sent from the panel
