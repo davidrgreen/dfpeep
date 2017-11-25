@@ -20,13 +20,14 @@ chrome.runtime.onConnect.addListener( function ( port ) {
 	// Listens to messages sent from the content
 	port.onMessage.addListener( extensionListener );
 
-	// contentPorts[ contentPorts.length - 1 ].onDisconnect.addListener( function( port ) {
-	// 	port.onMessage.removeListener( extensionListener );
-	// 	var i = contentPorts.indexOf( port );
-	// 	if ( -1 !== i ) {
-	// 		contentPorts.splice( i, 1 );
-	// 	}
-	// } );
+	port.onDisconnect.addListener( function( port ) {
+		port.onMessage.removeListener( extensionListener );
+		var i = contentPorts.indexOf( port );
+		if ( -1 !== i ) {
+			contentPorts.splice( i, 1 );
+			panelPorts.splice( i, 1 );
+		}
+	} );
 } );
 
 chrome.extension.onConnect.addListener( function( port ) {
@@ -53,6 +54,7 @@ chrome.extension.onConnect.addListener( function( port ) {
 		var i = panelPorts.indexOf( port );
 		if ( -1 !== i ) {
 			panelPorts.splice( i, 1 );
+			contentPorts.splice( i, 1 );
 		}
 	} );
 } );
