@@ -1,5 +1,7 @@
 /* global chrome */
 
+var debug = 1;
+
 /**
  * Insert a script into the page.
  */
@@ -22,7 +24,8 @@ function init() {
 init();
 
 /**
- * Listen for messages from the page.
+ * Listen for messages from the page and send it along to the background page
+ * to pass to the panel.
  */
 window.addEventListener( 'message', function( event ) {
 	if ( window !== event.source ) {
@@ -30,28 +33,21 @@ window.addEventListener( 'message', function( event ) {
 	}
 
 	if ( event.data.from && 'DFPeep' === event.data.from ) {
-		console.log( 'Content script received message: ' );
-		console.log( event.data );
+		if ( debug ) {
+			console.log( 'Content script received message: ' );
+			console.log( event.data );
+		}
 		DFPort.postMessage( { payload: event.data } );
-		// chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
-			// console.log(response.farewell);
-		//   });
 	}
 } );
-
-/**
- * Send message to panel.
- */
-// chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
-// 	// console.log(response.farewell);
-//   });
-
 
 var DFPort = chrome.runtime.connect( { name: 'DFPeepFromContent' } );
 DFPort.onMessage.addListener(
 	function( message, sender ) {
-		console.log( 'content script got message from panel:' );
-		console.log( message );
+		if ( debug ) {
+			console.log( 'content script got message from panel:' );
+			console.log( message );
+		}
 		var toSend = {
 			from: 'DFPeepFromPanel',
 			data: message

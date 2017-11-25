@@ -1,6 +1,7 @@
 /* global chrome */
 var contentPorts = {},
-	panelPorts = {};
+	panelPorts = {},
+	debug = 1; // If 1 then enable console logs.
 
 chrome.runtime.onConnect.addListener( function ( port ) {
 	if ( 'DFPeepFromContent' !== port.name ) {
@@ -8,17 +9,20 @@ chrome.runtime.onConnect.addListener( function ( port ) {
 	}
 	var tabId = port.sender.tab.id;
 	contentPorts[ tabId ] = port;
-	console.log('connected to content script' );
-	console.log( port );
+	if ( debug ) {
+		console.log('connected to content script' );
+		console.log( port );
+	}
 	port.postMessage( {message: 'message back from new port with background page'} );
 	var extensionListener = function( message, sender, sendResponse ) {
-		console.log( 'background page received:' );
-		console.log( sender );
-		console.log( message );
+		if ( debug ) {
+			console.log( 'background page received:' );
+			console.log( sender );
+			console.log( message );
+		}
 		if ( panelPorts[ sender.sender.tab.id ] ) {
 			panelPorts[ sender.sender.tab.id ].postMessage( message );
 		}
-		// port.postMessage( message );
 	};
 
 	// Listens to messages sent from the content
@@ -37,8 +41,10 @@ chrome.extension.onConnect.addListener( function( port ) {
 	if ( 'DFPeepFromPanel' !== port.name ) {
 		return;
 	}
-	console.log( port );
-	console.log( 'established connection with panel' );
+	if ( debug ) {
+		console.log( port );
+		console.log( 'established connection with panel' );
+	}
 	chrome.tabs.query(
 		{ active: true, currentWindow: true },
 		function( tabs ) {
@@ -51,8 +57,11 @@ chrome.extension.onConnect.addListener( function( port ) {
 
 	var extensionListener = function( message, sender, sendResponse ) {
 		// Sent from panel, pass along to content script.
-		console.log( 'background page heard from panel' );
-		console.log( message );
+
+		if ( debug ) {
+			console.log( 'background page heard from panel' );
+			console.log( message );
+		}
 		var tabId;
 		if ( sender.sender.tab && sender.sender.tab.id ) {
 			tabId = sender.sender.tab.id;
@@ -80,8 +89,10 @@ chrome.extension.onConnect.addListener( function( port ) {
 	port.onMessage.addListener( extensionListener );
 
 	port.onDisconnect.addListener( function( port ) {
-		console.log( 'disconnecting panel' );
-		console.log( port );
+		if ( debug ) {
+			console.log( 'disconnecting panel' );
+			console.log( port );
+		}
 		port.onMessage.removeListener( extensionListener );
 		chrome.tabs.query(
 			{ active: true, currentWindow: true },

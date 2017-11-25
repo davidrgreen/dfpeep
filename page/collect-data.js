@@ -6,7 +6,8 @@ var DFPeep = ( function() {
 	window.googletag.cmd = window.googletag.cmd || [];
 
 	var wrappedSlotFunctions,
-		inited;
+		inited,
+		debug = 1;
 
 	var adData = {
 		pageLoadTimestamp: null,
@@ -196,8 +197,6 @@ var DFPeep = ( function() {
 	var wrapGPTDefineSlot = function() {
 		var oldDefineVersion = googletag.defineSlot;
 		googletag.defineSlot = function() {
-			// console.log( 'defined slot with following arguments:' );
-			// console.log( arguments );
 			var definedSlot = oldDefineVersion.apply( this, arguments );
 			var elementId = definedSlot.getSlotElementId();
 			if ( ! adData.slots[ elementId ] ) {
@@ -260,8 +259,10 @@ var DFPeep = ( function() {
 			}
 
 			if ( event.data.from && 'DFPeepFromPanel' === event.data.from ) {
-				console.log( 'Page received message from content script: ' );
-				console.log( event.data );
+				if ( debug ) {
+					console.log( 'Page received message from content script: ' );
+					console.log( event.data );
+				}
 				if ( 'resend data' === event.data.data ) {
 					sendAllAdData();
 				}
