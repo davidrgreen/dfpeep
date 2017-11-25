@@ -217,12 +217,17 @@ function buildSlotListItem( slot ) {
 	if ( slot.refreshedIndexes ) {
 		var previousRefreshes = document.createElement( 'li' );
 
-		if ( 1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
-			text = 'Fetches: 1';
+		if ( adData.slots[ slot.elementId ] ) {
+			if ( adData.slots[ slot.elementId ].refreshedIndexes &&
+					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
+				text = 'Fetches: 1';
+			} else {
+				text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
+					adData.slots[ slot.elementId ].refreshedIndexes.length +
+					' total.';
+			}
 		} else {
-			text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
-				adData.slots[ slot.elementId ].refreshedIndexes.length +
-				' total.';
+			text = 'Fetches: 0';
 		}
 
 		previousRefreshes.appendChild( document.createTextNode( text ) );
