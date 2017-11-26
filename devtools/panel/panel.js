@@ -13,11 +13,13 @@ var currentScreen,
 		warnings: {},
 		errors: {}
 	}, // code: { 'text', [slots/creatives] }
-	explanations = {}; // code corresponding to recommendations code.
+	debug = 1;
 
 function handleIncomingMessage( msg ) {
-	console.log( 'panel received:' );
-	console.log( msg );
+	if ( debug )
+		console.log( 'panel received:' );
+		console.log( msg );
+	}
 	if ( msg.payload && msg.payload.action ) {
 		switch ( msg.payload.action ) {
 			case 'newPageLoad':
