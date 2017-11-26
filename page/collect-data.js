@@ -299,8 +299,13 @@ var DFPeep = ( function() {
 		}
 
 		element.scrollIntoView( 1 );
-		element.classList.add( 'dfpeep-ad' );
-		element.classList.add( 'dfpeep-ad--show' );
+
+		requestAnimationFrame( function() {
+			element.classList.add( 'dfpeep-ad' );
+			requestAnimationFrame( function() {
+				element.classList.add( 'dfpeep-ad--show' );
+			} );
+		} );
 		setTimeout(
 			function() {
 				element.classList.remove( 'dfpeep-ad--show' );

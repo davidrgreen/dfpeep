@@ -13,7 +13,7 @@
 	background: rgba( 6, 69, 196, 0.9 );
 	border: solid 2px #000;
 	transition: opacity 0.5s ease-in-out;
-	transition-delay: 0.25s;
+	transition-delay: 0.05s;
 	top: 0;
 	left: 0;
 }
@@ -37,5 +37,5 @@
 	background-position: center 25px;
 	background-size: 91px 150px;
 	transition: opacity 0.5s ease-in-out;
-	transition-delay: 0.25s;
+	transition-delay: 0.05s;
 }
