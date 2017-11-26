@@ -239,7 +239,7 @@ function buildSlotListItem( slot ) {
 		if ( adData.slots[ slot.elementId ] ) {
 			if ( adData.slots[ slot.elementId ].refreshedIndexes &&
 					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
-				text = 'Fetches: 1';
+				text = 'Fetches: #1';
 			} else {
 				text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
 					adData.slots[ slot.elementId ].refreshedIndexes.length +
@@ -368,10 +368,10 @@ function buildRefreshResultList( slotId ) {
 			if ( refreshResults[ i ].labelIds ) {
 				detail = document.createElement( 'li' );
 				text = 'Label IDs: ';
-				if ( Array.isArray( refreshResultList[ i ].labelIds ) ) {
-					text += refreshResultList[ i ].labelIds.join( ', ' );
+				if ( Array.isArray( refreshResults[ i ].labelIds ) ) {
+					text += refreshResults[ i ].labelIds.join( ', ' );
 				} else {
-					text += refreshResultList[ i ].labelIds;
+					text += refreshResults[ i ].labelIds;
 				}
 				detail.appendChild( document.createTextNode( text ) );
 				detailList.appendChild( detail );
