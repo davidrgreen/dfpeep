@@ -249,7 +249,11 @@ function buildSlotListItem( slot ) {
 			text = 'Fetches: 0';
 		}
 
+
 		previousRefreshes.appendChild( document.createTextNode( text ) );
+		previousRefreshes.appendChild(
+			buildRefreshResultList( slot.elementId )
+		);
 		slotInfoList.appendChild( previousRefreshes );
 	}
 
@@ -283,7 +287,8 @@ function buildSlotListItem( slot ) {
 
 	var collapseDiv = document.createElement( 'li' );
 	text = 'Collapse if Empty: ';
-	if ( slot.collapseEmptyDiv ||( adData.collapseEmptyDivs.timestamp &&
+	if ( slot.collapseEmptyDiv || ( adData.collapseEmptyDivs &&
+			adData.collapseEmptyDivs.timestamp &&
 			! adData.collapseEmptyDivs.error ) ) {
 		text += 'Yes';
 
@@ -302,9 +307,58 @@ function buildSlotListItem( slot ) {
 	return slotListItem;
 }
 
+function buildRefreshResultList( slotId ) {
+	var item, text, detailList, detail;
+	var refreshResultList = document.createElement( 'ul' );
+
+	var refreshResults = adData.slots[ slotId ].refreshResults;
+
+	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
+		item = document.createElement( 'li' );
+		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
+			refreshResults[ i ].overallRefreshIndex;
+		item.appendChild( document.createTextNode( text ) );
+		detailList = document.createElement( 'ul' );
+
+		if ( refreshResults[ i ].isEmpty ) {
+			detail = document.createElement( 'li' );
+			text = 'No creative returned.';
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+		} else {
+			if ( refreshResults[ i ].onloadTimestamp ) {
+				detail = document.createElement( 'li' );
+				text = 'Load time: ' + ( refreshResults[ i ].onloadTimestamp -
+					refreshResults[ i ].renderEndedTimestamp ) + 'ms';
+				detail.appendChild( document.createTextNode( text ) );
+				detailList.appendChild( detail );
+			}
+
+			detail = document.createElement( 'li' );
+			text = 'Creative ID: ' + refreshResults[ i ].creativeId;
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+
+			detail = document.createElement( 'li' );
+			text = 'Line Item ID: ' + refreshResults[ i ].lineItemId;
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+
+			detail = document.createElement( 'li' );
+			text = 'Advertiser ID: ' + refreshResults[ i ].advertiserId;
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+		}
+
+		item.appendChild( detailList );
+		refreshResultList.appendChild( item );
+	}
+
+	return refreshResultList;
+}
+
 function buildTimeIntervalListItem( refreshes, i ) {
-	var timeDiffMs, timeDiffSecs, timeDiffText, timeListItem,
-		pageTimeDiffMs, pageTimeDiffSecs;
+	var timeDiffMs, timeDiffSecs, timeDiffText, timeListItem;
 
 	// Show time passed between refreshes.
 	timeDiffMs = adData.refreshes[ i ].timestamp - adData.refreshes[ i - 1 ].timestamp;
