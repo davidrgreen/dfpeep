@@ -455,6 +455,10 @@ function buildFallbackSizeList( sizes ) {
 		sizeItem = document.createElement( 'li' );
 		if ( ! Array.isArray( sizes[ i ] ) ) {
 			size = sizes[ i ];
+			if ( sizes[ i + 1 ] ) {
+				size += 'x' + sizes[ i + 1 ];
+			}
+			i = length;
 		} else {
 			size = sizes[ i ][0] + 'x' + sizes[ i ][1];
 		}
