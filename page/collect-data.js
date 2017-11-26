@@ -98,6 +98,14 @@ var DFPeep = ( function() {
 			'slotRenderEnded',
 			processSlotRenderEnded
 		);
+		googletag.companionAds().addEventListener(
+			'slotRenderEnded',
+			processSlotRenderEnded
+		);
+		googletag.content().addEventListener(
+			'slotRenderEnded',
+			processSlotRenderEnded
+		);
 	};
 
 	var processSlotRenderEnded = function( event ) {
