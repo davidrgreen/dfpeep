@@ -348,6 +348,34 @@ function buildRefreshResultList( slotId ) {
 			text = 'Advertiser ID: ' + refreshResults[ i ].advertiserId;
 			detail.appendChild( document.createTextNode( text ) );
 			detailList.appendChild( detail );
+
+			detail = document.createElement( 'li' );
+			text = 'Campaign ID: ' + refreshResults[ i ].campaignId;
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+
+			detail = document.createElement( 'li' );
+			text = 'Creative Size: ' + refreshResults[ i ].size[0] +
+				'x' + refreshResults[ i ].size[1];
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+
+			detail = document.createElement( 'li' );
+			text = 'Backfill? ' + ( refreshResults[ i ].isBackfill ? 'Yes' : 'No' );
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+
+			if ( refreshResults[ i ].labelIds ) {
+				detail = document.createElement( 'li' );
+				text = 'Label IDs: ';
+				if ( Array.isArray( refreshResultList[ i ].labelIds ) ) {
+					text += refreshResultList[ i ].labelIds.join( ', ' );
+				} else {
+					text += refreshResultList[ i ].labelIds;
+				}
+				detail.appendChild( document.createTextNode( text ) );
+				detailList.appendChild( detail );
+			}
 		}
 
 		item.appendChild( detailList );
