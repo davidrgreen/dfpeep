@@ -70,6 +70,8 @@ function handleIncomingMessage( msg ) {
 	} else {
 		outputDataToScreen( msg );
 	}
+	determineRecommendations();
+	maybeUpdateMenuText( 'recommendations' );
 }
 
 function maybeUpdateMenuText( item ) {
@@ -665,5 +667,27 @@ function makeCollapsible( dom ) {
 	var listsToHide = dom.querySelectorAll( '.tree-with-children' );
 	for ( var i = 0, length = listsToHide.length; i < length; i++ ) {
 		listsToHide[ i ].querySelector( 'ul' ).classList.add( 'tree-hidden' );
+	}
+}
+
+function determineRecommendations() {
+	checkForLateDisableInitialLoad();
+}
+
+function checkForLateDisableInitialLoad() {
+	if ( recommendations.errors.lateDisableInitialLoad ) {
+		return;
+	}
+
+	if ( 0 === adData.disabledInitialLoad.length ||
+			0 === adData.enabledServices.length ) {
+		return;
+	}
+
+	if ( adData.enabledServices[0] < adData.disabledInitialLoad[0] ) {
+		recommendations.errors.lateDisableInitialLoad = {
+			code: 'lateDisableInitialLoad',
+			description: 'googletag.pubads().disableInitialLoad() had no effect because it was called after googletag.enableServices().'
+		};
 	}
 }
