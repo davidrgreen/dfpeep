@@ -103,6 +103,7 @@ var DFPeep = ( function() {
 	var processSlotRenderEnded = function( event ) {
 		var elementId = event.slot.getSlotElementId();
 		var toStore = {
+			timestamp: getTimestamp(),
 			advertiserId: event.advertiserId,
 			isEmpty: event.isEmpty,
 			isBackfill: event.isBackfill,
