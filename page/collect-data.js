@@ -38,7 +38,6 @@ var DFPeep = ( function() {
 
 	var setupMutationObservers = function() {
 		var observer = new MutationObserver( function( mutations ) {
-			console.log( mutations );
 			for ( var i = 0, length = mutations.length; i < length; i++ ) {
 				var m = 0, mlength = mutations[ i ].addedNodes.length;
 				for ( ; m < mlength; m++ ) {
@@ -59,7 +58,6 @@ var DFPeep = ( function() {
 	var checkIfHasAdNode = function( addedNode ) {
 		// Only check element nodes.
 		if ( 1 === addedNode.nodeType ) {
-			// console.log( addedNode );
 
 			// Doing this loop here instead of abstracting to a function to
 			// avoid the cost of calling it repeatedly for mutations
@@ -90,8 +88,42 @@ var DFPeep = ( function() {
 		googletag.cmd.push(
 			function() {
 				listenImpressionViewable();
+				listenSlotRenderEnded();
 			}
 		);
+	};
+
+	var listenSlotRenderEnded = function() {
+		googletag.pubads().addEventListener(
+			'slotRenderEnded',
+			processSlotRenderEnded
+		);
+	};
+
+	var processSlotRenderEnded = function( event ) {
+		var elementId = event.slot.getSlotElementId();
+		var toStore = {
+			advertiserId: event.advertiserId,
+			isEmpty: event.isEmpty,
+			isBackfill: event.isBackfill,
+			serviceName: event.serviceName
+		}
+		if ( ! event.isEmpty ) {
+			toStore.advertiserId = event.advertiserId;
+			toStore.campaignId = event.campaignId;
+			toStore.creativeId = event.creativeId;
+			toStore.labelIds = event.labelIds;
+			toStore.lineItemID = event.lineItemId;
+			toStore.size = event.size;
+			toStore.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
+			toStore.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
+		}
+
+		adData.slots[ elementId ].refreshResults.push( toStore );
+		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+
+		// Store creative info.
+		// Store campaign info?
 	};
 
 	var listenImpressionViewable = function() {
@@ -248,6 +280,7 @@ var DFPeep = ( function() {
 	var setupNewSlotData = function( name ) {
 		adData.slots[ name ] = {
 			refreshedIndexes: [],
+			refreshResults: [],
 			viewed: [],
 			movedInDOM: []
 		};
@@ -285,13 +318,13 @@ var DFPeep = ( function() {
 				( function( obPrototype ) {
 					var oldVersion = obPrototype.defineSizeMapping;
 					obPrototype.defineSizeMapping = function() {
-						var slotElement = this.getSlotElementId();
-						if ( ! adData.slots[ slotElement ].sizeMappings ) {
-							adData.slots[ slotElement ].sizeMappings = [ arguments[0] ];
+						var elementId = this.getSlotElementId();
+						if ( ! adData.slots[ elementId ].sizeMappings ) {
+							adData.slots[ elementId ].sizeMappings = [ arguments[0] ];
 						} else {
-							adData.slots[ slotElement ].sizeMappings.push( arguments[0] );
+							adData.slots[ elementId ].sizeMappings.push( arguments[0] );
 						}
-						sendSlotDataToDevTools( slotElement, adData.slots[ slotElement ] );
+						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
