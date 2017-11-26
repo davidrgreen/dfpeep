@@ -6,9 +6,15 @@ var currentScreen,
 	adData,
 	UIState = {
 		refreshesShown: 0,
-		slotsShown: 0
+		slotsShown: 0,
+		recommendationsShown: 0
 	},
-	recommendations = {};
+	recommendations = {
+		warnings: {},
+		errors: {}
+	}, // code: { 'text', [slots/creatives] }
+	explanations = {}; // code corresponding to recommendations code.
+
 
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
@@ -86,6 +92,16 @@ function maybeUpdateMenuText( item ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#slots"]' );
 			toUpdate.innerText = 'Slots (' + currentLength + ')';
+		}
+	}
+
+	if ( ! item || 'recommendations' === item ) {
+		currentLength = Object.keys( adData.recommendations.warnings ).length +
+			Object.keys( adData.recommendations.errors ).length;
+		if ( ! UIState.recommendationsShown || UIState.recommendationsShown !== currentLength ) {
+			UIState.slotsShown = currentLength;
+			toUpdate = menuElement.querySelector( 'a[href="#recommendations"]' );
+			toUpdate.innerText = 'Recommendations (' + currentLength + ')';
 		}
 	}
 }
