@@ -422,6 +422,26 @@ var DFPeep = ( function() {
 					};
 				} )( proto );
 				// End googletag.Slot.defineSizeMapping
+
+				// googletag.Slot.setCollapseEmptyDiv
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.setCollapseEmptyDiv;
+					obPrototype.setCollapseEmptyDiv = function() {
+						var elementId = this.getSlotElementId();
+						if ( arguments[ 0 ] ) {
+							adData.slots[ elementId ].collapseEmptyDiv = {
+								collapse: true
+							};
+						}
+						if ( arguments[ 1 ] ) {
+							adData.slots[ elementId ].collapseEmptyDiv.collapse = 'before';
+						}
+						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.setCollapseEmptyDiv
 			}
 			return definedSlot;
 		};
