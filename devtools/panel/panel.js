@@ -7,7 +7,8 @@ var currentScreen,
 	UIState = {
 		refreshesShown: 0,
 		slotsShown: 0
-	};
+	},
+	recommendations = {};
 
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
@@ -545,6 +546,16 @@ function generateOverview() {
 	return overview;
 }
 
+function generateRecommendationsScreen() {
+	var recommendations = document.createDocumentFragment();
+	var intro = document.createElement( 'p' );
+	var text = 'Recommendations go here';
+	intro.appendChild( document.createTextNode( text ) );
+	recommendations.appendChild( intro );
+
+	return recommendations;
+}
+
 function changeScreen( screen ) {
 	var nextScreen = screen;
 	switch ( screen ) {
@@ -558,6 +569,9 @@ function changeScreen( screen ) {
 			break;
 		case 'slots':
 			displayContent( generateSlotInfo(), nextScreen );
+			break;
+		case 'recommendations':
+			displayContent( generateRecommendationsScreen(), nextScreen );
 			break;
 		case 'overview':
 			displayContent( generateOverview(), nextScreen );
