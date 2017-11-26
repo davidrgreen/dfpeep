@@ -119,6 +119,7 @@ var DFPeep = ( function() {
 		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
 		refresh.onloadTimestamp = getTimestamp();
 		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+		// TODO: Store creative info / load time
 	};
 
 	var listenSlotRenderEnded = function() {
@@ -162,6 +163,22 @@ var DFPeep = ( function() {
 
 		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 
+		if ( event.isEmpty ) {
+			// No creative delivered so no creative data to store.
+			return;
+		}
+		if ( ! adData.creatives[ event.creativeId ] ) {
+			setupNewCreative( event.creativeId );
+		}
+		var creative = adData.creatives[ event.creativeId ];
+		creative.id = event.creativeId;
+		creative.campaignId = event.campaignId;
+		creative.lineItemID = event.lineItemID;
+		creative.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
+		creative.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
+		creative.slotRefreshIndex.push( whichRefresh );
+		creative.overallRefreshIndex.push( adData.refreshes.length - 1 );
+
 		// Store creative info.
 		// Store campaign info?
 	};
@@ -184,6 +201,7 @@ var DFPeep = ( function() {
 	var processImpressionViewable = function( viewed ) {
 		var slotName = viewed.slot.getSlotElementId();
 		adData.slots[ slotName ].viewed[ adData.slots[ slotName ].viewed.length - 1 ] = 1;
+		// TODO: Store creative viewable info.
 		sendSlotDataToDevTools( slotName, adData.slots[ slotName ] );
 	};
 
@@ -331,7 +349,8 @@ var DFPeep = ( function() {
 			return;
 		}
 		adData.creatives[ id ] = {
-			refreshedIndexes: [],
+			slotRefreshedIndexes: [],
+			overallRefreshedIndexes: [],
 			refreshResults: []
 		};
 	};
