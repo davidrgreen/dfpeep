@@ -605,6 +605,8 @@ function generateRecommendationsScreen() {
 	if ( warningCount > 0 ) {
 		title = document.createElement( 'h3' );
 		title.appendChild( document.createTextNode( 'Warnings:' ) );
+		title.className = 'recommendation-section-title';
+		toReturn.appendChild( title );
 		toReturn.appendChild(
 			buildRecommendationList( recommendations.warnings, 'warning' )
 		);
