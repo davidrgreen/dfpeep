@@ -14,7 +14,7 @@ function injectJS( link ) {
 
 function preloadImages() {
 	var img = document.createElement( 'img' );
-	img.src = chrome.extension.getURL( 'img/dfpeep.png' );
+	img.src = chrome.extension.getURL( 'img/dfpeep-chicken.svg' );
 }
 
 function init() {
