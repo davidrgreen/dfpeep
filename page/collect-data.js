@@ -151,6 +151,7 @@ var DFPeep = ( function() {
 		refresh.isEmpty = event.isEmpty;
 		refresh.isBackfill = event.isBackfill;
 		refresh.serviceName = event.serviceName;
+		refresh.overallRefreshIndex = adData.refreshes.length - 1;
 		if ( ! event.isEmpty ) {
 			refresh.advertiserId = event.advertiserId;
 			refresh.campaignId = event.campaignId;
