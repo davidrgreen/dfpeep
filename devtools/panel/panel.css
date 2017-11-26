@@ -114,3 +114,36 @@ ul.tree-list li.tree-with-children:last-child {
 	text-decoration: underline;
 	cursor: pointer;
 }
+
+.recommendation-list {
+	list-style: none;
+	padding-left: 0;
+	margin-left: 2px;
+}
+
+.recommendation-list li {
+	min-height: 32px;
+	padding-left: 32px;
+}
+
+.error-list {
+	background: url(img/egg-error.svg) no-repeat top left;
+	background-size: 23px 31px;
+}
+
+.warning-list {
+	background: url(img/egg-warning.svg) no-repeat top left;
+	background-size: 23px 31px;
+}
+
+.recommendation-title {
+	margin: 0 0 3px;
+}
+
+.recommendation-section-title {
+	text-transform: uppercase;
+}
+
+h2 + p {
+	margin-top: 6px;
+}

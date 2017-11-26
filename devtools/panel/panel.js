@@ -547,7 +547,6 @@ function generateSlotInfo() {
 	title.appendChild( document.createTextNode( 'Slots:' ) );
 	toReturn.appendChild( title );
 
-
 	var slotList = document.createElement( 'ul' );
 	slotList.className = 'tree-list';
 
@@ -596,9 +595,10 @@ function generateRecommendationsScreen() {
 	if ( errorCount > 0 ) {
 		title = document.createElement( 'h3' );
 		title.appendChild( document.createTextNode( 'Errors:' ) );
+		title.className = 'recommendation-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
-			buildRecommendationList( recommendations.errors, 'error-list' )
+			buildRecommendationList( recommendations.errors, 'error' )
 		);
 	}
 
@@ -606,17 +606,17 @@ function generateRecommendationsScreen() {
 		title = document.createElement( 'h3' );
 		title.appendChild( document.createTextNode( 'Warnings:' ) );
 		toReturn.appendChild(
-			buildRecommendationList( recommendations.warnings, 'warning-list' )
+			buildRecommendationList( recommendations.warnings, 'warning' )
 		);
 	}
 
 	return toReturn;
 }
 
-function buildRecommendationList( recs, classes ) {
-	var listItem, text;
+function buildRecommendationList( recs, type ) {
+	var listItem, title;
 	var list = document.createElement( 'ul' );
-	list.className = classes;
+	list.className = type + '-list recommendation-list';
 
 	for ( var rec in recs ) {
 		if ( ! recs.hasOwnProperty( rec ) ) {
@@ -624,6 +624,12 @@ function buildRecommendationList( recs, classes ) {
 		}
 
 		listItem = document.createElement( 'li' );
+
+		title = document.createElement( 'h4' );
+		title.className = type + '-title recommendation-title';
+		title.appendChild( document.createTextNode( recs[ rec ].title ) );
+		listItem.appendChild( title );
+
 		listItem.appendChild( document.createTextNode( recs[ rec ].description ) );
 		list.appendChild( listItem );
 	}
@@ -748,7 +754,8 @@ function checkForLateDisableInitialLoad() {
 	if ( adData.enabledServices[0] < adData.disabledInitialLoad[0] ) {
 		recommendations.errors.lateDisableInitialLoad = {
 			code: 'lateDisableInitialLoad',
-			description: 'googletag.pubads().disableInitialLoad() had no effect because it was called after googletag.enableServices().'
+			title: 'Disabled Initial Load Too Late',
+			description: 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices().'
 		};
 	}
 }
