@@ -15,7 +15,6 @@ var currentScreen,
 	}, // code: { 'text', [slots/creatives] }
 	explanations = {}; // code corresponding to recommendations code.
 
-
 function handleIncomingMessage( msg ) {
 	console.log( 'panel received:' );
 	console.log( msg );
@@ -23,6 +22,7 @@ function handleIncomingMessage( msg ) {
 		switch ( msg.payload.action ) {
 			case 'newPageLoad':
 				setupVariables( msg.payload.data );
+				maybeUpdateMenuText();
 				changeScreen( 'init' );
 				break;
 			case 'fullSync':
@@ -100,7 +100,8 @@ function maybeUpdateMenuText( item ) {
 	if ( ! item || 'recommendations' === item ) {
 		currentLength = Object.keys( recommendations.warnings ).length +
 			Object.keys( recommendations.errors ).length;
-		if ( UIState.recommendationsShown !== currentLength ) {
+		if ( ! UIState.recommendationsShown ||
+				UIState.recommendationsShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#recommendations"]' );
 			toUpdate.innerText = 'Recommendations (' + currentLength + ')';
@@ -120,6 +121,15 @@ function updateSlotInfo( name, data ) {
 }
 
 function setupVariables( data ) {
+	UIState = {
+		refreshesShown: 0,
+		slotsShown: 0,
+		recommendationsShown: 0
+	};
+	recommendations = {
+		warnings: {},
+		errors: {}
+	};
 	adData = {
 		slots: {},
 		refreshes: [],
