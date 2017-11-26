@@ -96,9 +96,9 @@ function maybeUpdateMenuText( item ) {
 	}
 
 	if ( ! item || 'recommendations' === item ) {
-		currentLength = Object.keys( adData.recommendations.warnings ).length +
-			Object.keys( adData.recommendations.errors ).length;
-		if ( ! UIState.recommendationsShown || UIState.recommendationsShown !== currentLength ) {
+		currentLength = Object.keys( recommendations.warnings ).length +
+			Object.keys( recommendations.errors ).length;
+		if ( UIState.recommendationsShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#recommendations"]' );
 			toUpdate.innerText = 'Recommendations (' + currentLength + ')';
