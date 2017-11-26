@@ -217,6 +217,7 @@ var DFPeep = ( function() {
 				wrapGPTSetTargeting();
 				wrapGPTEnableSingleRequest();
 				wrapGPTDisplay();
+				wrapGPTDisableInitialLoad();
 				wrapGPTCollapseEmptyDivs();
 		} );
 	};
@@ -283,8 +284,8 @@ var DFPeep = ( function() {
 	};
 
 	var wrapGPTDisableInitialLoad = function() {
-		var oldVersion = googletag.pubads().disabledInitialLoad;
-		googletag.pubads().disabledInitialLoad = function() {
+		var oldVersion = googletag.pubads().disableInitialLoad;
+		googletag.pubads().disableInitialLoad = function() {
 			var timestamp = getTimestamp();
 			adData.disabledInitialLoad.push( timestamp );
 			sendDataToDevTools( 'GPTDisableInitialLoad', { time: timestamp } );
