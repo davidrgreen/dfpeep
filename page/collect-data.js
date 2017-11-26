@@ -110,25 +110,26 @@ var DFPeep = ( function() {
 
 	var processSlotRenderEnded = function( event ) {
 		var elementId = event.slot.getSlotElementId();
-		var toStore = {
-			timestamp: getTimestamp(),
-			advertiserId: event.advertiserId,
-			isEmpty: event.isEmpty,
-			isBackfill: event.isBackfill,
-			serviceName: event.serviceName
-		}
+		var whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
+
+
+		refresh.timestamp = getTimestamp();
+		refresh.advertiserId = event.advertiserId;
+		refresh.isEmpty = event.isEmpty;
+		refresh.isBackfill = event.isBackfill;
+		refresh.serviceName = event.serviceName;
 		if ( ! event.isEmpty ) {
-			toStore.advertiserId = event.advertiserId;
-			toStore.campaignId = event.campaignId;
-			toStore.creativeId = event.creativeId;
-			toStore.labelIds = event.labelIds;
-			toStore.lineItemID = event.lineItemId;
-			toStore.size = event.size;
-			toStore.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
-			toStore.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
+			refresh.advertiserId = event.advertiserId;
+			refresh.campaignId = event.campaignId;
+			refresh.creativeId = event.creativeId;
+			refresh.labelIds = event.labelIds;
+			refresh.lineItemID = event.lineItemId;
+			refresh.size = event.size;
+			refresh.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
+			refresh.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
 		}
 
-		adData.slots[ elementId ].refreshResults.push( toStore );
 		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 
 		// Store creative info.
