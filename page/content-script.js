@@ -18,7 +18,7 @@ function preloadImages() {
 }
 
 function init() {
-	injectJS( chrome.extension.getURL( 'page/collect-data.js' ) );
+	injectJS( chrome.extension.getURL( 'page/page.js' ) );
 	preloadImages();
 }
 init();

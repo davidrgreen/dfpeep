@@ -14,13 +14,13 @@
 			"matches": [
 				"<all_urls>"
 			],
-			"js": ["page/insert-scripts.js"],
+			"js": ["page/content-script.js"],
 			"css": ["page/page.css"],
 			"run_at": "document_start"
 		}
 	],
 	"web_accessible_resources": [
-		"page/collect-data.js",
+		"page/page.js",
 		"page/page.css",
 		"img/*"
 	],
