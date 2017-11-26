@@ -16,7 +16,8 @@ var DFPeep = ( function() {
 		disabledInitialLoad: [],
 		slots: {}, // Make each slot an array to contain instance data for each refresh
 		refreshes: [],
-		pageTargeting: {}
+		pageTargeting: {},
+		creatives: {}
 	};
 
 	var init = function() {
@@ -322,6 +323,16 @@ var DFPeep = ( function() {
 			refreshResults: [],
 			viewed: [],
 			movedInDOM: []
+		};
+	};
+
+	var setupNewCreative = function( id ) {
+		if ( adData.creatives[ id ] ) {
+			return;
+		}
+		adData.creatives[ id ] = {
+			refreshedIndexes: [],
+			refreshResults: []
 		};
 	};
 
