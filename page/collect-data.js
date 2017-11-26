@@ -111,8 +111,10 @@ var DFPeep = ( function() {
 	var processSlotRenderEnded = function( event ) {
 		var elementId = event.slot.getSlotElementId();
 		var whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
+			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
+		}
 		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
-
 
 		refresh.timestamp = getTimestamp();
 		refresh.advertiserId = event.advertiserId;
