@@ -316,7 +316,7 @@ function buildRefreshResultList( slotId ) {
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
 		item = document.createElement( 'li' );
 		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
-			refreshResults[ i ].overallRefreshIndex;
+			( refreshResults[ i ].overallRefreshIndex + 1 );
 		item.appendChild( document.createTextNode( text ) );
 		detailList = document.createElement( 'ul' );
 
@@ -354,11 +354,14 @@ function buildRefreshResultList( slotId ) {
 			detail.appendChild( document.createTextNode( text ) );
 			detailList.appendChild( detail );
 
-			detail = document.createElement( 'li' );
-			text = 'Creative Size: ' + refreshResults[ i ].size[0] +
-				'x' + refreshResults[ i ].size[1];
-			detail.appendChild( document.createTextNode( text ) );
-			detailList.appendChild( detail );
+			if ( refreshResults[ i ].size &&
+					Array.isArray( refreshResults[ i ].size ) ) {
+				detail = document.createElement( 'li' );
+				text = 'Creative Size: ' + refreshResults[ i ].size[0] +
+					'x' + refreshResults[ i ].size[1];
+				detail.appendChild( document.createTextNode( text ) );
+				detailList.appendChild( detail );
+			}
 
 			detail = document.createElement( 'li' );
 			text = 'Backfill? ' + ( refreshResults[ i ].isBackfill ? 'Yes' : 'No' );
