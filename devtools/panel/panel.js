@@ -16,7 +16,7 @@ var currentScreen,
 	debug = 1;
 
 function handleIncomingMessage( msg ) {
-	if ( debug )
+	if ( debug ) {
 		console.log( 'panel received:' );
 		console.log( msg );
 	}
@@ -646,7 +646,7 @@ function buildRecommendationList( recs, type ) {
 		title.appendChild( document.createTextNode( recs[ rec ].title ) );
 		listItem.appendChild( title );
 
-		listItem.appendChild( document.createTextNode( recs[ rec ].description ) );
+		listItem.appendChild( recs[ rec ].description );
 		list.appendChild( listItem );
 	}
 
@@ -769,11 +769,16 @@ function checkForLateDisableInitialLoad() {
 	}
 
 	if ( adData.enabledServices[0] < adData.disabledInitialLoad[0] ) {
+		var description = document.createElement( 'p' );
+		var text = 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices().';
+		description.appendChild( document.createTextNode( text ) );
+
 		recommendations.errors.lateDisableInitialLoad = {
 			title: 'Disabled Initial Load Too Late',
-			description: 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices().'
+			description: description
 		};
 	}
+
 }
 
 function checkForMoveAfterRender() {
@@ -803,9 +808,12 @@ function checkForMoveAfterRender() {
 	}
 
 	if ( offendingSlots.length > 0 ) {
+		var description = document.createElement( 'p' );
+		var text = 'The following slots have been detected as having been moved in the DOM after the initial fetching of their ads: ' + offendingSlots.join( ', ' ) + '. This causes the iframe to refresh and results in a blank slot. If you need to move the slot element, such as moving a sidebar ad inline, then you need to ensure the slot element is moved before the ad is fetched. A sure-fire way of doing this is to use googletag.pubads().disableInitialLoad(), allowing you to manually fetch the ad with googletag.pubads().refresh() only after the slot element has been moved in the DOM.';
+		description.appendChild( document.createTextNode( text ) );
 		recommendations.warnings.lateDisableInitialLoad = {
 			title: 'Moved Slot Element After Rendered In DOM',
-			description: 'The following slots have been detected as having been moved in the DOM after the initial fetching of their ads: ' + offendingSlots.join( ', ' ) + '. This causes the iframe to refresh and results in a blank slot. If you need to move the slot element, such as moving a sidebar ad inline, then you need to ensure the slot element is moved before the ad is fetched. A sure-fire way of doing this is to use googletag.pubads().disableInitialLoad(), allowing you to manually fetch the ad with googletag.pubads().refresh() only after the slot element has been moved in the DOM.'
+			description: description
 		};
 	}
 }
