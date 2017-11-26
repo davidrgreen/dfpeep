@@ -575,13 +575,60 @@ function generateOverview() {
 }
 
 function generateRecommendationsScreen() {
-	var recommendations = document.createDocumentFragment();
-	var intro = document.createElement( 'p' );
-	var text = 'Recommendations go here';
-	intro.appendChild( document.createTextNode( text ) );
-	recommendations.appendChild( intro );
+	var title, text, intro,
+		toReturn = document.createDocumentFragment(),
+		errorCount = Object.keys( recommendations.errors ).length,
+		warningCount = Object.keys( recommendations.warnings ).length;
 
-	return recommendations;
+	title = document.createElement( 'h2' );
+	title.appendChild( document.createTextNode( 'Recommendations:' ) );
+	toReturn.appendChild( title );
+
+	intro = document.createElement( 'p' );
+	if ( errorCount || warningCount ) {
+		text = 'DFPeep suggests the following issues be examined.';
+	} else {
+		text = 'DFPeep has no suggestions to make at this time.';
+	}
+	intro.appendChild( document.createTextNode( text ) );
+	toReturn.appendChild( intro );
+
+	if ( errorCount > 0 ) {
+		title = document.createElement( 'h3' );
+		title.appendChild( document.createTextNode( 'Errors:' ) );
+		toReturn.appendChild( title );
+		toReturn.appendChild(
+			buildRecommendationList( recommendations.errors, 'error-list' )
+		);
+	}
+
+	if ( warningCount > 0 ) {
+		title = document.createElement( 'h3' );
+		title.appendChild( document.createTextNode( 'Warnings:' ) );
+		toReturn.appendChild(
+			buildRecommendationList( recommendations.warnings, 'warning-list' )
+		);
+	}
+
+	return toReturn;
+}
+
+function buildRecommendationList( recs, classes ) {
+	var listItem, text;
+	var list = document.createElement( 'ul' );
+	list.className = classes;
+
+	for ( var rec in recs ) {
+		if ( ! recs.hasOwnProperty( rec ) ) {
+			continue;
+		}
+
+		listItem = document.createElement( 'li' );
+		listItem.appendChild( document.createTextNode( recs[ rec ].description ) );
+		list.appendChild( listItem );
+	}
+
+	return list;
 }
 
 function changeScreen( screen ) {
@@ -670,7 +717,11 @@ function emptyElement( element ) {
 	}
 }
 
-function makeCollapsible( dom ) {
+function makeCollapsible( dom, screen ) {
+	var exclude = [ 'recommendations' ];
+	if ( screen && -1 !== exclude.indexOf( screen ) ) {
+		return;
+	}
 	if ( ! dom ) {
 		dom = document;
 	}
