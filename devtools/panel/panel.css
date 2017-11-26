@@ -74,10 +74,6 @@ ul.tree-list li.tree-time-diff {
 	font-style: italic;
 }
 
-/* ul.tree-list li ul li > ul {
-	display: none;
-} */
-
 ul.tree-list li.tree-with-children {
 	background-position: -1px 7px;
 }
@@ -94,12 +90,8 @@ ul.tree-list li.tree-with-children:last-child {
 	cursor: pointer;
 	display: inline-block;
 	margin: 0 4px 0 0;
-	/* border-radius: 50%; */
 	width: 18px;
 	height: 24px;
-	/* background-color: rgb(44, 108, 128);
-	-webkit-border-radius: 63px 63px 63px 63px / 108px 108px 72px 72px;
-	border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; */
 	background: url(img/egg-plus.svg);
 	background-size: 18px 24px;
 	position: relative;
@@ -110,32 +102,15 @@ ul.tree-list li.tree-with-children:last-child {
 	background-image: url(img/egg-minus.svg);
 }
 
-/* .tree-plus-sign::before {
-	content: " ";
-	position: absolute;
-	display: block;
-	background-color: #fff;
-	width: 12px;
-	height: 4px;
-	margin-left: -6px;
-	left: 50%;
-	top: 14px;
-	z-index: 9;
+.highlight-slot-link {
+	display: inline-block;
+	margin-left: 5px;
+	font-size: 80%;
+	color: dodgerblue;
 }
 
-.tree-plus-sign::after {
-	content: " ";
-	position: absolute;
-	display: block;
-	background-color: #fff;
-	height: 14px;
-	width: 4px;
-	margin-top: -6px;
-	top: 50%;
-	left: 9px;
-	z-index: 9;
-} */
-
-/* .tree-plus-sign--expanded::after {
-	display: none;
-} */
+.highlight-slot-link:hover,
+.highlight-slot-link:active {
+	text-decoration: underline;
+	cursor: pointer;
+}

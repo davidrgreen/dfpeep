@@ -209,8 +209,17 @@ function buildSlotListItem( slot ) {
 	var plusSign = document.createElement( 'span' );
 	plusSign.className = 'tree-plus-sign';
 	slotListItem.appendChild( plusSign );
-	var slotName = document.createTextNode( 'Slot: ' + slot.elementId );
+	var slotName = document.createTextNode( 'Slot: ' + slot.elementId + ' \u2014 ' );
 	slotListItem.appendChild( slotName );
+
+	var slotHighlightLink = document.createElement( 'span' );
+	text = 'Highlight slot in page';
+	slotHighlightLink.appendChild( document.createTextNode( text ) );
+	slotHighlightLink.className = 'highlight-slot-link';
+	slotHighlightLink.addEventListener( 'click', function() {
+		sendToBackground( { action: 'highlightSlot', data: slot.elementId } );
+	} );
+	slotListItem.appendChild( slotHighlightLink );
 
 	var slotInfoList = document.createElement( 'ul' );
 

@@ -49,9 +49,14 @@ DFPort.onMessage.addListener(
 			console.log( message );
 		}
 		var toSend = {
-			from: 'DFPeepFromPanel',
-			data: message
+			from: 'DFPeepFromPanel'
 		};
+		if ( message.action ) {
+			toSend.action = message.action;
+		}
+		if ( message.data ) {
+			toSend.data = message.data;
+		}
 		window.postMessage( toSend, '*' );
 	}
 );

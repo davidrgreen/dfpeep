@@ -258,13 +258,19 @@ var DFPeep = ( function() {
 				return;
 			}
 
+			console.log( event );
+
 			if ( event.data.from && 'DFPeepFromPanel' === event.data.from ) {
 				if ( debug ) {
 					console.log( 'Page received message from content script: ' );
 					console.log( event.data );
 				}
-				if ( 'sync' === event.data.data.action ) {
+				if ( 'sync' === event.data.action ) {
 					sendAllAdData();
+				} else if ( 'highlightSlot' === event.data.action
+						&& event.data.data ) {
+					console.log( 'about to highlight event ' + event.data.data );
+					highlightElement( event.data.data );
 				}
 			}
 		} );
