@@ -12,6 +12,7 @@ var DFPeep = ( function() {
 
 	var adData = {
 		pageLoadTimestamp: null,
+		enabledServices: [],
 		enabledSingleRequest: [],
 		disabledInitialLoad: [],
 		collapseEmptyDivs: {},
@@ -315,7 +316,9 @@ var DFPeep = ( function() {
 	var wrapGPTEnableServices = function() {
 		var oldVersion = googletag.enableServices;
 		googletag.enableServices = function() {
-			sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+			var timestamp = getTimestamp();
+			adData.enabledServices.push( timestamp );
+			sendDataToDevTools( 'GPTEnableServices', { time: timestamp } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
