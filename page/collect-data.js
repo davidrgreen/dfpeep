@@ -429,12 +429,10 @@ var DFPeep = ( function() {
 					obPrototype.setCollapseEmptyDiv = function() {
 						var elementId = this.getSlotElementId();
 						if ( arguments[ 0 ] ) {
-							adData.slots[ elementId ].collapseEmptyDiv = {
-								collapse: true
-							};
+							adData.slots[ elementId ].collapseEmptyDiv = 1;
 						}
 						if ( arguments[ 1 ] ) {
-							adData.slots[ elementId ].collapseEmptyDiv.collapse = 'before';
+							adData.slots[ elementId ].collapseEmptyDiv = 'before';
 						}
 						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 						var result = oldVersion.apply( this, arguments );

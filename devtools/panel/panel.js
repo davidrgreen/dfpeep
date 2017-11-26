@@ -281,6 +281,22 @@ function buildSlotListItem( slot ) {
 		slotInfoList.appendChild( fallbackSizes );
 	}
 
+	var collapseDiv = document.createElement( 'li' );
+	text = 'Collapse if Empty: ';
+	if ( slot.collapseEmptyDiv ||( adData.collapseEmptyDivs.timestamp &&
+			! adData.collapseEmptyDivs.error ) ) {
+		text += 'Yes';
+
+		if ( 'before' === slot.collapseEmptyDiv || ( adData.collapseEmptyDivs &&
+			adData.collapseEmptyDivs.before ) ) {
+			text += ', before ad is fetched';
+		}
+	} else {
+		text += 'No';
+	}
+	collapseDiv.appendChild( document.createTextNode( text ) );
+	slotInfoList.appendChild( collapseDiv );
+
 	slotListItem.appendChild( slotInfoList );
 
 	return slotListItem;
