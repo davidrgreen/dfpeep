@@ -34,7 +34,7 @@
 	height: 100%;
 	width: 100%;
 	background: url('chrome-extension://__MSG_@@extension_id__/img/dfpeep-chicken.svg') no-repeat;
-	background-position: center 50px;
+	background-position: center 25px;
 	background-size: 91px 150px;
 	transition: opacity 0.5s ease-in-out;
 	transition-delay: 0.25s;
