@@ -88,9 +88,36 @@ var DFPeep = ( function() {
 		googletag.cmd.push(
 			function() {
 				listenImpressionViewable();
+				listenSlotOnLoad();
 				listenSlotRenderEnded();
 			}
 		);
+	};
+
+	var listenSlotOnLoad = function() {
+		googletag.pubads().addEventListener(
+			'slotOnload',
+			processSlotOnLoad
+		);
+		googletag.companionAds().addEventListener(
+			'slotOnload',
+			processSlotOnLoad
+		);
+		googletag.content().addEventListener(
+			'slotOnload',
+			processSlotOnLoad
+		);
+	};
+
+	var processSlotOnLoad = function( event ) {
+		var elementId = event.slot.getSlotElementId();
+		var whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
+			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
+		}
+		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
+		refresh.onloadTimestamp = getTimestamp();
+		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 	};
 
 	var listenSlotRenderEnded = function() {
@@ -116,7 +143,7 @@ var DFPeep = ( function() {
 		}
 		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
 
-		refresh.timestamp = getTimestamp();
+		refresh.renderEndedTimestamp = getTimestamp();
 		refresh.advertiserId = event.advertiserId;
 		refresh.isEmpty = event.isEmpty;
 		refresh.isBackfill = event.isBackfill;
