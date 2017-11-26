@@ -594,7 +594,13 @@ function generateRecommendationsScreen() {
 
 	if ( errorCount > 0 ) {
 		title = document.createElement( 'h3' );
-		title.appendChild( document.createTextNode( 'Errors:' ) );
+		text = errorCount + ' Error';
+		if ( 1 === errorCount ) {
+			text += ':';
+		} else {
+			text += 's:';
+		}
+		title.appendChild( document.createTextNode( text ) );
 		title.className = 'recommendation-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
@@ -604,7 +610,13 @@ function generateRecommendationsScreen() {
 
 	if ( warningCount > 0 ) {
 		title = document.createElement( 'h3' );
-		title.appendChild( document.createTextNode( 'Warnings:' ) );
+		text = warningCount + ' Warning';
+		if ( 1 === warningCount ) {
+			text += ':';
+		} else {
+			text += 's:';
+		}
+		title.appendChild( document.createTextNode( text ) );
 		title.className = 'recommendation-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
