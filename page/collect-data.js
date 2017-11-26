@@ -7,7 +7,8 @@ var DFPeep = ( function() {
 
 	var wrappedSlotFunctions,
 		inited,
-		debug = 1;
+		debug = 1,
+		activeAdIds = []; // Ids which have been refreshed at least once.
 
 	var adData = {
 		pageLoadTimestamp: null,
@@ -32,6 +33,57 @@ var DFPeep = ( function() {
 		adData.pageLoadTimestamp = timestamp;
 		wrapGPTFunctions();
 		addGPTListeners();
+		setupMutationObservers();
+	};
+
+	var setupMutationObservers = function() {
+		var observer = new MutationObserver( function( mutations ) {
+			console.log( mutations );
+			for ( var i = 0, length = mutations.length; i < length; i++ ) {
+				var m = 0, mlength = mutations[ i ].addedNodes.length;
+				for ( ; m < mlength; m++ ) {
+					checkIfHasAdNode( mutations[ i ].addedNodes[ m ] );
+				}
+			}
+		} );
+
+		observer.observe(
+			document.documentElement,
+			{
+				childList: true,
+				subtree: true
+			}
+		);
+	};
+
+	var checkIfHasAdNode = function( addedNode ) {
+		// Only check element nodes.
+		if ( 1 === addedNode.nodeType ) {
+			// console.log( addedNode );
+
+			// Doing this loop here instead of abstracting to a function to
+			// avoid the cost of calling it repeatedly for mutations
+			// with large subtrees.
+			for ( var i = 0, length = activeAdIds.length; i < length; i++ ) {
+				if ( addedNode.id === activeAdIds[ i ] ) {
+					indicateAdMovedInDOM( activeAdIds[ i ] );
+					break;
+				}
+			}
+
+			// Need to check all child nodes so the entire subtree will be
+			// checked for ads.
+			if ( addedNode.childNodes ) {
+				var n = 0, nlength = addedNode.childNodes.length;
+				for ( ; n < nlength; n++ ) {
+					checkIfHasAdNode( addedNode.childNodes[ n ] );
+				}
+			}
+		}
+	};
+
+	var indicateAdMovedInDOM = function( id ) {
+		adData.slots[ id ].movedInDOM.push( getTimestamp() );
 	};
 
 	var addGPTListeners = function() {
@@ -121,6 +173,12 @@ var DFPeep = ( function() {
 					slot.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
 				}
 
+				// Indicate this ad ID is active so the DFPeep mutation observer
+				// will begin looking for it.
+				if ( -1 === activeAdIds.indexOf( slot.elementId ) ) {
+					activeAdIds.push( slot.elementId );
+				}
+
 				refreshData.slots.push( slot );
 			}
 			adData.refreshes.push( refreshData );
@@ -190,7 +248,8 @@ var DFPeep = ( function() {
 	var setupNewSlotData = function( name ) {
 		adData.slots[ name ] = {
 			refreshedIndexes: [],
-			viewed: []
+			viewed: [],
+			movedInDOM: []
 		};
 	};
 
@@ -257,8 +316,6 @@ var DFPeep = ( function() {
 			if ( window !== event.source ) {
 				return;
 			}
-
-			console.log( event );
 
 			if ( event.data.from && 'DFPeepFromPanel' === event.data.from ) {
 				if ( debug ) {
