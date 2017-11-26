@@ -23,7 +23,7 @@ chrome.devtools.panels.create(
 			// Remove to show only once.
 			extensionPanel.onShown.removeListener( firstRun );
 
-			port.postMessage( 'resend data' );
+			port.postMessage( { action: 'sync' } );
 
 			panelWindow = _window;
 			panelWindow.backgroundPort = port;

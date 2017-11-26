@@ -263,7 +263,7 @@ var DFPeep = ( function() {
 					console.log( 'Page received message from content script: ' );
 					console.log( event.data );
 				}
-				if ( 'resend data' === event.data.data ) {
+				if ( 'sync' === event.data.data.action ) {
 					sendAllAdData();
 				}
 			}
