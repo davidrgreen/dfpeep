@@ -142,6 +142,9 @@ function setupVariables( data ) {
 	if ( data && data.pageLoadTimestamp ) {
 		adData.pageLoadTimestamp = data.pageLoadTimestamp;
 	}
+	if ( data && data.pageURL ) {
+		adData.pageURL = data.pageURL;
+	}
 }
 
 function getMenuElement() {
@@ -566,11 +569,24 @@ function generateSlotInfo() {
 }
 
 function generateOverview() {
+	var text, list, item;
 	var overview = document.createDocumentFragment();
-	var intro = document.createElement( 'p' );
-	var text = 'This is the overview. There will be more here later.';
-	intro.appendChild( document.createTextNode( text ) );
-	overview.appendChild( intro );
+
+	var title = document.createElement( 'h2' );
+	text = 'Overview';
+	title.appendChild( document.createTextNode( text ) );
+	overview.appendChild( title );
+
+	list = document.createElement( 'ul' );
+
+	if ( adData && adData.pageURL ) {
+		item = document.createElement( 'li' );
+		// text = 'Page URL: ' + adData.pageURL;
+		item.appendChild( createLabelAndValue( 'Page URL: ', adData.pageURL ) );
+		list.appendChild( item );
+	}
+
+	overview.appendChild( list );
 
 	return overview;
 }
@@ -835,4 +851,14 @@ function checkForMoveAfterRender() {
 
 		return fragment;
 	}
+}
+
+function createLabelAndValue( label, value ) {
+	var fragment = document.createDocumentFragment();
+	var labelElement = document.createElement( 'span' );
+	labelElement.className = 'info-label';
+	labelElement.appendChild( document.createTextNode( label ) );
+	fragment.appendChild( labelElement );
+	fragment.appendChild( document.createTextNode( value ) );
+	return fragment;
 }

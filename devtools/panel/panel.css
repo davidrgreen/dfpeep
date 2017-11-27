@@ -7,6 +7,11 @@ body {
 	padding-bottom: 50px;
 }
 
+ul {
+	list-style: disc;
+	padding: 0 0 0 20px;
+}
+
 #menu ul {
 	list-style: none;
 	padding: 0;
@@ -167,4 +172,8 @@ ul.tree-list li.tree-with-children:last-child {
 
 h2 + p {
 	margin-top: 6px;
+}
+
+.info-label {
+	font-weight: 700;
 }
