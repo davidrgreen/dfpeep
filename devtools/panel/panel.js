@@ -878,6 +878,11 @@ function createLabelAndValue( label, value ) {
 	labelElement.className = 'info-label';
 	labelElement.appendChild( document.createTextNode( label ) );
 	fragment.appendChild( labelElement );
-	fragment.appendChild( document.createTextNode( value ) );
+
+	if ( value instanceof HTMLElement ) {
+		fragment.appendChild( value );
+	} else {
+		fragment.appendChild( document.createTextNode( value ) );
+	}
 	return fragment;
 }
