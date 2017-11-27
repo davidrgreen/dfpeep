@@ -818,7 +818,7 @@ function determineRecommendations() {
 }
 
 function checkForLateDisableInitialLoad() {
-	if ( recommendations.errors.lateDisableInitialLoad ) {
+	if ( recommendations.warnings.lateDisableInitialLoad ) {
 		return;
 	}
 
@@ -829,10 +829,10 @@ function checkForLateDisableInitialLoad() {
 
 	if ( adData.enabledServices[0] < adData.disabledInitialLoad[0] ) {
 		var description = document.createElement( 'p' );
-		var text = 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices().';
+		var text = 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices(), but it could have still worked for any slots that called googletag.display() after googletag.pubads().disableInitialLoad().';
 		description.appendChild( document.createTextNode( text ) );
 
-		recommendations.errors.lateDisableInitialLoad = {
+		recommendations.warnings.lateDisableInitialLoad = {
 			title: 'Disabled Initial Load Too Late',
 			description: description
 		};
