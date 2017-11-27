@@ -3,7 +3,6 @@
 var currentScreen,
 	contentElement,
 	menuElement,
-	adData,
 	UIState = {
 		refreshesShown: 0,
 		slotsShown: 0,
@@ -12,7 +11,14 @@ var currentScreen,
 	issues = {
 		warnings: {},
 		errors: {}
-	}, // code: { 'text', [slots/creatives] }
+	},
+	adData = {
+		slots: {},
+		refreshes: [],
+		enabledServices: [],
+		disabledInitialLoad: [],
+		enabledSingleRequest: []
+	},
 	debug = 1;
 
 function handleIncomingMessage( msg ) {
