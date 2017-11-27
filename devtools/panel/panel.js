@@ -791,6 +791,7 @@ function makeCollapsible( dom, screen ) {
 function determineRecommendations() {
 	checkForLateDisableInitialLoad();
 	checkForMoveAfterRender();
+	checkForLateEnableSingleRequest();
 }
 
 function checkForLateDisableInitialLoad() {
@@ -813,7 +814,28 @@ function checkForLateDisableInitialLoad() {
 			description: description
 		};
 	}
+}
 
+function checkForLateEnableSingleRequest() {
+	if ( recommendations.errors.lateEnableSingleRequest ) {
+		return;
+	}
+
+	if ( 0 === adData.enabledSingleRequest.length ||
+			0 === adData.enabledServices.length ) {
+		return;
+	}
+
+	if ( adData.enabledServices[0] < adData.enabledSingleRequest[0] ) {
+		var description = document.createElement( 'p' );
+		var text = 'googletag.pubads().enableSingleRequest() had no effect because it was called after googletag.enableServices().';
+		description.appendChild( document.createTextNode( text ) );
+
+		recommendations.errors.lateEnableSingleRequest = {
+			title: 'Enabled Single Request Mode Too Late',
+			description: description
+		};
+	}
 }
 
 function checkForMoveAfterRender() {
