@@ -577,14 +577,33 @@ function generateOverview() {
 	title.appendChild( document.createTextNode( text ) );
 	overview.appendChild( title );
 
+	if ( ! adData ) {
+
+		return overview;
+	}
+
 	list = document.createElement( 'ul' );
 
-	if ( adData && adData.pageURL ) {
+	if ( adData.pageURL ) {
 		item = document.createElement( 'li' );
-		// text = 'Page URL: ' + adData.pageURL;
 		item.appendChild( createLabelAndValue( 'Page URL: ', adData.pageURL ) );
 		list.appendChild( item );
 	}
+
+	if ( adData.pageLoadTimestamp ) {
+		item = document.createElement( 'li' );
+		var dateObj = new Date( adData.pageLoadTimestamp );
+		item.appendChild( createLabelAndValue( 'Page Loaded: ', dateObj ) );
+		list.appendChild( item );
+	}
+
+	var disabledInitialLoad = 'No';
+	if ( adData.disabledInitialLoad && adData.disabledInitialLoad.length > 0 ) {
+		disabledInitialLoad = 'Yes';
+	}
+	item = document.createElement( 'li' );
+	item.appendChild( createLabelAndValue( 'Disabled Initial Load? ', disabledInitialLoad ) );
+	list.appendChild( item );
 
 	overview.appendChild( list );
 
