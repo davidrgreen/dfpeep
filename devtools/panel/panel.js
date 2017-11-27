@@ -7,9 +7,9 @@ var currentScreen,
 	UIState = {
 		refreshesShown: 0,
 		slotsShown: 0,
-		recommendationsShown: 0
+		issuesShown: 0
 	},
-	recommendations = {
+	issues = {
 		warnings: {},
 		errors: {}
 	}, // code: { 'text', [slots/creatives] }
@@ -80,8 +80,8 @@ function handleIncomingMessage( msg ) {
 	} else {
 		outputDataToScreen( msg );
 	}
-	determineRecommendations();
-	maybeUpdateMenuText( 'recommendations' );
+	determineIssues();
+	maybeUpdateMenuText( 'issues' );
 }
 
 function maybeUpdateMenuText( item ) {
@@ -107,14 +107,14 @@ function maybeUpdateMenuText( item ) {
 		}
 	}
 
-	if ( ! item || 'recommendations' === item ) {
-		currentLength = Object.keys( recommendations.warnings ).length +
-			Object.keys( recommendations.errors ).length;
-		if ( ! UIState.recommendationsShown ||
-				UIState.recommendationsShown !== currentLength ) {
+	if ( ! item || 'issues' === item ) {
+		currentLength = Object.keys( issues.warnings ).length +
+			Object.keys( issues.errors ).length;
+		if ( ! UIState.issuesShown ||
+				UIState.issuesShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
-			toUpdate = menuElement.querySelector( 'a[href="#recommendations"]' );
-			toUpdate.innerText = 'Recommendations (' + currentLength + ')';
+			toUpdate = menuElement.querySelector( 'a[href="#issues"]' );
+			toUpdate.innerText = 'Issues (' + currentLength + ')';
 		}
 	}
 }
@@ -134,9 +134,9 @@ function setupVariables( data ) {
 	UIState = {
 		refreshesShown: 0,
 		slotsShown: 0,
-		recommendationsShown: 0
+		issuesShown: 0
 	};
-	recommendations = {
+	issues = {
 		warnings: {},
 		errors: {}
 	};
@@ -621,7 +621,7 @@ function generateOverview() {
 		enabledSingleRequest = 'Yes';
 		if ( adData.enabledServices && adData.enabledServices.length > 0 &&
 				adData.enabledSingleRequest[0] > adData.enabledServices[0] ) {
-			enabledSingleRequest = 'No, error detected. See recommendations.';
+			enabledSingleRequest = 'No, error detected. See issues.';
 		}
 	}
 	item = document.createElement( 'li' );
@@ -633,14 +633,14 @@ function generateOverview() {
 	return overview;
 }
 
-function generateRecommendationsScreen() {
+function generateIssuesScreen() {
 	var title, text, intro,
 		toReturn = document.createDocumentFragment(),
-		errorCount = Object.keys( recommendations.errors ).length,
-		warningCount = Object.keys( recommendations.warnings ).length;
+		errorCount = Object.keys( issues.errors ).length,
+		warningCount = Object.keys( issues.warnings ).length;
 
 	title = document.createElement( 'h2' );
-	title.appendChild( document.createTextNode( 'Recommendations:' ) );
+	title.appendChild( document.createTextNode( 'Issues:' ) );
 	toReturn.appendChild( title );
 
 	intro = document.createElement( 'p' );
@@ -661,10 +661,10 @@ function generateRecommendationsScreen() {
 			text += 's:';
 		}
 		title.appendChild( document.createTextNode( text ) );
-		title.className = 'recommendation-section-title';
+		title.className = 'issue-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
-			buildRecommendationList( recommendations.errors, 'error' )
+			buildIssueList( issues.errors, 'error' )
 		);
 	}
 
@@ -677,20 +677,20 @@ function generateRecommendationsScreen() {
 			text += 's:';
 		}
 		title.appendChild( document.createTextNode( text ) );
-		title.className = 'recommendation-section-title';
+		title.className = 'issue-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
-			buildRecommendationList( recommendations.warnings, 'warning' )
+			buildIssueList( issues.warnings, 'warning' )
 		);
 	}
 
 	return toReturn;
 }
 
-function buildRecommendationList( recs, type ) {
+function buildIssueList( recs, type ) {
 	var listItem, title;
 	var list = document.createElement( 'ul' );
-	list.className = type + '-list recommendation-list';
+	list.className = type + '-list issue-list';
 
 	for ( var rec in recs ) {
 		if ( ! recs.hasOwnProperty( rec ) ) {
@@ -700,7 +700,7 @@ function buildRecommendationList( recs, type ) {
 		listItem = document.createElement( 'li' );
 
 		title = document.createElement( 'h4' );
-		title.className = type + '-title recommendation-title';
+		title.className = type + '-title issue-title';
 		title.appendChild( document.createTextNode( recs[ rec ].title ) );
 		listItem.appendChild( title );
 
@@ -725,8 +725,8 @@ function changeScreen( screen ) {
 		case 'slots':
 			displayContent( generateSlotInfo(), nextScreen );
 			break;
-		case 'recommendations':
-			displayContent( generateRecommendationsScreen(), nextScreen );
+		case 'issues':
+			displayContent( generateIssuesScreen(), nextScreen );
 			break;
 		case 'overview':
 			displayContent( generateOverview(), nextScreen );
@@ -798,7 +798,7 @@ function emptyElement( element ) {
 }
 
 function makeCollapsible( dom, screen ) {
-	var exclude = [ 'recommendations' ];
+	var exclude = [ 'issues' ];
 	if ( screen && -1 !== exclude.indexOf( screen ) ) {
 		return;
 	}
@@ -811,14 +811,14 @@ function makeCollapsible( dom, screen ) {
 	}
 }
 
-function determineRecommendations() {
+function determineIssues() {
 	checkForLateDisableInitialLoad();
 	checkForMoveAfterRender();
 	checkForLateEnableSingleRequest();
 }
 
 function checkForLateDisableInitialLoad() {
-	if ( recommendations.warnings.lateDisableInitialLoad ) {
+	if ( issues.warnings.lateDisableInitialLoad ) {
 		return;
 	}
 
@@ -832,7 +832,7 @@ function checkForLateDisableInitialLoad() {
 		var text = 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices(), but it could have still worked for any slots that called googletag.display() after googletag.pubads().disableInitialLoad().';
 		description.appendChild( document.createTextNode( text ) );
 
-		recommendations.warnings.lateDisableInitialLoad = {
+		issues.warnings.lateDisableInitialLoad = {
 			title: 'Disabled Initial Load Too Late',
 			description: description
 		};
@@ -840,7 +840,7 @@ function checkForLateDisableInitialLoad() {
 }
 
 function checkForLateEnableSingleRequest() {
-	if ( recommendations.errors.lateEnableSingleRequest ) {
+	if ( issues.errors.lateEnableSingleRequest ) {
 		return;
 	}
 
@@ -854,7 +854,7 @@ function checkForLateEnableSingleRequest() {
 		var text = 'googletag.pubads().enableSingleRequest() had no effect because it was called after googletag.enableServices().';
 		description.appendChild( document.createTextNode( text ) );
 
-		recommendations.errors.lateEnableSingleRequest = {
+		issues.errors.lateEnableSingleRequest = {
 			title: 'Enabled Single Request Mode Too Late',
 			description: description
 		};
@@ -908,7 +908,7 @@ function checkForMoveAfterRender() {
 		text = 'If you need to move the slot element, such as moving a sidebar ad inline on mobile, then you need to ensure the slot element is moved before the ad is fetched. A sure-fire way of doing this is to use googletag.pubads().disableInitialLoad(), allowing you to manually fetch the ad with googletag.pubads().refresh() only after the slot element has been moved in the DOM.';
 		description.appendChild( document.createTextNode( text ) );
 		fragment.appendChild( description );
-		recommendations.warnings.lateDisableInitialLoad = {
+		issues.warnings.lateDisableInitialLoad = {
 			title: 'Moved Slot Element After Rendered In DOM',
 			description: fragment
 		};

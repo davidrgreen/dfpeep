@@ -125,23 +125,23 @@ ul.tree-list li.tree-with-children:last-child {
 	cursor: pointer;
 }
 
-.recommendation-list {
+.issue-list {
 	list-style: none;
 	padding-left: 0;
 	margin-left: 2px;
 }
 
-.recommendation-list li {
+.issue-list li {
 	min-height: 32px;
 	padding-left: 32px;
 	margin-bottom: 14px;
 }
 
-.recommendation-list ul {
+.issue-list ul {
 	list-style: disc;
 }
 
-.recommendation-list ul li {
+.issue-list ul li {
 	padding-left: 0;
 	line-height: 16px;
 	min-height: auto;
@@ -158,20 +158,20 @@ ul.tree-list li.tree-with-children:last-child {
 	background-size: 23px 31px;
 }
 
-.recommendation-list p {
+.issue-list p {
 	line-height: 19px;
 }
 
-.recommendation-title {
+.issue-title {
 	margin: 0;
 	padding-top: 0;
 }
 
-.recommendation-title + p {
+.issue-title + p {
 	margin-top: 0;
 }
 
-.recommendation-section-title {
+.issue-section-title {
 	text-transform: uppercase;
 }
 
