@@ -616,6 +616,18 @@ function generateOverview() {
 	item.appendChild( createLabelAndValue( 'Disabled Initial Load? ', disabledInitialLoad ) );
 	list.appendChild( item );
 
+	var enabledSingleRequest = 'No';
+	if ( adData.enabledSingleRequest && adData.enabledSingleRequest.length > 0 ) {
+		enabledSingleRequest = 'Yes';
+		if ( adData.enabledServices && adData.enabledServices.length > 0 &&
+				adData.enabledSingleRequest[0] > adData.enabledServices[0] ) {
+			enabledSingleRequest = 'No, error detected. See recommendations.';
+		}
+	}
+	item = document.createElement( 'li' );
+	item.appendChild( createLabelAndValue( 'Single Request Mode? ', enabledSingleRequest ) );
+	list.appendChild( item );
+
 	overview.appendChild( list );
 
 	return overview;
