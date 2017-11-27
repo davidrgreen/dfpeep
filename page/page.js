@@ -172,6 +172,11 @@ var DFPeep = ( function() {
 			return;
 		}
 
+		if ( -1 === activeAdIds.indexOf( elementId ) ) {
+			// Make this slot eligible to be monitored for DOM mutations.
+			activeAdIds.push( elementId );
+		}
+
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
 			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
 		} else {
