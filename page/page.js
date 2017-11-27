@@ -118,7 +118,27 @@ var DFPeep = ( function() {
 
 	var processSlotOnLoad = function( event ) {
 		var elementId = event.slot.getSlotElementId();
-		var whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+
+		if ( ! elementId ) {
+			return;
+		}
+
+		var whichRefresh;
+		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
+			whichRefresh = adData.slots[ elementId ].refreshedIndexes[ adData.slots[ elementId ].refreshedIndexes.length - 1 ];
+		} else {
+			whichRefresh = 0;
+			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
+				adData.refreshes[0] = {
+					slots: []
+				};
+			}
+			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
+				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
+				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
+			}
+		}
+
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
 		}
@@ -145,9 +165,12 @@ var DFPeep = ( function() {
 
 	var processSlotRenderEnded = function( event ) {
 		var elementId = event.slot.getSlotElementId();
+		if ( ! elementId ) {
+			return;
+		}
 		var whichRefresh;
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
-			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+			whichRefresh = adData.slots[ elementId ].refreshedIndexes[ adData.slots[ elementId ].refreshedIndexes.length - 1 ];
 		} else {
 			// Slot got rendered without a refresh call, meaning it must have
 			// loaded in the initial load, bypassing the code we normally
@@ -164,8 +187,10 @@ var DFPeep = ( function() {
 				};
 			}
 			// TODO: setTargeting
-			adData.refreshes[0].slots.push( adData.slots[ elementId ] );
-			sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
+			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
+				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
+				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } )
+			};
 		}
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
