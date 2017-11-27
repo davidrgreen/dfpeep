@@ -16,6 +16,7 @@ body {
 	display: inline-block;
 	padding: 0 12px;
 	border-right: solid 1px #ccc;
+	line-height: 21px;
 }
 
 #menu li:first-of-type {
