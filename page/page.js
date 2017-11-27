@@ -125,7 +125,7 @@ var DFPeep = ( function() {
 
 		var whichRefresh;
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
-			whichRefresh = adData.slots[ elementId ].refreshedIndexes[ adData.slots[ elementId ].refreshedIndexes.length - 1 ];
+			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
 		} else {
 			whichRefresh = 0;
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
@@ -170,7 +170,7 @@ var DFPeep = ( function() {
 		}
 		var whichRefresh;
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
-			whichRefresh = adData.slots[ elementId ].refreshedIndexes[ adData.slots[ elementId ].refreshedIndexes.length - 1 ];
+			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
 		} else {
 			// Slot got rendered without a refresh call, meaning it must have
 			// loaded in the initial load, bypassing the code we normally
