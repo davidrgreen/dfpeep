@@ -353,7 +353,9 @@ function buildRefreshResultList( slotId ) {
 	var item, text, detailList, detail;
 	var refreshResultList = document.createElement( 'ul' );
 
-	console.log( adData.slots[ slotId ] );
+	if ( ! adData.slots[ slotId ] ) {
+		return refreshResultList;
+	}
 	var refreshResults = adData.slots[ slotId ].refreshResults;
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
