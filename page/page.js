@@ -384,7 +384,7 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().collapseEmptyDivs;
 		googletag.pubads().collapseEmptyDivs = function() {
 			if ( adData.collapseEmptyDivs.timestamp &&
-					adData.enableServices.length > 0 ) {
+					adData.enabledServices.length > 0 ) {
 				// Only need to take note of trying to collapse empty divs
 				// after enableServices one time. Past that is redundant.
 				return;
