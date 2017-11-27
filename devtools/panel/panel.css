@@ -147,18 +147,18 @@ ul.tree-list li.tree-with-children:last-child {
 	margin-bottom: 5px;
 }
 
-.error-list {
+.error-list li {
 	background: url(img/egg-error.svg) no-repeat top left;
 	background-size: 23px 31px;
 }
 
-.warning-list {
+.warning-list li {
 	background: url(img/egg-warning.svg) no-repeat top left;
 	background-size: 23px 31px;
 }
 
 .recommendation-list p {
-	line-height: 22px;
+	line-height: 19px;
 }
 
 .recommendation-title {
