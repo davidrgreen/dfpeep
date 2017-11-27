@@ -165,11 +165,13 @@ var DFPeep = ( function() {
 	};
 
 	var processSlotRenderEnded = function( event ) {
+		var updateRefresh = 0,
+			toSend, whichRefresh, newTimestamp;
 		var elementId = event.slot.getSlotElementId();
 		if ( ! elementId ) {
 			return;
 		}
-		var whichRefresh;
+
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
 			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
 		} else {
@@ -183,15 +185,22 @@ var DFPeep = ( function() {
 			adData.slots[ elementId ].targeting = {};
 			adData.slots[ elementId ].viewed.push( 0 );
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
+				if ( adData.enabledServices.length > 0 ) {
+					newTimestamp = adData.enabledServices[ 0 ];
+				} else {
+					newTimestamp = getTimestamp();
+				}
+
 				adData.refreshes[0] = {
+					timestamp: newTimestamp,
 					slots: []
 				};
 			}
 			// TODO: setTargeting
 			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
 				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
-				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } )
-			};
+				updateRefresh = 1;
+			}
 		}
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
@@ -215,6 +224,16 @@ var DFPeep = ( function() {
 			refresh.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
 		}
 
+		if ( updateRefresh ) {
+			// This was a refresh caused by initial load. Need
+			// to pass the info along to the panel.
+			toSend = {
+				index: 0,
+				slot: adData.slots[ elementId ],
+				timestamp: adData.refreshes[0].timestamp
+			};
+			sendDataToDevTools( 'GPTRefreshUpdate', toSend );
+		}
 		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 
 		if ( event.isEmpty ) {

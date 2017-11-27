@@ -50,12 +50,17 @@ function handleIncomingMessage( msg ) {
 				maybeUpdateMenuText( 'slots' );
 				break;
 			case 'GPTRefreshUpdate':
-				if ( msg.payload.data.index && msg.payload.data.slot ) {
-
-					if ( ! adData.refreshes[ msg.payload.data.index ].slots ) {
-						adData.refreshes[ msg.payload.data.index ].slots = [];
+				if ( msg.payload.data.index ) {
+					if ( msg.payload.data.slot ) {
+						if ( ! adData.refreshes[ msg.payload.data.index ].slots ) {
+							adData.refreshes[ msg.payload.data.index ].slots = [];
+						}
+						adData.refreshes[ msg.payload.data.index ].slots.push( msg.payload.data.slot );
 					}
-					adData.refreshes[ msg.payload.data.index ].slots.push( msg.payload.data.slot );
+
+					if ( msg.payload.data.timestamp ) {
+						adData.refreshes[ msg.payload.data.index ].timestamp = msg.payload.data.timestamp;
+					}
 				}
 				break;
 			case 'GPTEnableServices':
