@@ -165,13 +165,12 @@ var DFPeep = ( function() {
 			}
 			// TODO: setTargeting
 			adData.refreshes[0].slots.push( adData.slots[ elementId ] );
+			sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
 		}
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
 		}
-		console.log( elementId + ' loaded - ' + whichRefresh );
 		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
-		console.log( refresh );
 
 		refresh.renderEndedTimestamp = getTimestamp();
 		refresh.advertiserId = event.advertiserId;

@@ -42,7 +42,15 @@ function handleIncomingMessage( msg ) {
 				}
 				maybeUpdateMenuText( 'refreshes' );
 				maybeUpdateMenuText( 'slots' );
-				changeScreen( 'refreshes' );
+				break;
+			case 'GPTRefreshUpdate':
+				if ( msg.payload.data.index && msg.payload.data.slot ) {
+
+					if ( ! adData.refreshes[ msg.payload.data.index ].slots ) {
+						adData.refreshes[ msg.payload.data.index ].slots = [];
+					}
+					adData.refreshes[ msg.payload.data.index ].slots.push( msg.payload.data.slot );
+				}
 				break;
 			case 'GPTEnableServices':
 				if ( msg.payload.data.time ) {
@@ -345,6 +353,7 @@ function buildRefreshResultList( slotId ) {
 	var item, text, detailList, detail;
 	var refreshResultList = document.createElement( 'ul' );
 
+	console.log( adData.slots[ slotId ] );
 	var refreshResults = adData.slots[ slotId ].refreshResults;
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
