@@ -148,12 +148,12 @@ ul.tree-list li.tree-with-children:last-child {
 	margin-bottom: 5px;
 }
 
-.error-list li {
+.error-list > li {
 	background: url(img/egg-error.svg) no-repeat top left;
 	background-size: 23px 31px;
 }
 
-.warning-list li {
+.warning-list > li {
 	background: url(img/egg-warning.svg) no-repeat top left;
 	background-size: 23px 31px;
 }
