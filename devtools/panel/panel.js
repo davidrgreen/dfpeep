@@ -808,12 +808,31 @@ function checkForMoveAfterRender() {
 	}
 
 	if ( offendingSlots.length > 0 ) {
+		var fragment = document.createDocumentFragment();
 		var description = document.createElement( 'p' );
-		var text = 'The following slots have been detected as having been moved in the DOM after the initial fetching of their ads: ' + offendingSlots.join( ', ' ) + '. This causes the iframe to refresh and results in a blank slot. If you need to move the slot element, such as moving a sidebar ad inline, then you need to ensure the slot element is moved before the ad is fetched. A sure-fire way of doing this is to use googletag.pubads().disableInitialLoad(), allowing you to manually fetch the ad with googletag.pubads().refresh() only after the slot element has been moved in the DOM.';
+		var text = 'When an ad slot element is moved in the DOM after the initial fetching of the ad it will force the ad\'s iframe to refresh, resulting in a blank slot. The following slots have been detected as having been moved in the DOM after the initial fetching of their ads:';
 		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			listItem.appendChild( document.createTextNode( offendingSlots[ d ] ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		description = document.createElement( 'p' );
+		text = 'If you need to move the slot element, such as moving a sidebar ad inline on mobile, then you need to ensure the slot element is moved before the ad is fetched. A sure-fire way of doing this is to use googletag.pubads().disableInitialLoad(), allowing you to manually fetch the ad with googletag.pubads().refresh() only after the slot element has been moved in the DOM.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
 		recommendations.warnings.lateDisableInitialLoad = {
 			title: 'Moved Slot Element After Rendered In DOM',
-			description: description
+			description: fragment
 		};
+
+		return fragment;
 	}
 }

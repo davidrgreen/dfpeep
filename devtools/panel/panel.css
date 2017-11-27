@@ -126,6 +126,17 @@ ul.tree-list li.tree-with-children:last-child {
 	padding-left: 32px;
 }
 
+.recommendation-list ul {
+	list-style: disc;
+}
+
+.recommendation-list ul li {
+	padding-left: 0;
+	line-height: 16px;
+	min-height: auto;
+	margin-bottom: 5px;
+}
+
 .error-list {
 	background: url(img/egg-error.svg) no-repeat top left;
 	background-size: 23px 31px;
@@ -137,7 +148,12 @@ ul.tree-list li.tree-with-children:last-child {
 }
 
 .recommendation-title {
-	margin: 0 0 3px;
+	margin: 0;
+	padding-top: 1px;
+}
+
+.recommendation-title + p {
+	margin-top: 4px;
 }
 
 .recommendation-section-title {
