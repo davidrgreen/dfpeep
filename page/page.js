@@ -11,6 +11,7 @@ var DFPeep = ( function() {
 		activeAdIds = []; // Ids which have been refreshed at least once.
 
 	var adData = {
+		pageURL: window.location.href,
 		pageLoadTimestamp: null,
 		enabledServices: [],
 		enabledSingleRequest: [],
@@ -31,7 +32,10 @@ var DFPeep = ( function() {
 		listenForMessagesFromPanel();
 		sendDataToDevTools(
 			'newPageLoad',
-			{ pageLoadTimestamp: timestamp }
+			{
+				pageLoadTimestamp: timestamp,
+				pageURL: adData.pageURL
+			}
 		);
 		adData.pageLoadTimestamp = timestamp;
 		wrapGPTFunctions();
