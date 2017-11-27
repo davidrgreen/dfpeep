@@ -145,11 +145,33 @@ var DFPeep = ( function() {
 
 	var processSlotRenderEnded = function( event ) {
 		var elementId = event.slot.getSlotElementId();
-		var whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+		var whichRefresh;
+		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
+			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
+		} else {
+			// Slot got rendered without a refresh call, meaning it must have
+			// loaded in the initial load, bypassing the code we normally
+			// run during refresh. Should abstract this so it's in one location.
+			adData.slots[ elementId ].refreshedIndexes.push( 0 );
+			whichRefresh = 0;
+			adData.slots[ elementId ].adUnitPath = event.slot.getAdUnitPath();
+			adData.slots[ elementId ].elementId = elementId;
+			adData.slots[ elementId ].targeting = {};
+			adData.slots[ elementId ].viewed.push( 0 );
+			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
+				adData.refreshes[0] = {
+					slots: []
+				};
+			}
+			// TODO: setTargeting
+			adData.refreshes[0].slots.push( adData.slots[ elementId ] );
+		}
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
 		}
+		console.log( elementId + ' loaded - ' + whichRefresh );
 		var refresh = adData.slots[ elementId ].refreshResults[ whichRefresh ];
+		console.log( refresh );
 
 		refresh.renderEndedTimestamp = getTimestamp();
 		refresh.advertiserId = event.advertiserId;
