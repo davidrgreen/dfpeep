@@ -134,6 +134,7 @@ ul.tree-list li.tree-with-children:last-child {
 .recommendation-list li {
 	min-height: 32px;
 	padding-left: 32px;
+	margin-bottom: 14px;
 }
 
 .recommendation-list ul {
@@ -163,11 +164,11 @@ ul.tree-list li.tree-with-children:last-child {
 
 .recommendation-title {
 	margin: 0;
-	padding-top: 1px;
+	padding-top: 0;
 }
 
 .recommendation-title + p {
-	margin-top: 4px;
+	margin-top: 0;
 }
 
 .recommendation-section-title {
