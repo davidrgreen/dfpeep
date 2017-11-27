@@ -41,6 +41,10 @@ body {
 	text-decoration: underline;
 }
 
+#content li {
+	line-height: 23px;
+}
+
 ul.tree-list,
 .tree-list ul {
 	list-style-type: none;
