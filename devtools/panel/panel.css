@@ -157,6 +157,10 @@ ul.tree-list li.tree-with-children:last-child {
 	background-size: 23px 31px;
 }
 
+.recommendation-list p {
+	line-height: 22px;
+}
+
 .recommendation-title {
 	margin: 0;
 	padding-top: 1px;
