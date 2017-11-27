@@ -89,6 +89,7 @@ var DFPeep = ( function() {
 
 	var indicateAdMovedInDOM = function( id ) {
 		adData.slots[ id ].movedInDOM.push( getTimestamp() );
+		sendSlotDataToDevTools( id, adData.slots[ id ] );
 	};
 
 	var addGPTListeners = function() {
