@@ -433,6 +433,10 @@ var DFPeep = ( function() {
 				setupNewSlotData( elementId );
 			}
 			adData.slots[ elementId ].displayCallTimestamp = getTimestamp();
+			adData.slots[ elementId ].elementId = elementId;
+
+			sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
