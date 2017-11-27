@@ -646,7 +646,7 @@ function buildRecommendationList( recs, type ) {
 		title.appendChild( document.createTextNode( recs[ rec ].title ) );
 		listItem.appendChild( title );
 
-		listItem.appendChild( recs[ rec ].description );
+		listItem.appendChild( recs[ rec ].description.cloneNode( true ) );
 		list.appendChild( listItem );
 	}
 
