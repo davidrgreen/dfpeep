@@ -202,7 +202,18 @@ var DFPeep = ( function() {
 				};
 			}
 			// TODO: setTargeting
-			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
+
+			if ( 0 === adData.refreshes[0].slots.length ) {
+				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
+				updateRefresh = 1;
+			}
+			var slotNotInRefresh = 1;
+			for ( var i = 0, length = adData.refreshes[0].slots.length; i < length; i++ ) {
+				if ( adData.refreshes[0].slots[ i ].elementId === elementId ) {
+					slotNotInRefresh = 0;
+				}
+			}
+			if ( slotNotInRefresh ) {
 				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
 				updateRefresh = 1;
 			}
@@ -553,7 +564,6 @@ var DFPeep = ( function() {
 					sendAllAdData();
 				} else if ( 'highlightSlot' === event.data.action
 						&& event.data.data ) {
-					console.log( 'about to highlight event ' + event.data.data );
 					highlightElement( event.data.data );
 				}
 			}
