@@ -6,6 +6,7 @@ var DFPeep = ( function() {
 	window.googletag.cmd = window.googletag.cmd || [];
 
 	var wrappedSlotFunctions,
+		wrappedOutOfPageSlotFunctions,
 		inited,
 		debug = 1,
 		activeAdIds = []; // Ids which have been refreshed at least once.
@@ -301,6 +302,7 @@ var DFPeep = ( function() {
 				wrapGPTRefresh();
 				wrapGPTEnableServices();
 				wrapGPTDefineSlot();
+				wrapGPTDefineOutOfPageSlot();
 				wrapGPTSetTargeting();
 				wrapGPTEnableSingleRequest();
 				wrapGPTDisplay();
@@ -492,6 +494,73 @@ var DFPeep = ( function() {
 			}
 			if ( ! wrappedSlotFunctions ) {
 				wrappedSlotFunctions = 1;
+				var proto = Object.getPrototypeOf( definedSlot );
+
+				// googletag.Slot.setTargeting
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.setTargeting;
+					obPrototype.setTargeting = function() {
+						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.setTargeting
+
+				// googletag.Slot.defineSizeMapping
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.defineSizeMapping;
+					obPrototype.defineSizeMapping = function() {
+						var elementId = this.getSlotElementId();
+						if ( ! adData.slots[ elementId ].sizeMappings ) {
+							adData.slots[ elementId ].sizeMappings = [ arguments[0] ];
+						} else {
+							adData.slots[ elementId ].sizeMappings.push( arguments[0] );
+						}
+						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.defineSizeMapping
+
+				// googletag.Slot.setCollapseEmptyDiv
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.setCollapseEmptyDiv;
+					obPrototype.setCollapseEmptyDiv = function() {
+						var elementId = this.getSlotElementId();
+						if ( arguments[ 0 ] ) {
+							adData.slots[ elementId ].collapseEmptyDiv = 1;
+						}
+						if ( arguments[ 1 ] ) {
+							adData.slots[ elementId ].collapseEmptyDiv = 'before';
+						}
+						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.setCollapseEmptyDiv
+			}
+			return definedSlot;
+		};
+	};
+
+	var wrapGPTDefineOutOfPageSlot = function() {
+		var oldDefineVersion = googletag.defineOutOfPageSlot;
+		googletag.defineOutOfPageSlot = function() {
+			var definedSlot = oldDefineVersion.apply( this, arguments );
+			var elementId = definedSlot.getSlotElementId();
+			if ( ! adData.slots[ elementId ] ) {
+				setupNewSlotData( elementId );
+			}
+			adData.slots[ elementId ].elementId = elementId;
+			adData.slots[ elementId ].adUnitPath = definedSlot.getAdUnitPath();
+			if ( arguments[1] ) {
+				adData.slots[ elementId ].fallbackSize = arguments[1];
+			}
+			if ( ! wrappedOutOfPageSlotFunctions ) {
+				wrappedOutOfPageSlotFunctions = 1;
 				var proto = Object.getPrototypeOf( definedSlot );
 
 				// googletag.Slot.setTargeting
