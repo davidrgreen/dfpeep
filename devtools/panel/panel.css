@@ -90,7 +90,7 @@ ul.tree-list > li:first-child {
 }
 
 ul.tree-list li.tree-time-diff {
-	background: url(img/vline.png) repeat-y;
+	background: url(img/vline.svg) repeat-y;
 	padding-top: 35px;
 	padding-bottom: 35px;
 	font-size: 110%;
