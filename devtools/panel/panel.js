@@ -667,6 +667,18 @@ function generateOverview() {
 	item.appendChild( createLabelAndValue( 'Single Request Mode? ', enabledSingleRequest ) );
 	list.appendChild( item );
 
+	if ( adData.pageTargeting &&
+			Object.keys( adData.pageTargeting ).length > 0 ) {
+		item = document.createElement( 'li' );
+		text = 'Page-wide Key-Value Targeting:';
+		var targeting = buildKeyTargetingList( adData.pageTargeting );
+		item.appendChild(
+			createLabelAndValue( text, targeting )
+		);
+
+		list.appendChild( item );
+	}
+
 	overview.appendChild( list );
 
 	return overview;
