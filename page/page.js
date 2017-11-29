@@ -557,9 +557,6 @@ var DFPeep = ( function() {
 			adData.slots[ elementId ].elementId = elementId;
 			adData.slots[ elementId ].adUnitPath = definedSlot.getAdUnitPath();
 			adData.slots[ elementId ].outOfPage = 1;
-			if ( arguments[1] ) {
-				adData.slots[ elementId ].fallbackSize = arguments[1];
-			}
 			if ( ! wrappedOutOfPageSlotFunctions ) {
 				wrappedOutOfPageSlotFunctions = 1;
 				var proto = Object.getPrototypeOf( definedSlot );
