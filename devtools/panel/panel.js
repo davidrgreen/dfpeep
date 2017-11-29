@@ -791,9 +791,46 @@ function displayContent( content, screen ) {
 			return;
 		}
 	}
+	var expandedElementIds = getExpandedElementIds( contentElement );
 	emptyElement( contentElement );
 	makeCollapsible( content, screen );
+	if ( expandedElementIds ) {
+		reExpandElements( content, expandedElementIds );
+	}
 	contentElement.appendChild( content );
+}
+
+function getExpandedElementIds( content ) {
+	var expandedIds = [];
+	var expandedElements = content.querySelectorAll( '.tree-plus-sign--expanded' );
+	if ( ! expandedElements ) {
+		return;
+	}
+	for ( var i = 0, length = expandedElements.length; i < length; i++ ) {
+		expandedIds.push( expandedElements[ i ].parentElement.id );
+	}
+	return expandedIds;
+}
+
+function reExpandElements( content, expandedElementIds ) {
+	var element, plusSign, hidden;
+
+	for ( var i = 0, length = expandedElementIds.length; i < length; i++ ) {
+		element = content.getElementById( expandedElementIds[ i ] );
+		if ( ! element ) {
+			continue;
+		}
+
+		plusSign = element.querySelector( '.tree-plus-sign' );
+		if ( plusSign ) {
+			plusSign.className += ' tree-plus-sign--expanded';
+		}
+
+		hidden = element.querySelector( '.tree-hidden' );
+		if ( hidden ) {
+			hidden.classList.remove( 'tree-hidden' );
+		}
+	}
 }
 
 function setupContentArea() {
