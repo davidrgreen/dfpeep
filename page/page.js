@@ -417,6 +417,7 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().setTargeting;
 		googletag.pubads().setTargeting = function() {
 			adData.pageTargeting[ arguments[0] ] = arguments[1];
+			sendDataToDevTools( 'pageTargetingData', { targets: adData.pageTargeting } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};

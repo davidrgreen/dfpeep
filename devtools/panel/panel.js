@@ -31,6 +31,7 @@ var currentScreen,
 	debug = 1;
 
 function handleIncomingMessage( msg ) {
+	var skipDetermineIssues;
 	if ( debug ) {
 		console.log( 'panel received:' );
 		console.log( msg );
@@ -105,6 +106,14 @@ function handleIncomingMessage( msg ) {
 					maybeUpdateMenuText( 'slots' );
 					maybeUpdateScreen( 'slots' );
 					maybeUpdateScreen( 'refreshes' );
+				}
+				break;
+			case 'pageTargetingData':
+				if ( msg.payload.data.targets ) {
+					adData.pageTargeting = msg.payload.data.targets;
+					maybeUpdateScreen( 'slots' );
+					maybeUpdateScreen( 'refreshes' );
+					skipDetermineIssues = 1;
 				}
 				break;
 			default:
