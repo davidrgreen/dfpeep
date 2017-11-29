@@ -204,7 +204,7 @@ function setupMenuEventListeners() {
 			var targetScreen = e.target.hash.replace( '#', '' );
 			changeScreen( targetScreen );
 		}
-	});
+	} );
 }
 
 function outputDataToScreen( data ) {
@@ -877,6 +877,23 @@ function setupContentArea() {
 			var parentToggle = e.target.parentElement.querySelector( 'ul' );
 			if ( parentToggle ) {
 				parentToggle.classList.toggle( 'tree-hidden' );
+			}
+		}
+	} );
+
+	contentElement.addEventListener( 'click', function( e ) {
+		if ( e.target && 'A' === e.target.nodeName ) {
+			var rel = e.target.getAttribute( 'rel' );
+			if ( ! rel || 'panel' !== rel ) {
+				return;
+			}
+			e.preventDefault();
+			var targetScreen = e.target.hash.replace( '#', '' );
+			var id = e.target.getAttribute( 'data-ref' );
+			if ( id ) {
+				changeScreen( targetScreen, id );
+			} else {
+				changeScreen( targetScreen );
 			}
 		}
 	} );
