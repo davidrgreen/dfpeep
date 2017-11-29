@@ -114,8 +114,10 @@ function handleIncomingMessage( msg ) {
 	} else {
 		outputDataToScreen( msg );
 	}
-	determineIssues();
-	maybeUpdateMenuText( 'issues' );
+	if ( ! skipDetermineIssues ) {
+		determineIssues();
+		maybeUpdateMenuText( 'issues' );
+	}
 }
 
 function maybeUpdateScreen( screen ) {
