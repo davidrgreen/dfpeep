@@ -1,3 +1,12 @@
+/**
+ * Styling used for elements injected into the page by DFPeep.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 .dfpeep-ad {
 	position: relative;
 }

@@ -1,3 +1,12 @@
+/**
+ * Inserts assets into page. Passes messages from page to background script.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 /* global chrome */
 
 var debug = 1;

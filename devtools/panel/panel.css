@@ -1,3 +1,12 @@
+/**
+ * Styling for DFPeep panel in Chrome dev tools.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 * {
 	box-sizing: border-box;
 }

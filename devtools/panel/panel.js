@@ -1,3 +1,12 @@
+/**
+ * Display ad data collected from page.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 /* global chrome */
 
 var currentScreen,

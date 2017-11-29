@@ -1,3 +1,12 @@
+/**
+ * Collects data from GPT tags on page and sends to content script.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 /* global googletag */
 var DFPeep = ( function() {
 	'use strict';
