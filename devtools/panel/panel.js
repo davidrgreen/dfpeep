@@ -973,6 +973,7 @@ function determineIssues() {
 	checkForLateDisableInitialLoad();
 	checkForMoveAfterRender();
 	checkForLateEnableSingleRequest();
+	checkForDuplicateFetches();
 
 	maybeUpdateScreen( 'issues' );
 }
@@ -1070,6 +1071,48 @@ function checkForMoveAfterRender() {
 		fragment.appendChild( description );
 		issues.warnings.lateDisableInitialLoad = {
 			title: 'Moved Slot Element After Rendered In DOM',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+function checkForDuplicateFetches() {
+	var slot, text,
+		offendingSlots = [],
+		slotNames = Object.keys( adData.slots ).sort();
+
+	for ( var i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		if ( Array.isArray( slot.refreshedIndexes ) && slot.refreshedIndexes.length > 1 ) {
+			offendingSlots.push(
+				{ id: slotNames[ i ], count: slot.refreshedIndexes.length }
+			);
+		}
+	}
+
+	if ( offendingSlots.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following slots were fetched more than once. You should confirm that this was intentional.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			text = offendingSlots[ d ].id + ' \u2014 ' +
+				offendingSlots[ d ].count + ' fetches';
+			listItem.appendChild( document.createTextNode( text ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		issues.warnings.duplicateAdFetch = {
+			title: 'Duplicate Ad Slot Fetches',
 			description: fragment
 		};
 
