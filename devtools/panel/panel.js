@@ -45,9 +45,9 @@ function handleIncomingMessage( msg ) {
 			case 'fullSync':
 				if ( msg.payload.data ) {
 					adData = msg.payload.data;
+					maybeUpdateMenuText();
+					changeScreen( 'overview' );
 				}
-				maybeUpdateMenuText();
-				changeScreen( 'overview' );
 				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
@@ -102,10 +102,10 @@ function handleIncomingMessage( msg ) {
 			case 'slotData':
 				if ( msg.payload.data.name && msg.payload.data.data ) {
 					updateSlotInfo( msg.payload.data.name, msg.payload.data.data );
+					maybeUpdateMenuText( 'slots' );
+					maybeUpdateScreen( 'slots' );
+					maybeUpdateScreen( 'refreshes' );
 				}
-				maybeUpdateMenuText( 'slots' );
-				maybeUpdateScreen( 'slots' );
-				maybeUpdateScreen( 'refreshes' );
 				break;
 			default:
 				outputDataToScreen( msg );
