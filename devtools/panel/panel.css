@@ -118,7 +118,6 @@ ul.tree-list li.tree-with-children:last-child {
 
 .highlight-slot-link {
 	display: inline-block;
-	margin-left: 5px;
 	font-size: 80%;
 	color: dodgerblue;
 }
