@@ -442,8 +442,11 @@ function buildRefreshResultList( slotId ) {
 			if ( refreshResults[ i ].size &&
 					Array.isArray( refreshResults[ i ].size ) ) {
 				detail = document.createElement( 'li' );
-				text = 'Creative Size: ' + refreshResults[ i ].size[0] +
-					'x' + refreshResults[ i ].size[1];
+				text = 'Creative Size: ' +
+					buildSizePairText(
+						refreshResults[ i ].size[0],
+						refreshResults[ i ].size[1]
+					);
 				detail.appendChild( document.createTextNode( text ) );
 				detailList.appendChild( detail );
 			}
@@ -544,11 +547,11 @@ function buildFallbackSizeList( sizes ) {
 		if ( ! Array.isArray( sizes[ i ] ) ) {
 			size = sizes[ i ];
 			if ( sizes[ i + 1 ] ) {
-				size += 'x' + sizes[ i + 1 ];
+				size = buildSizePairText( sizes[ i ], sizes[ i + 1 ] );
 			}
 			i = length;
 		} else {
-			size = sizes[ i ][0] + 'x' + sizes[ i ][1];
+			size = buildSizePairText( sizes[ i ][0], sizes[ i ][1] );
 		}
 		sizeItem.appendChild( document.createTextNode( size ) );
 
@@ -556,6 +559,14 @@ function buildFallbackSizeList( sizes ) {
 	}
 
 	return sizeList;
+}
+
+function buildSizePairText( first, second ) {
+	if ( ! first ) {
+		return 'No size. Do not show ad.';
+	} else {
+		return first + 'x' + second;
+	}
 }
 
 function buildSizeMappingList( sizeMapping ) {
@@ -570,13 +581,20 @@ function buildSizeMappingList( sizeMapping ) {
 		adSizeList = document.createElement( 'ul' );
 		if ( ! Array.isArray( sizeMapping[ j ][1][0] ) ) {
 			adSizeItem = document.createElement( 'li' );
-			adSize = sizeMapping[ j ][1][0] + 'x' + sizeMapping[ j ][1][1];
+			adSize = buildSizePairText(
+				sizeMapping[ j ][1][0],
+				sizeMapping[ j ][1][1]
+			);
 			adSizeItem.appendChild( document.createTextNode( adSize ) );
 			adSizeList.appendChild( adSizeItem );
 		} else {
 			for ( var l = 0, llength = sizeMapping[ j ][1].length; l < llength; l++ ) {
 				adSizeItem = document.createElement( 'li' );
 				adSize = sizeMapping[ j ][1][ l ][0] + 'x' + sizeMapping[ j ][1][ l ][1];
+				adSize = buildSizePairText(
+					sizeMapping[ j ][1][ l ][0],
+					sizeMapping[ j ][1][ l ][1]
+				);
 				adSizeItem.appendChild( document.createTextNode( adSize ) );
 				adSizeList.appendChild( adSizeItem );
 			}
