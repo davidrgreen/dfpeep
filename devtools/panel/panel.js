@@ -779,7 +779,8 @@ function changeSelectedMenuItem( menuItem ) {
 	newlySelected.classList.add( 'selected' );
 }
 
-function displayContent( content, screen ) {
+function displayContent( content, nextScreen ) {
+	var expandedElementIds;
 	if ( ! content ) {
 		console.error( 'No content passed to displayContent' );
 		return;
@@ -791,10 +792,12 @@ function displayContent( content, screen ) {
 			return;
 		}
 	}
-	var expandedElementIds = getExpandedElementIds( contentElement );
+	if ( nextScreen === currentScreen ) {
+		expandedElementIds = getExpandedElementIds( contentElement );
+	}
 	emptyElement( contentElement );
-	makeCollapsible( content, screen );
-	if ( expandedElementIds ) {
+	makeCollapsible( content, nextScreen );
+	if ( nextScreen === currentScreen && expandedElementIds ) {
 		reExpandElements( content, expandedElementIds );
 	}
 	contentElement.appendChild( content );
