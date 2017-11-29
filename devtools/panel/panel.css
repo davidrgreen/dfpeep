@@ -76,6 +76,10 @@ ul.tree-list li:last-child {
 	background-position: left top -17px;
 }
 
+ul.tree-list > li:first-child {
+	background: url(img/topnode.svg) no-repeat !important;
+}
+
 ul.tree-list li.tree-time-diff {
 	background: url(img/vline.png) repeat-y;
 	padding-top: 35px;
