@@ -201,7 +201,8 @@ var DFPeep = ( function() {
 					slots: []
 				};
 			}
-			// TODO: setTargeting
+
+			setCurrentTargeting( event.slot, elementId );
 
 			if ( 0 === adData.refreshes[0].slots.length ) {
 				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
@@ -341,18 +342,7 @@ var DFPeep = ( function() {
 				// has not been pushed to the adData.refreshes array yet.
 				slot.refreshedIndexes.push( adData.refreshes.length );
 
-				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
-				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
-					slot.targeting[ targetingKeys[ t ] ] = slotsRefreshed[ i ].getTargeting( targetingKeys[ t ] );
-				}
-
-				for ( pageTarget in adData.pageTargeting ) {
-					if ( ! adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
-						continue;
-					}
-
-					slot.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
-				}
+				setCurrentTargeting( slotsRefreshed[ i ], slotElementId );
 
 				// Indicate this ad ID is active so the DFPeep mutation observer
 				// will begin looking for it.
@@ -367,6 +357,20 @@ var DFPeep = ( function() {
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
+	};
+
+	var setCurrentTargeting = function( slot, slotElementId ) {
+		var targetingKeys = slot.getTargetingKeys();
+		for ( var t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
+			adData.slots[ slotElementId ].targeting[ targetingKeys[ t ] ] = slot.getTargeting( targetingKeys[ t ] );
+		}
+
+		for ( var pageTarget in adData.pageTargeting ) {
+			if ( ! adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
+				continue;
+			}
+			adData.slots[ slotElementId ].targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
+		}
 	};
 
 	var wrapGPTDisableInitialLoad = function() {
