@@ -894,6 +894,8 @@ function determineIssues() {
 	checkForLateDisableInitialLoad();
 	checkForMoveAfterRender();
 	checkForLateEnableSingleRequest();
+
+	maybeUpdateScreen( 'issues' );
 }
 
 function checkForLateDisableInitialLoad() {
