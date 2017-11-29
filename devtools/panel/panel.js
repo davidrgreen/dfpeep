@@ -225,6 +225,7 @@ function generateRefreshInfo() {
 		slotCount = slots.length;
 
 		refreshListItem = document.createElement( 'li' );
+		refreshListItem.className = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
 		// Unicode for mdash html entity.
@@ -246,7 +247,7 @@ function generateRefreshInfo() {
 		refreshSlotList = document.createElement( 'ul' );
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
-			refreshSlotList.appendChild( buildSlotListItem( slots[ s ] ) );
+			refreshSlotList.appendChild( buildSlotListItem( slots[ s ], 'refresh-' + ( i + 1 ) ) );
 		}
 		refreshListItem.appendChild( refreshSlotList );
 
@@ -258,11 +259,17 @@ function generateRefreshInfo() {
 	return toReturn;
 }
 
-function buildSlotListItem( slot ) {
+function buildSlotListItem( slot, parentListName ) {
 	var text;
 
 	var slotListItem = document.createElement( 'li' );
 	slotListItem.className = 'tree-with-children';
+
+	if ( parentListName ) {
+		slotListItem.id = parentListName + '_' + slot.elementId;
+	} else {
+		slotListItem.id = slot.elementId;
+	}
 
 	var plusSign = document.createElement( 'span' );
 	plusSign.className = 'tree-plus-sign';
