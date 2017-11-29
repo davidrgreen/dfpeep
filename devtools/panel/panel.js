@@ -451,11 +451,23 @@ function buildRefreshResultList( slotId ) {
 			if ( refreshResults[ i ].size &&
 					Array.isArray( refreshResults[ i ].size ) ) {
 				detail = document.createElement( 'li' );
-				text = 'Creative Size: ' +
-					buildSizePairText(
-						refreshResults[ i ].size[0],
-						refreshResults[ i ].size[1]
+				text = 'Creative Size: ';
+				if ( refreshResults[ i ].size[0] && 0 !== refreshResults[ i ].size[0] ) {
+					text += buildSizePairText(
+							refreshResults[ i ].size[0],
+							refreshResults[ i ].size[1]
 					);
+				} else {
+					if ( adData.slots[ slotId ].fallbackSize &&
+							-1 !== adData.slots[ slotId ].fallbackSize.indexOf( 'fluid' ) ) {
+						text += 'fluid';
+					} else {
+						text += buildSizePairText(
+								refreshResults[ i ].size[0],
+								refreshResults[ i ].size[1]
+						);
+					}
+				}
 				detail.appendChild( document.createTextNode( text ) );
 				detailList.appendChild( detail );
 			}
