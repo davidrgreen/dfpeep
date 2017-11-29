@@ -31,7 +31,7 @@ var currentScreen,
 	debug = 1;
 
 function handleIncomingMessage( msg ) {
-	var skipDetermineIssues;
+	var skipDetermineIssues = 0;
 	if ( debug ) {
 		console.log( 'panel received:' );
 		console.log( msg );

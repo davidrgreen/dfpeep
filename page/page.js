@@ -281,8 +281,8 @@ var DFPeep = ( function() {
 		creative.lineItemID = event.lineItemID;
 		creative.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
 		creative.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
-		creative.slotRefreshIndex.push( whichRefresh );
-		creative.overallRefreshIndex.push( adData.refreshes.length - 1 );
+		creative.slotRefreshedIndexes.push( whichRefresh );
+		creative.overallRefreshedIndexes.push( adData.refreshes.length - 1 );
 
 		// Store creative info.
 		// Store campaign info?
