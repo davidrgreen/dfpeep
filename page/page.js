@@ -198,7 +198,9 @@ var DFPeep = ( function() {
 			whichRefresh = 0;
 			adData.slots[ elementId ].adUnitPath = event.slot.getAdUnitPath();
 			adData.slots[ elementId ].elementId = elementId;
-			adData.slots[ elementId ].targeting = {};
+			if ( ! adData.slots[ elementId ].targeting ) {
+				adData.slots[ elementId ].targeting = {};
+			}
 			adData.slots[ elementId ].viewed.push( 0 );
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
 				if ( adData.enabledServices.length > 0 ) {
@@ -374,9 +376,11 @@ var DFPeep = ( function() {
 	};
 
 	var setCurrentTargeting = function( slot, slotElementId ) {
-		var targetingKeys = slot.getTargetingKeys();
-		for ( var t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
-			adData.slots[ slotElementId ].targeting[ targetingKeys[ t ] ] = slot.getTargeting( targetingKeys[ t ] );
+		if ( slot.getTargetingKeys ) {
+			var targetingKeys = slot.getTargetingKeys();
+			for ( var t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
+				adData.slots[ slotElementId ].targeting[ targetingKeys[ t ] ] = slot.getTargeting( targetingKeys[ t ] );
+			}
 		}
 
 		for ( var pageTarget in adData.pageTargeting ) {
@@ -464,6 +468,8 @@ var DFPeep = ( function() {
 			adData.slots[ elementId ].displayCallTimestamp = getTimestamp();
 			adData.slots[ elementId ].elementId = elementId;
 
+			setCurrentTargeting( adData.slots[ elementId ], elementId );
+
 			sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 
 			var result = oldVersion.apply( this, arguments );
@@ -476,7 +482,8 @@ var DFPeep = ( function() {
 			refreshedIndexes: [],
 			refreshResults: [],
 			viewed: [],
-			movedInDOM: []
+			movedInDOM: [],
+			targeting: {}
 		};
 	};
 
