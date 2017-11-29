@@ -95,7 +95,8 @@ function handleIncomingMessage( msg ) {
 					updateSlotInfo( msg.payload.data.name, msg.payload.data.data );
 				}
 				maybeUpdateMenuText( 'slots' );
-				maybeUpdateMenuText( 'refreshes' );
+				maybeUpdateScreen( 'slots' );
+				maybeUpdateScreen( 'refreshes' );
 				break;
 			default:
 				outputDataToScreen( msg );
@@ -110,7 +111,7 @@ function handleIncomingMessage( msg ) {
 
 function maybeUpdateScreen( screen ) {
 	if ( screen !== currentScreen ) {
-		// Only update if data coming in is from the current screen.
+		// Only update if data coming in is for the current screen.
 		return;
 	}
 	changeScreen( screen );
@@ -586,7 +587,6 @@ function buildSizeMappingList( sizeMapping ) {
 
 	return screenSizeList;
 }
-
 
 function generateSlotInfo() {
 	var toReturn = document.createDocumentFragment();
