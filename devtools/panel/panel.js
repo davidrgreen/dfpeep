@@ -48,6 +48,8 @@ function handleIncomingMessage( msg ) {
 				}
 				maybeUpdateMenuText( 'refreshes' );
 				maybeUpdateMenuText( 'slots' );
+				maybeUpdateScreen( 'refreshes' );
+				maybeUpdateScreen( 'slots' );
 				break;
 			case 'GPTRefreshUpdate':
 				if ( 'number' === typeof msg.payload.data.index ) {
@@ -66,21 +68,26 @@ function handleIncomingMessage( msg ) {
 					}
 					maybeUpdateMenuText( 'refreshes' );
 					maybeUpdateMenuText( 'slots' );
+					maybeUpdateScreen( 'refreshes' );
+					maybeUpdateScreen( 'slots' );
 				}
 				break;
 			case 'GPTEnableServices':
 				if ( msg.payload.data.time ) {
 					adData.enabledServices.push( msg.payload.data.time );
+					maybeUpdateScreen( 'overview' );
 				}
 				break;
 			case 'GPTEnableSingleRequest':
 				if ( msg.payload.data.time ) {
 					adData.enabledSingleRequest.push( msg.payload.data.time );
+					maybeUpdateScreen( 'overview' );
 				}
 				break;
 			case 'GPTDisableInitialLoad':
 				if ( msg.payload.data.time ) {
 					adData.disabledInitialLoad.push( msg.payload.data.time );
+					maybeUpdateScreen( 'overview' );
 				}
 				break;
 			case 'slotData':
@@ -88,6 +95,7 @@ function handleIncomingMessage( msg ) {
 					updateSlotInfo( msg.payload.data.name, msg.payload.data.data );
 				}
 				maybeUpdateMenuText( 'slots' );
+				maybeUpdateMenuText( 'refreshes' );
 				break;
 			default:
 				outputDataToScreen( msg );
@@ -98,6 +106,14 @@ function handleIncomingMessage( msg ) {
 	}
 	determineIssues();
 	maybeUpdateMenuText( 'issues' );
+}
+
+function maybeUpdateScreen( screen ) {
+	if ( screen !== currentScreen ) {
+		// Only update if data coming in is from the current screen.
+		return;
+	}
+	changeScreen( screen );
 }
 
 function maybeUpdateMenuText( item ) {
