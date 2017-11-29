@@ -321,7 +321,7 @@ function buildSlotListItem( slot, parentListName ) {
 		if ( adData.slots[ slot.elementId ] ) {
 			if ( adData.slots[ slot.elementId ].refreshedIndexes &&
 					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
-				text = 'Fetches: #1';
+				text = 'Fetches: 1';
 			} else {
 				text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
 					adData.slots[ slot.elementId ].refreshedIndexes.length +
