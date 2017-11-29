@@ -151,9 +151,11 @@ ul.tree-list li.tree-with-children:last-child {
 
 .issue-list ul {
 	list-style: disc;
+	margin-left: 20px;
+	margin-top: -5px;
 }
 
-.issue-list ul li {
+#content .issue-list ul li {
 	padding-left: 0;
 	line-height: 16px;
 	min-height: auto;
