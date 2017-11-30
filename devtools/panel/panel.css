@@ -126,16 +126,27 @@ ul.tree-list li.tree-with-children:last-child {
 	background-image: url(img/egg-minus.svg);
 }
 
-.highlight-slot-link {
+.slot-options {
+	padding-left: 11px;
+	background: url(img/vline.svg) repeat-y;
+	background-position: left 10px top;
+	padding-bottom: 7px;
+}
+
+.slot-options span {
 	display: inline-block;
 	font-size: 80%;
 	color: dodgerblue;
+	padding: 0 14px;
 }
 
-.highlight-slot-link:hover,
-.highlight-slot-link:active {
+.slot-options span:hover {
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+li:last-of-type .slot-options {
+	background: none;
 }
 
 .issue-list {

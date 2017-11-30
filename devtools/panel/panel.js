@@ -311,8 +311,12 @@ function buildSlotListItem( slot, parentListName ) {
 	var plusSign = document.createElement( 'span' );
 	plusSign.className = 'tree-plus-sign';
 	slotListItem.appendChild( plusSign );
-	var slotName = document.createTextNode( 'Slot: ' + slot.elementId + ' \u2014 ' );
+	var slotName = document.createTextNode( 'Slot: ' + slot.elementId +
+		' \u2014 ' + slot.refreshedIndexes.length + ' fetches' );
 	slotListItem.appendChild( slotName );
+
+	var slotOptions = document.createElement( 'div' );
+	slotOptions.className = 'slot-options';
 
 	var slotHighlightLink = document.createElement( 'span' );
 	text = 'Highlight slot in page';
@@ -321,7 +325,8 @@ function buildSlotListItem( slot, parentListName ) {
 	slotHighlightLink.addEventListener( 'click', function() {
 		sendToBackground( { action: 'highlightSlot', data: slot.elementId } );
 	} );
-	slotListItem.appendChild( slotHighlightLink );
+	slotOptions.appendChild( slotHighlightLink );
+	slotListItem.appendChild( slotOptions );
 
 	var slotInfoList = document.createElement( 'ul' );
 
