@@ -683,7 +683,7 @@ var DFPeep = ( function() {
 			return;
 		}
 
-		element.scrollIntoView( 1 );
+		element.scrollIntoView( { block: 'center', inline: 'center' } );
 
 		requestAnimationFrame( function() {
 			element.classList.add( 'dfpeep-ad' );
