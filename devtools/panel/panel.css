@@ -118,6 +118,10 @@ ul.tree-list li.tree-with-children:last-child {
 	background: url(img/egg-plus.svg);
 	background-size: 18px 24px;
 	position: relative;
+	vertical-align: top;
+}
+
+ul ul .tree-plus-sign {
 	top: 3px;
 }
 
@@ -130,14 +134,14 @@ ul.tree-list li.tree-with-children:last-child {
 	margin-top: -6px;
 }
 
-.refresh-list .slot-options {
-	display: none;
-}
-
 .tree-plus-sign--expanded ~ .slot-options {
 	background: url(img/vline.svg) repeat-y;
 	background-position: left 10px top;
 	padding-bottom: 5px;
+}
+
+ul ul .tree-plus-sign--expanded ~ .slot-options {
+		background-position: left 9.5px top;
 }
 
 .slot-options span {
