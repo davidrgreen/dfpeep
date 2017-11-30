@@ -248,7 +248,7 @@ function generateRefreshInfo() {
 	toReturn.appendChild( title );
 
 	var refreshList = document.createElement( 'ul' );
-	refreshList.className = 'tree-list';
+	refreshList.className = 'tree-list refresh-list';
 
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 
