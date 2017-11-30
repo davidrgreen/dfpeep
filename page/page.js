@@ -1,3 +1,12 @@
+/**
+ * Collects data from GPT tags on page and sends to content script.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 /* global googletag */
 var DFPeep = ( function() {
 	'use strict';
@@ -6,6 +15,7 @@ var DFPeep = ( function() {
 	window.googletag.cmd = window.googletag.cmd || [];
 
 	var wrappedSlotFunctions,
+		wrappedOutOfPageSlotFunctions,
 		inited,
 		debug = 1,
 		activeAdIds = []; // Ids which have been refreshed at least once.
@@ -135,7 +145,8 @@ var DFPeep = ( function() {
 				};
 			}
 			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
-				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
+				var copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
+				adData.refreshes[0].slots.push( copyOfSlotData );
 				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
 			}
 		}
@@ -165,11 +176,18 @@ var DFPeep = ( function() {
 	};
 
 	var processSlotRenderEnded = function( event ) {
+		var updateRefresh = 0,
+			toSend, whichRefresh, newTimestamp, copyOfSlotData;
 		var elementId = event.slot.getSlotElementId();
 		if ( ! elementId ) {
 			return;
 		}
-		var whichRefresh;
+
+		if ( -1 === activeAdIds.indexOf( elementId ) ) {
+			// Make this slot eligible to be monitored for DOM mutations.
+			activeAdIds.push( elementId );
+		}
+
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
 			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
 		} else {
@@ -180,18 +198,41 @@ var DFPeep = ( function() {
 			whichRefresh = 0;
 			adData.slots[ elementId ].adUnitPath = event.slot.getAdUnitPath();
 			adData.slots[ elementId ].elementId = elementId;
-			adData.slots[ elementId ].targeting = {};
+			if ( ! adData.slots[ elementId ].targeting ) {
+				adData.slots[ elementId ].targeting = {};
+			}
 			adData.slots[ elementId ].viewed.push( 0 );
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
+				if ( adData.enabledServices.length > 0 ) {
+					newTimestamp = adData.enabledServices[ 0 ];
+				} else {
+					newTimestamp = getTimestamp();
+				}
+
 				adData.refreshes[0] = {
+					timestamp: newTimestamp,
 					slots: []
 				};
 			}
-			// TODO: setTargeting
-			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
-				adData.refreshes[0].slots.push( adData.slots[ elementId ] );
-				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } )
-			};
+
+			setCurrentTargeting( event.slot, elementId );
+
+			if ( 0 === adData.refreshes[0].slots.length ) {
+				copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
+				adData.refreshes[0].slots.push( copyOfSlotData );
+				updateRefresh = 1;
+			}
+			var slotNotInRefresh = 1;
+			for ( var i = 0, length = adData.refreshes[0].slots.length; i < length; i++ ) {
+				if ( adData.refreshes[0].slots[ i ].elementId === elementId ) {
+					slotNotInRefresh = 0;
+				}
+			}
+			if ( slotNotInRefresh ) {
+				copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
+				adData.refreshes[0].slots.push( copyOfSlotData );
+				updateRefresh = 1;
+			}
 		}
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
@@ -215,6 +256,16 @@ var DFPeep = ( function() {
 			refresh.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
 		}
 
+		if ( updateRefresh ) {
+			// This was a refresh caused by initial load. Need
+			// to pass the info along to the panel.
+			toSend = {
+				index: 0,
+				slot: adData.slots[ elementId ],
+				timestamp: adData.refreshes[0].timestamp
+			};
+			sendDataToDevTools( 'GPTRefreshUpdate', toSend );
+		}
 		sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 
 		if ( event.isEmpty ) {
@@ -230,8 +281,8 @@ var DFPeep = ( function() {
 		creative.lineItemID = event.lineItemID;
 		creative.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
 		creative.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
-		creative.slotRefreshIndex.push( whichRefresh );
-		creative.overallRefreshIndex.push( adData.refreshes.length - 1 );
+		creative.slotRefreshedIndexes.push( whichRefresh );
+		creative.overallRefreshedIndexes.push( adData.refreshes.length - 1 );
 
 		// Store creative info.
 		// Store campaign info?
@@ -265,6 +316,7 @@ var DFPeep = ( function() {
 				wrapGPTRefresh();
 				wrapGPTEnableServices();
 				wrapGPTDefineSlot();
+				wrapGPTDefineOutOfPageSlot();
 				wrapGPTSetTargeting();
 				wrapGPTEnableSingleRequest();
 				wrapGPTDisplay();
@@ -306,18 +358,7 @@ var DFPeep = ( function() {
 				// has not been pushed to the adData.refreshes array yet.
 				slot.refreshedIndexes.push( adData.refreshes.length );
 
-				targetingKeys = slotsRefreshed[ i ].getTargetingKeys();
-				for ( t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
-					slot.targeting[ targetingKeys[ t ] ] = slotsRefreshed[ i ].getTargeting( targetingKeys[ t ] );
-				}
-
-				for ( pageTarget in adData.pageTargeting ) {
-					if ( ! adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
-						continue;
-					}
-
-					slot.targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
-				}
+				setCurrentTargeting( slotsRefreshed[ i ], slotElementId );
 
 				// Indicate this ad ID is active so the DFPeep mutation observer
 				// will begin looking for it.
@@ -332,6 +373,22 @@ var DFPeep = ( function() {
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
+	};
+
+	var setCurrentTargeting = function( slot, slotElementId ) {
+		if ( slot.getTargetingKeys ) {
+			var targetingKeys = slot.getTargetingKeys();
+			for ( var t = 0, tlength = targetingKeys.length; t < tlength; t++ ) {
+				adData.slots[ slotElementId ].targeting[ targetingKeys[ t ] ] = slot.getTargeting( targetingKeys[ t ] );
+			}
+		}
+
+		for ( var pageTarget in adData.pageTargeting ) {
+			if ( ! adData.pageTargeting.hasOwnProperty( pageTarget ) ) {
+				continue;
+			}
+			adData.slots[ slotElementId ].targeting[ pageTarget ] = adData.pageTargeting[ pageTarget ];
+		}
 	};
 
 	var wrapGPTDisableInitialLoad = function() {
@@ -360,6 +417,7 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().setTargeting;
 		googletag.pubads().setTargeting = function() {
 			adData.pageTargeting[ arguments[0] ] = arguments[1];
+			sendDataToDevTools( 'pageTargetingData', { targets: adData.pageTargeting } );
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
@@ -384,7 +442,7 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().collapseEmptyDivs;
 		googletag.pubads().collapseEmptyDivs = function() {
 			if ( adData.collapseEmptyDivs.timestamp &&
-					adData.enableServices.length > 0 ) {
+					adData.enabledServices.length > 0 ) {
 				// Only need to take note of trying to collapse empty divs
 				// after enableServices one time. Past that is redundant.
 				return;
@@ -409,6 +467,12 @@ var DFPeep = ( function() {
 				setupNewSlotData( elementId );
 			}
 			adData.slots[ elementId ].displayCallTimestamp = getTimestamp();
+			adData.slots[ elementId ].elementId = elementId;
+
+			setCurrentTargeting( adData.slots[ elementId ], elementId );
+
+			sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
@@ -419,7 +483,8 @@ var DFPeep = ( function() {
 			refreshedIndexes: [],
 			refreshResults: [],
 			viewed: [],
-			movedInDOM: []
+			movedInDOM: [],
+			targeting: {}
 		};
 	};
 
@@ -501,6 +566,71 @@ var DFPeep = ( function() {
 		};
 	};
 
+	var wrapGPTDefineOutOfPageSlot = function() {
+		var oldDefineVersion = googletag.defineOutOfPageSlot;
+		googletag.defineOutOfPageSlot = function() {
+			var definedSlot = oldDefineVersion.apply( this, arguments );
+			var elementId = definedSlot.getSlotElementId();
+			if ( ! adData.slots[ elementId ] ) {
+				setupNewSlotData( elementId );
+			}
+			adData.slots[ elementId ].elementId = elementId;
+			adData.slots[ elementId ].adUnitPath = definedSlot.getAdUnitPath();
+			adData.slots[ elementId ].outOfPage = 1;
+			if ( ! wrappedOutOfPageSlotFunctions ) {
+				wrappedOutOfPageSlotFunctions = 1;
+				var proto = Object.getPrototypeOf( definedSlot );
+
+				// googletag.Slot.setTargeting
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.setTargeting;
+					obPrototype.setTargeting = function() {
+						// sendDataToDevTools( 'GPTEnableServices', { time: getTimestamp() } );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.setTargeting
+
+				// googletag.Slot.defineSizeMapping
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.defineSizeMapping;
+					obPrototype.defineSizeMapping = function() {
+						var elementId = this.getSlotElementId();
+						if ( ! adData.slots[ elementId ].sizeMappings ) {
+							adData.slots[ elementId ].sizeMappings = [ arguments[0] ];
+						} else {
+							adData.slots[ elementId ].sizeMappings.push( arguments[0] );
+						}
+						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.defineSizeMapping
+
+				// googletag.Slot.setCollapseEmptyDiv
+				( function( obPrototype ) {
+					var oldVersion = obPrototype.setCollapseEmptyDiv;
+					obPrototype.setCollapseEmptyDiv = function() {
+						var elementId = this.getSlotElementId();
+						if ( arguments[ 0 ] ) {
+							adData.slots[ elementId ].collapseEmptyDiv = 1;
+						}
+						if ( arguments[ 1 ] ) {
+							adData.slots[ elementId ].collapseEmptyDiv = 'before';
+						}
+						sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
+						var result = oldVersion.apply( this, arguments );
+						return result;
+					};
+				} )( proto );
+				// End googletag.Slot.setCollapseEmptyDiv
+			}
+			return definedSlot;
+		};
+	};
+
 	var sendDataToDevTools = function( action, data ) {
 		var toSend = {
 			from: 'DFPeep',
@@ -525,7 +655,6 @@ var DFPeep = ( function() {
 					sendAllAdData();
 				} else if ( 'highlightSlot' === event.data.action
 						&& event.data.data ) {
-					console.log( 'about to highlight event ' + event.data.data );
 					highlightElement( event.data.data );
 				}
 			}
@@ -554,7 +683,7 @@ var DFPeep = ( function() {
 			return;
 		}
 
-		element.scrollIntoView( 1 );
+		element.scrollIntoView( { block: 'center', inline: 'center' } );
 
 		requestAnimationFrame( function() {
 			element.classList.add( 'dfpeep-ad' );

@@ -1,15 +1,27 @@
+/**
+ * Create the DFPeep dev tools panel and establish port connection with
+ * background script.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
+/* global chrome */
+
 chrome.devtools.panels.create(
 	'DFPeep',
 	'', // Icon location.
 	'devtools/panel/panel.html',
-	function(extensionPanel) {
+	function( extensionPanel ) {
 		var panelWindow; // Reference to the panel's window object.
 
 		var data = [];
 		var port = chrome.runtime.connect( { name: 'DFPeepFromPanel'} );
 		console.log( 'dev panel created new port' );
 		console.log( port );
-		port.onMessage.addListener(function(msg) {
+		port.onMessage.addListener( function( msg ) {
 			// Write information to the panel, if exists.
 			// If we don't have a panel reference (yet), queue the data.
 			if ( panelWindow ) {

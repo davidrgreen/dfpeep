@@ -1,21 +1,37 @@
+/**
+ * Display ad data collected from page.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 /* global chrome */
 
 var currentScreen,
 	contentElement,
 	menuElement,
-	adData,
 	UIState = {
 		refreshesShown: 0,
 		slotsShown: 0,
-		recommendationsShown: 0
+		issuesShown: 0
 	},
-	recommendations = {
+	issues = {
 		warnings: {},
 		errors: {}
-	}, // code: { 'text', [slots/creatives] }
+	},
+	adData = {
+		slots: {},
+		refreshes: [],
+		enabledServices: [],
+		disabledInitialLoad: [],
+		enabledSingleRequest: []
+	},
 	debug = 1;
 
 function handleIncomingMessage( msg ) {
+	var skipDetermineIssues = 0;
 	if ( debug ) {
 		console.log( 'panel received:' );
 		console.log( msg );
@@ -30,9 +46,9 @@ function handleIncomingMessage( msg ) {
 			case 'fullSync':
 				if ( msg.payload.data ) {
 					adData = msg.payload.data;
+					maybeUpdateMenuText();
+					changeScreen( 'overview' );
 				}
-				maybeUpdateMenuText();
-				changeScreen( 'overview' );
 				break;
 			case 'GPTRefresh':
 				adData.refreshes.push( msg.payload.data );
@@ -42,36 +58,63 @@ function handleIncomingMessage( msg ) {
 				}
 				maybeUpdateMenuText( 'refreshes' );
 				maybeUpdateMenuText( 'slots' );
+				maybeUpdateScreen( 'refreshes' );
+				maybeUpdateScreen( 'slots' );
 				break;
 			case 'GPTRefreshUpdate':
-				if ( msg.payload.data.index && msg.payload.data.slot ) {
-
-					if ( ! adData.refreshes[ msg.payload.data.index ].slots ) {
-						adData.refreshes[ msg.payload.data.index ].slots = [];
+				if ( 'number' === typeof msg.payload.data.index ) {
+					if ( ! adData.refreshes[ msg.payload.data.index ] ) {
+						adData.refreshes[ msg.payload.data.index ] = {};
 					}
-					adData.refreshes[ msg.payload.data.index ].slots.push( msg.payload.data.slot );
+					if ( msg.payload.data.slot ) {
+						if ( ! adData.refreshes[ msg.payload.data.index ].slots ) {
+							adData.refreshes[ msg.payload.data.index ].slots = [];
+						}
+						adData.refreshes[ msg.payload.data.index ].slots.push( msg.payload.data.slot );
+					}
+
+					if ( msg.payload.data.timestamp ) {
+						adData.refreshes[ msg.payload.data.index ].timestamp = msg.payload.data.timestamp;
+					}
+					maybeUpdateMenuText( 'refreshes' );
+					maybeUpdateMenuText( 'slots' );
+					maybeUpdateScreen( 'refreshes' );
+					maybeUpdateScreen( 'slots' );
 				}
 				break;
 			case 'GPTEnableServices':
 				if ( msg.payload.data.time ) {
 					adData.enabledServices.push( msg.payload.data.time );
+					maybeUpdateScreen( 'overview' );
 				}
 				break;
 			case 'GPTEnableSingleRequest':
 				if ( msg.payload.data.time ) {
 					adData.enabledSingleRequest.push( msg.payload.data.time );
+					maybeUpdateScreen( 'overview' );
 				}
 				break;
 			case 'GPTDisableInitialLoad':
 				if ( msg.payload.data.time ) {
 					adData.disabledInitialLoad.push( msg.payload.data.time );
+					maybeUpdateScreen( 'overview' );
 				}
 				break;
 			case 'slotData':
 				if ( msg.payload.data.name && msg.payload.data.data ) {
 					updateSlotInfo( msg.payload.data.name, msg.payload.data.data );
+					maybeUpdateMenuText( 'slots' );
+					maybeUpdateScreen( 'slots' );
+					maybeUpdateScreen( 'refreshes' );
 				}
-				maybeUpdateMenuText( 'slots' );
+				break;
+			case 'pageTargetingData':
+				if ( msg.payload.data.targets ) {
+					adData.pageTargeting = msg.payload.data.targets;
+					maybeUpdateScreen( 'slots' );
+					maybeUpdateScreen( 'refreshes' );
+					skipDetermineIssues = 1;
+				}
 				break;
 			default:
 				outputDataToScreen( msg );
@@ -80,8 +123,18 @@ function handleIncomingMessage( msg ) {
 	} else {
 		outputDataToScreen( msg );
 	}
-	determineRecommendations();
-	maybeUpdateMenuText( 'recommendations' );
+	if ( ! skipDetermineIssues ) {
+		determineIssues();
+		maybeUpdateMenuText( 'issues' );
+	}
+}
+
+function maybeUpdateScreen( screen ) {
+	if ( screen !== currentScreen ) {
+		// Only update if data coming in is for the current screen.
+		return;
+	}
+	changeScreen( screen );
 }
 
 function maybeUpdateMenuText( item ) {
@@ -107,14 +160,14 @@ function maybeUpdateMenuText( item ) {
 		}
 	}
 
-	if ( ! item || 'recommendations' === item ) {
-		currentLength = Object.keys( recommendations.warnings ).length +
-			Object.keys( recommendations.errors ).length;
-		if ( ! UIState.recommendationsShown ||
-				UIState.recommendationsShown !== currentLength ) {
+	if ( ! item || 'issues' === item ) {
+		currentLength = Object.keys( issues.warnings ).length +
+			Object.keys( issues.errors ).length;
+		if ( ! UIState.issuesShown ||
+				UIState.issuesShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
-			toUpdate = menuElement.querySelector( 'a[href="#recommendations"]' );
-			toUpdate.innerText = 'Recommendations (' + currentLength + ')';
+			toUpdate = menuElement.querySelector( 'a[href="#issues"]' );
+			toUpdate.innerText = 'Issues (' + currentLength + ')';
 		}
 	}
 }
@@ -134,9 +187,9 @@ function setupVariables( data ) {
 	UIState = {
 		refreshesShown: 0,
 		slotsShown: 0,
-		recommendationsShown: 0
+		issuesShown: 0
 	};
-	recommendations = {
+	issues = {
 		warnings: {},
 		errors: {}
 	};
@@ -171,7 +224,7 @@ function setupMenuEventListeners() {
 			var targetScreen = e.target.hash.replace( '#', '' );
 			changeScreen( targetScreen );
 		}
-	});
+	} );
 }
 
 function outputDataToScreen( data ) {
@@ -195,7 +248,7 @@ function generateRefreshInfo() {
 	toReturn.appendChild( title );
 
 	var refreshList = document.createElement( 'ul' );
-	refreshList.className = 'tree-list';
+	refreshList.className = 'tree-list refresh-list';
 
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 
@@ -209,6 +262,7 @@ function generateRefreshInfo() {
 		slotCount = slots.length;
 
 		refreshListItem = document.createElement( 'li' );
+		refreshListItem.id = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
 		// Unicode for mdash html entity.
@@ -230,7 +284,7 @@ function generateRefreshInfo() {
 		refreshSlotList = document.createElement( 'ul' );
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
-			refreshSlotList.appendChild( buildSlotListItem( slots[ s ] ) );
+			refreshSlotList.appendChild( buildSlotListItem( slots[ s ], 'refresh-' + ( i + 1 ) ) );
 		}
 		refreshListItem.appendChild( refreshSlotList );
 
@@ -242,17 +296,27 @@ function generateRefreshInfo() {
 	return toReturn;
 }
 
-function buildSlotListItem( slot ) {
+function buildSlotListItem( slot, parentListName ) {
 	var text;
 
 	var slotListItem = document.createElement( 'li' );
 	slotListItem.className = 'tree-with-children';
 
+	if ( parentListName ) {
+		slotListItem.id = parentListName + '_' + slot.elementId;
+	} else {
+		slotListItem.id = slot.elementId;
+	}
+
 	var plusSign = document.createElement( 'span' );
 	plusSign.className = 'tree-plus-sign';
 	slotListItem.appendChild( plusSign );
-	var slotName = document.createTextNode( 'Slot: ' + slot.elementId + ' \u2014 ' );
+	var slotName = document.createTextNode( 'Slot: ' + slot.elementId +
+		' \u2014 ' + slot.refreshedIndexes.length + ' fetches' );
 	slotListItem.appendChild( slotName );
+
+	var slotOptions = document.createElement( 'div' );
+	slotOptions.className = 'slot-options';
 
 	var slotHighlightLink = document.createElement( 'span' );
 	text = 'Highlight slot in page';
@@ -261,7 +325,8 @@ function buildSlotListItem( slot ) {
 	slotHighlightLink.addEventListener( 'click', function() {
 		sendToBackground( { action: 'highlightSlot', data: slot.elementId } );
 	} );
-	slotListItem.appendChild( slotHighlightLink );
+	slotOptions.appendChild( slotHighlightLink );
+	slotListItem.appendChild( slotOptions );
 
 	var slotInfoList = document.createElement( 'ul' );
 
@@ -281,7 +346,7 @@ function buildSlotListItem( slot ) {
 		if ( adData.slots[ slot.elementId ] ) {
 			if ( adData.slots[ slot.elementId ].refreshedIndexes &&
 					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
-				text = 'Fetches: #1';
+				text = 'Fetches: 1';
 			} else {
 				text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
 					adData.slots[ slot.elementId ].refreshedIndexes.length +
@@ -402,8 +467,23 @@ function buildRefreshResultList( slotId ) {
 			if ( refreshResults[ i ].size &&
 					Array.isArray( refreshResults[ i ].size ) ) {
 				detail = document.createElement( 'li' );
-				text = 'Creative Size: ' + refreshResults[ i ].size[0] +
-					'x' + refreshResults[ i ].size[1];
+				text = 'Creative Size: ';
+				if ( refreshResults[ i ].size[0] && 0 !== refreshResults[ i ].size[0] ) {
+					text += buildSizePairText(
+							refreshResults[ i ].size[0],
+							refreshResults[ i ].size[1]
+					);
+				} else {
+					if ( adData.slots[ slotId ].fallbackSize &&
+							-1 !== adData.slots[ slotId ].fallbackSize.indexOf( 'fluid' ) ) {
+						text += 'fluid';
+					} else {
+						text += buildSizePairText(
+								refreshResults[ i ].size[0],
+								refreshResults[ i ].size[1]
+						);
+					}
+				}
 				detail.appendChild( document.createTextNode( text ) );
 				detailList.appendChild( detail );
 			}
@@ -499,23 +579,37 @@ function buildFallbackSizeList( sizes ) {
 	var sizeList = document.createElement( 'ul' ),
 		sizeItem, size;
 
-	for ( var i = 0, length = sizes.length; i < length; i++ ) {
+	if ( ! Array.isArray( sizes ) ) {
 		sizeItem = document.createElement( 'li' );
-		if ( ! Array.isArray( sizes[ i ] ) ) {
-			size = sizes[ i ];
-			if ( sizes[ i + 1 ] ) {
-				size += 'x' + sizes[ i + 1 ];
-			}
-			i = length;
-		} else {
-			size = sizes[ i ][0] + 'x' + sizes[ i ][1];
-		}
-		sizeItem.appendChild( document.createTextNode( size ) );
-
+		sizeItem.appendChild( document.createTextNode( sizes ) );
 		sizeList.appendChild( sizeItem );
+	} else {
+		for ( var i = 0, length = sizes.length; i < length; i++ ) {
+			sizeItem = document.createElement( 'li' );
+			if ( ! Array.isArray( sizes[ i ] ) ) {
+				size = sizes[ i ];
+				if ( sizes[ i + 1 ] ) {
+					size = buildSizePairText( sizes[ i ], sizes[ i + 1 ] );
+				}
+				i = length;
+			} else {
+				size = buildSizePairText( sizes[ i ][0], sizes[ i ][1] );
+			}
+			sizeItem.appendChild( document.createTextNode( size ) );
+
+			sizeList.appendChild( sizeItem );
+		}
 	}
 
 	return sizeList;
+}
+
+function buildSizePairText( first, second ) {
+	if ( ! first ) {
+		return 'No size. Do not show ad.';
+	} else {
+		return first + 'x' + second;
+	}
 }
 
 function buildSizeMappingList( sizeMapping ) {
@@ -530,13 +624,20 @@ function buildSizeMappingList( sizeMapping ) {
 		adSizeList = document.createElement( 'ul' );
 		if ( ! Array.isArray( sizeMapping[ j ][1][0] ) ) {
 			adSizeItem = document.createElement( 'li' );
-			adSize = sizeMapping[ j ][1][0] + 'x' + sizeMapping[ j ][1][1];
+			adSize = buildSizePairText(
+				sizeMapping[ j ][1][0],
+				sizeMapping[ j ][1][1]
+			);
 			adSizeItem.appendChild( document.createTextNode( adSize ) );
 			adSizeList.appendChild( adSizeItem );
 		} else {
 			for ( var l = 0, llength = sizeMapping[ j ][1].length; l < llength; l++ ) {
 				adSizeItem = document.createElement( 'li' );
 				adSize = sizeMapping[ j ][1][ l ][0] + 'x' + sizeMapping[ j ][1][ l ][1];
+				adSize = buildSizePairText(
+					sizeMapping[ j ][1][ l ][0],
+					sizeMapping[ j ][1][ l ][1]
+				);
 				adSizeItem.appendChild( document.createTextNode( adSize ) );
 				adSizeList.appendChild( adSizeItem );
 			}
@@ -547,7 +648,6 @@ function buildSizeMappingList( sizeMapping ) {
 
 	return screenSizeList;
 }
-
 
 function generateSlotInfo() {
 	var toReturn = document.createDocumentFragment();
@@ -616,19 +716,43 @@ function generateOverview() {
 	item.appendChild( createLabelAndValue( 'Disabled Initial Load? ', disabledInitialLoad ) );
 	list.appendChild( item );
 
+	var enabledSingleRequest = 'No';
+	if ( adData.enabledSingleRequest && adData.enabledSingleRequest.length > 0 ) {
+		enabledSingleRequest = 'Yes';
+		if ( adData.enabledServices && adData.enabledServices.length > 0 &&
+				adData.enabledSingleRequest[0] > adData.enabledServices[0] ) {
+			enabledSingleRequest = 'No, error detected. See issues.';
+		}
+	}
+	item = document.createElement( 'li' );
+	item.appendChild( createLabelAndValue( 'Single Request Mode? ', enabledSingleRequest ) );
+	list.appendChild( item );
+
+	if ( adData.pageTargeting &&
+			Object.keys( adData.pageTargeting ).length > 0 ) {
+		item = document.createElement( 'li' );
+		text = 'Page-wide Key-Value Targeting:';
+		var targeting = buildKeyTargetingList( adData.pageTargeting );
+		item.appendChild(
+			createLabelAndValue( text, targeting )
+		);
+
+		list.appendChild( item );
+	}
+
 	overview.appendChild( list );
 
 	return overview;
 }
 
-function generateRecommendationsScreen() {
+function generateIssuesScreen() {
 	var title, text, intro,
 		toReturn = document.createDocumentFragment(),
-		errorCount = Object.keys( recommendations.errors ).length,
-		warningCount = Object.keys( recommendations.warnings ).length;
+		errorCount = Object.keys( issues.errors ).length,
+		warningCount = Object.keys( issues.warnings ).length;
 
 	title = document.createElement( 'h2' );
-	title.appendChild( document.createTextNode( 'Recommendations:' ) );
+	title.appendChild( document.createTextNode( 'Issues:' ) );
 	toReturn.appendChild( title );
 
 	intro = document.createElement( 'p' );
@@ -649,10 +773,10 @@ function generateRecommendationsScreen() {
 			text += 's:';
 		}
 		title.appendChild( document.createTextNode( text ) );
-		title.className = 'recommendation-section-title';
+		title.className = 'issue-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
-			buildRecommendationList( recommendations.errors, 'error' )
+			buildIssueList( issues.errors, 'error' )
 		);
 	}
 
@@ -665,20 +789,20 @@ function generateRecommendationsScreen() {
 			text += 's:';
 		}
 		title.appendChild( document.createTextNode( text ) );
-		title.className = 'recommendation-section-title';
+		title.className = 'issue-section-title';
 		toReturn.appendChild( title );
 		toReturn.appendChild(
-			buildRecommendationList( recommendations.warnings, 'warning' )
+			buildIssueList( issues.warnings, 'warning' )
 		);
 	}
 
 	return toReturn;
 }
 
-function buildRecommendationList( recs, type ) {
+function buildIssueList( recs, type ) {
 	var listItem, title;
 	var list = document.createElement( 'ul' );
-	list.className = type + '-list recommendation-list';
+	list.className = type + '-list issue-list';
 
 	for ( var rec in recs ) {
 		if ( ! recs.hasOwnProperty( rec ) ) {
@@ -688,7 +812,7 @@ function buildRecommendationList( recs, type ) {
 		listItem = document.createElement( 'li' );
 
 		title = document.createElement( 'h4' );
-		title.className = type + '-title recommendation-title';
+		title.className = type + '-title issue-title';
 		title.appendChild( document.createTextNode( recs[ rec ].title ) );
 		listItem.appendChild( title );
 
@@ -713,8 +837,8 @@ function changeScreen( screen ) {
 		case 'slots':
 			displayContent( generateSlotInfo(), nextScreen );
 			break;
-		case 'recommendations':
-			displayContent( generateRecommendationsScreen(), nextScreen );
+		case 'issues':
+			displayContent( generateIssuesScreen(), nextScreen );
 			break;
 		case 'overview':
 			displayContent( generateOverview(), nextScreen );
@@ -744,7 +868,8 @@ function changeSelectedMenuItem( menuItem ) {
 	newlySelected.classList.add( 'selected' );
 }
 
-function displayContent( content, screen ) {
+function displayContent( content, nextScreen ) {
+	var expandedElementIds;
 	if ( ! content ) {
 		console.error( 'No content passed to displayContent' );
 		return;
@@ -756,9 +881,48 @@ function displayContent( content, screen ) {
 			return;
 		}
 	}
+	if ( nextScreen === currentScreen ) {
+		expandedElementIds = getExpandedElementIds( contentElement );
+	}
 	emptyElement( contentElement );
-	makeCollapsible( content, screen );
+	makeCollapsible( content, nextScreen );
+	if ( nextScreen === currentScreen && expandedElementIds ) {
+		reExpandElements( content, expandedElementIds );
+	}
 	contentElement.appendChild( content );
+}
+
+function getExpandedElementIds( content ) {
+	var expandedIds = [];
+	var expandedElements = content.querySelectorAll( '.tree-plus-sign--expanded' );
+	if ( ! expandedElements ) {
+		return;
+	}
+	for ( var i = 0, length = expandedElements.length; i < length; i++ ) {
+		expandedIds.push( expandedElements[ i ].parentElement.id );
+	}
+	return expandedIds;
+}
+
+function reExpandElements( content, expandedElementIds ) {
+	var element, plusSign, hidden;
+
+	for ( var i = 0, length = expandedElementIds.length; i < length; i++ ) {
+		element = content.getElementById( expandedElementIds[ i ] );
+		if ( ! element ) {
+			continue;
+		}
+
+		plusSign = element.querySelector( '.tree-plus-sign' );
+		if ( plusSign ) {
+			plusSign.className += ' tree-plus-sign--expanded';
+		}
+
+		hidden = element.querySelector( '.tree-hidden' );
+		if ( hidden ) {
+			hidden.classList.remove( 'tree-hidden' );
+		}
+	}
 }
 
 function setupContentArea() {
@@ -777,6 +941,23 @@ function setupContentArea() {
 			}
 		}
 	} );
+
+	contentElement.addEventListener( 'click', function( e ) {
+		if ( e.target && 'A' === e.target.nodeName ) {
+			var rel = e.target.getAttribute( 'rel' );
+			if ( ! rel || 'panel' !== rel ) {
+				return;
+			}
+			e.preventDefault();
+			var targetScreen = e.target.hash.replace( '#', '' );
+			var id = e.target.getAttribute( 'data-ref' );
+			if ( id ) {
+				changeScreen( targetScreen, id );
+			} else {
+				changeScreen( targetScreen );
+			}
+		}
+	} );
 }
 
 function emptyElement( element ) {
@@ -786,7 +967,7 @@ function emptyElement( element ) {
 }
 
 function makeCollapsible( dom, screen ) {
-	var exclude = [ 'recommendations' ];
+	var exclude = [ 'issues' ];
 	if ( screen && -1 !== exclude.indexOf( screen ) ) {
 		return;
 	}
@@ -799,14 +980,17 @@ function makeCollapsible( dom, screen ) {
 	}
 }
 
-function determineRecommendations() {
+function determineIssues() {
 	checkForLateDisableInitialLoad();
 	checkForMoveAfterRender();
 	checkForLateEnableSingleRequest();
+	checkForDuplicateFetches();
+
+	maybeUpdateScreen( 'issues' );
 }
 
 function checkForLateDisableInitialLoad() {
-	if ( recommendations.errors.lateDisableInitialLoad ) {
+	if ( issues.warnings.lateDisableInitialLoad ) {
 		return;
 	}
 
@@ -817,10 +1001,10 @@ function checkForLateDisableInitialLoad() {
 
 	if ( adData.enabledServices[0] < adData.disabledInitialLoad[0] ) {
 		var description = document.createElement( 'p' );
-		var text = 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices().';
+		var text = 'googletag.pubads().disableInitialLoad() likely had no effect because it was called after googletag.enableServices(), but it could have still worked for any slots that called googletag.display() after googletag.pubads().disableInitialLoad().';
 		description.appendChild( document.createTextNode( text ) );
 
-		recommendations.errors.lateDisableInitialLoad = {
+		issues.warnings.lateDisableInitialLoad = {
 			title: 'Disabled Initial Load Too Late',
 			description: description
 		};
@@ -828,7 +1012,7 @@ function checkForLateDisableInitialLoad() {
 }
 
 function checkForLateEnableSingleRequest() {
-	if ( recommendations.errors.lateEnableSingleRequest ) {
+	if ( issues.errors.lateEnableSingleRequest ) {
 		return;
 	}
 
@@ -842,7 +1026,7 @@ function checkForLateEnableSingleRequest() {
 		var text = 'googletag.pubads().enableSingleRequest() had no effect because it was called after googletag.enableServices().';
 		description.appendChild( document.createTextNode( text ) );
 
-		recommendations.errors.lateEnableSingleRequest = {
+		issues.errors.lateEnableSingleRequest = {
 			title: 'Enabled Single Request Mode Too Late',
 			description: description
 		};
@@ -896,8 +1080,50 @@ function checkForMoveAfterRender() {
 		text = 'If you need to move the slot element, such as moving a sidebar ad inline on mobile, then you need to ensure the slot element is moved before the ad is fetched. A sure-fire way of doing this is to use googletag.pubads().disableInitialLoad(), allowing you to manually fetch the ad with googletag.pubads().refresh() only after the slot element has been moved in the DOM.';
 		description.appendChild( document.createTextNode( text ) );
 		fragment.appendChild( description );
-		recommendations.warnings.lateDisableInitialLoad = {
+		issues.warnings.lateDisableInitialLoad = {
 			title: 'Moved Slot Element After Rendered In DOM',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+function checkForDuplicateFetches() {
+	var slot, text,
+		offendingSlots = [],
+		slotNames = Object.keys( adData.slots ).sort();
+
+	for ( var i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		if ( Array.isArray( slot.refreshedIndexes ) && slot.refreshedIndexes.length > 1 ) {
+			offendingSlots.push(
+				{ id: slotNames[ i ], count: slot.refreshedIndexes.length }
+			);
+		}
+	}
+
+	if ( offendingSlots.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following slots were fetched more than once. You should confirm that this was intentional.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			text = offendingSlots[ d ].id + ' \u2014 ' +
+				offendingSlots[ d ].count + ' fetches';
+			listItem.appendChild( document.createTextNode( text ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		issues.warnings.duplicateAdFetch = {
+			title: 'Duplicate Ad Slot Fetches',
 			description: fragment
 		};
 

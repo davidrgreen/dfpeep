@@ -1,9 +1,18 @@
+/**
+ * Styling for DFPeep panel in Chrome dev tools.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 * {
 	box-sizing: border-box;
 }
 
 body {
-	font-family: sans-serif;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 	padding-bottom: 50px;
 }
 
@@ -19,7 +28,8 @@ ul {
 
 #menu li {
 	display: inline-block;
-	padding: 0 12px;
+	padding: 0 12px 0 0;
+	margin: 0 8px 11px 0;
 	border-right: solid 1px #ccc;
 	line-height: 21px;
 }
@@ -70,16 +80,19 @@ ul.tree-list li {
 	background-position: top left -1px;
 }
 
-
 ul.tree-list li:last-child {
 	background: #fff url(img/lastnode.svg) no-repeat;
 	background-position: left top -17px;
 }
 
+ul.tree-list > li:first-child {
+	background: url(img/topnode.svg) no-repeat !important;
+}
+
 ul.tree-list li.tree-time-diff {
-	background: url(img/vline.png) repeat-y;
-	padding-top: 35px;
-	padding-bottom: 35px;
+	background: url(img/vline.svg) repeat-y;
+	padding-top: 15px;
+	padding-bottom: 15px;
 	font-size: 110%;
 	font-style: italic;
 }
@@ -112,36 +125,52 @@ ul.tree-list li.tree-with-children:last-child {
 	background-image: url(img/egg-minus.svg);
 }
 
-.highlight-slot-link {
-	display: inline-block;
-	margin-left: 5px;
-	font-size: 80%;
-	color: dodgerblue;
+.slot-options {
+	padding-left: 8px;
+	margin-top: -6px;
 }
 
-.highlight-slot-link:hover,
-.highlight-slot-link:active {
+.refresh-list .slot-options {
+	display: none;
+}
+
+.tree-plus-sign--expanded ~ .slot-options {
+	background: url(img/vline.svg) repeat-y;
+	background-position: left 10px top;
+	padding-bottom: 5px;
+}
+
+.slot-options span {
+	display: inline-block;
+	font-size: 80%;
+	color: dodgerblue;
+	padding: 0 14px;
+}
+
+.slot-options span:hover {
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-.recommendation-list {
+.issue-list {
 	list-style: none;
 	padding-left: 0;
 	margin-left: 2px;
 }
 
-.recommendation-list li {
+.issue-list li {
 	min-height: 32px;
 	padding-left: 32px;
 	margin-bottom: 14px;
 }
 
-.recommendation-list ul {
+.issue-list ul {
 	list-style: disc;
+	margin-left: 20px;
+	margin-top: -5px;
 }
 
-.recommendation-list ul li {
+#content .issue-list ul li {
 	padding-left: 0;
 	line-height: 16px;
 	min-height: auto;
@@ -158,20 +187,20 @@ ul.tree-list li.tree-with-children:last-child {
 	background-size: 23px 31px;
 }
 
-.recommendation-list p {
+.issue-list p {
 	line-height: 19px;
 }
 
-.recommendation-title {
+.issue-title {
 	margin: 0;
 	padding-top: 0;
 }
 
-.recommendation-title + p {
+.issue-title + p {
 	margin-top: 0;
 }
 
-.recommendation-section-title {
+.issue-section-title {
 	text-transform: uppercase;
 }
 
@@ -180,5 +209,4 @@ h2 + p {
 }
 
 .info-label {
-	font-weight: 700;
 }

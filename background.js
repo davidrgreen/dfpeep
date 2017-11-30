@@ -1,9 +1,20 @@
+/**
+ * Listens to messages from content scripts and panel scripts using long-running
+ * ports. Directs messages between them appropriately. Messages flow from
+ * in-page to contet script to background page to panel and back.
+ *
+ * @since 0.1.0
+ * @package DFPeep
+ * @copyright 2017 David Green
+ * @license MIT
+ */
+
 /* global chrome */
 var contentPorts = {},
 	panelPorts = {},
 	debug = 1; // If 1 then enable console logs.
 
-chrome.runtime.onConnect.addListener( function ( port ) {
+chrome.runtime.onConnect.addListener( function( port ) {
 	if ( 'DFPeepFromContent' !== port.name ) {
 		return;
 	}
