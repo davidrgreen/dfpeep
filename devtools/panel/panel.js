@@ -579,20 +579,26 @@ function buildFallbackSizeList( sizes ) {
 	var sizeList = document.createElement( 'ul' ),
 		sizeItem, size;
 
-	for ( var i = 0, length = sizes.length; i < length; i++ ) {
+	if ( ! Array.isArray( sizes ) ) {
 		sizeItem = document.createElement( 'li' );
-		if ( ! Array.isArray( sizes[ i ] ) ) {
-			size = sizes[ i ];
-			if ( sizes[ i + 1 ] ) {
-				size = buildSizePairText( sizes[ i ], sizes[ i + 1 ] );
-			}
-			i = length;
-		} else {
-			size = buildSizePairText( sizes[ i ][0], sizes[ i ][1] );
-		}
-		sizeItem.appendChild( document.createTextNode( size ) );
-
+		sizeItem.appendChild( document.createTextNode( sizes ) );
 		sizeList.appendChild( sizeItem );
+	} else {
+		for ( var i = 0, length = sizes.length; i < length; i++ ) {
+			sizeItem = document.createElement( 'li' );
+			if ( ! Array.isArray( sizes[ i ] ) ) {
+				size = sizes[ i ];
+				if ( sizes[ i + 1 ] ) {
+					size = buildSizePairText( sizes[ i ], sizes[ i + 1 ] );
+				}
+				i = length;
+			} else {
+				size = buildSizePairText( sizes[ i ][0], sizes[ i ][1] );
+			}
+			sizeItem.appendChild( document.createTextNode( size ) );
+
+			sizeList.appendChild( sizeItem );
+		}
 	}
 
 	return sizeList;
