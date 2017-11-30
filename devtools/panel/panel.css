@@ -92,8 +92,8 @@ ul.tree-list > li:first-child {
 
 ul.tree-list li.tree-time-diff {
 	background: url(img/vline.svg) repeat-y;
-	padding-top: 20px;
-	padding-bottom: 20px;
+	padding-top: 15px;
+	padding-bottom: 15px;
 	font-size: 110%;
 	font-style: italic;
 }
@@ -127,10 +127,14 @@ ul.tree-list li.tree-with-children:last-child {
 }
 
 .slot-options {
-	padding-left: 11px;
+	padding-left: 8px;
+	margin-top: -6px;
+}
+
+.tree-plus-sign--expanded ~ .slot-options {
 	background: url(img/vline.svg) repeat-y;
 	background-position: left 10px top;
-	padding-bottom: 7px;
+	padding-bottom: 5px;
 }
 
 .slot-options span {
@@ -143,10 +147,6 @@ ul.tree-list li.tree-with-children:last-child {
 .slot-options span:hover {
 	text-decoration: underline;
 	cursor: pointer;
-}
-
-li:last-of-type .slot-options {
-	background: none;
 }
 
 .issue-list {
