@@ -262,7 +262,7 @@ function generateRefreshInfo() {
 		slotCount = slots.length;
 
 		refreshListItem = document.createElement( 'li' );
-		refreshListItem.className = 'refresh-' + ( i + 1 );
+		refreshListItem.id = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
 		// Unicode for mdash html entity.
