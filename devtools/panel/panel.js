@@ -284,7 +284,7 @@ function generateRefreshInfo() {
 		refreshSlotList = document.createElement( 'ul' );
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
-			refreshSlotList.appendChild( buildSlotListItem( slots[ s ], 'refresh-' + ( i + 1 ) ) );
+			refreshSlotList.appendChild( buildSlotListItem( slots[ s ], 'refresh-' + ( i + 1 ), i ) );
 		}
 		refreshListItem.appendChild( refreshSlotList );
 
@@ -296,7 +296,7 @@ function generateRefreshInfo() {
 	return toReturn;
 }
 
-function buildSlotListItem( slot, parentListName ) {
+function buildSlotListItem( slot, parentListName, refreshIndex ) {
 	var text;
 
 	var slotListItem = document.createElement( 'li' );
@@ -358,7 +358,7 @@ function buildSlotListItem( slot, parentListName ) {
 
 		previousRefreshes.appendChild( document.createTextNode( text ) );
 		previousRefreshes.appendChild(
-			buildRefreshResultList( slot.elementId )
+			buildRefreshResultList( slot.elementId, refreshIndex )
 		);
 		slotInfoList.appendChild( previousRefreshes );
 	}
@@ -413,7 +413,7 @@ function buildSlotListItem( slot, parentListName ) {
 	return slotListItem;
 }
 
-function buildRefreshResultList( slotId ) {
+function buildRefreshResultList( slotId, refreshIndex ) {
 	var item, text, detailList, detail;
 	var refreshResultList = document.createElement( 'ul' );
 
@@ -423,6 +423,9 @@ function buildRefreshResultList( slotId ) {
 	var refreshResults = adData.slots[ slotId ].refreshResults;
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
+		if ( 'undefined' !== typeof refreshIndex && i !== refreshIndex ) {
+			continue;
+		}
 		item = document.createElement( 'li' );
 		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
 			( refreshResults[ i ].overallRefreshIndex + 1 );
