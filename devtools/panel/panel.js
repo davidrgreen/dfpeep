@@ -412,7 +412,7 @@ function buildSlotListItem( slot, parentListName, refreshIndex ) {
 }
 
 function buildRefreshResultList( slotId, refreshIndex ) {
-	var item, text, detailList, detail;
+	var item, text, detailList, detail, ms, seconds;
 	var refreshResultList = document.createElement( 'ul' );
 
 	if ( ! adData.slots[ slotId ] ) {
@@ -437,9 +437,11 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			detailList.appendChild( detail );
 		} else {
 			if ( refreshResults[ i ].onloadTimestamp ) {
+				ms = refreshResults[ i ].onloadTimestamp -
+				refreshResults[ i ].renderEndedTimestamp;
+				seconds = Math.round( ms / 1000 * 100 ) / 100;
 				detail = document.createElement( 'li' );
-				text = 'Load time: ' + ( refreshResults[ i ].onloadTimestamp -
-					refreshResults[ i ].renderEndedTimestamp ) + 'ms';
+				text = 'Load time: ' + seconds + ' seconds (' + ms + 'ms)';
 				detail.appendChild( document.createTextNode( text ) );
 				detailList.appendChild( detail );
 			}
