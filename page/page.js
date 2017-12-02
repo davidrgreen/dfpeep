@@ -332,10 +332,7 @@ var DFPeep = ( function() {
 				timestamp: getTimestamp(),
 				slots: []
 			};
-			var slot,
-				targetingKeys,
-				i, length, t, tlength, slotElementId,
-				pageTarget;
+			var slot, i, length, slotElementId;
 
 			var slotsRefreshed = arguments[0];
 			if ( ! slotsRefreshed ) {
