@@ -311,8 +311,7 @@ function buildSlotListItem( slot, parentListName ) {
 	var plusSign = document.createElement( 'span' );
 	plusSign.className = 'tree-plus-sign';
 	slotListItem.appendChild( plusSign );
-	var slotName = document.createTextNode( 'Slot: ' + slot.elementId +
-		' \u2014 ' + slot.refreshedIndexes.length + ' fetches' );
+	var slotName = document.createTextNode( 'Slot: ' + slot.elementId );
 	slotListItem.appendChild( slotName );
 
 	var slotOptions = document.createElement( 'div' );
