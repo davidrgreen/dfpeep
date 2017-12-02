@@ -145,8 +145,8 @@ var DFPeep = ( function() {
 				};
 			}
 			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
-				var copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
-				adData.refreshes[0].slots.push( copyOfSlotData );
+				// var copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
+				adData.refreshes[0].slots.push( elementId );
 				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
 			}
 		}
@@ -177,7 +177,7 @@ var DFPeep = ( function() {
 
 	var processSlotRenderEnded = function( event ) {
 		var updateRefresh = 0,
-			toSend, whichRefresh, newTimestamp, copyOfSlotData;
+			toSend, whichRefresh, newTimestamp;
 		var elementId = event.slot.getSlotElementId();
 		if ( ! elementId ) {
 			return;
@@ -218,8 +218,8 @@ var DFPeep = ( function() {
 			setCurrentTargeting( event.slot, elementId );
 
 			if ( 0 === adData.refreshes[0].slots.length ) {
-				copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
-				adData.refreshes[0].slots.push( copyOfSlotData );
+				// copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
+				adData.refreshes[0].slots.push( elementId );
 				updateRefresh = 1;
 			}
 			var slotNotInRefresh = 1;
@@ -229,8 +229,8 @@ var DFPeep = ( function() {
 				}
 			}
 			if ( slotNotInRefresh ) {
-				copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
-				adData.refreshes[0].slots.push( copyOfSlotData );
+				// copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
+				adData.refreshes[0].slots.push( elementId );
 				updateRefresh = 1;
 			}
 		}
@@ -261,7 +261,7 @@ var DFPeep = ( function() {
 			// to pass the info along to the panel.
 			toSend = {
 				index: 0,
-				slot: adData.slots[ elementId ],
+				slot: elementId,
 				timestamp: adData.refreshes[0].timestamp
 			};
 			sendDataToDevTools( 'GPTRefreshUpdate', toSend );
@@ -330,12 +330,13 @@ var DFPeep = ( function() {
 		googletag.pubads().refresh = function() {
 			var refreshData = {
 				timestamp: getTimestamp(),
-				slots: []
+				slotIds: []
 			};
 			var slot,
-				targetingKeys,
-				i, length, t, tlength, slotElementId,
-				pageTarget;
+				slotsData = [],
+				i,
+				length,
+				slotElementId;
 
 			var slotsRefreshed = arguments[0];
 			if ( ! slotsRefreshed ) {
@@ -366,9 +367,11 @@ var DFPeep = ( function() {
 					activeAdIds.push( slot.elementId );
 				}
 
-				refreshData.slots.push( slot );
+				slotsData.push( slot );
+				refreshData.slotIds.push( slot.elementId );
 			}
 			adData.refreshes.push( refreshData );
+			refreshData.slots = slotsData;
 			sendDataToDevTools( 'GPTRefresh', refreshData );
 			var result = oldVersion.apply( this, arguments );
 			return result;
