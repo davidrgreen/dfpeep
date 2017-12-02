@@ -57,9 +57,11 @@ function handleIncomingMessage( msg ) {
 					slotIds: msg.payload.data.slotIds
 				};
 				adData.refreshes.push( refreshData );
-				var slots = msg.payload.data.slots;
-				for ( var i = 0, length = slots.length; i < length; i++ ) {
-					updateSlotInfo( slots[ i ].elementId, slots[ i ] );
+				if ( msg.payload.data.slots ) {
+					var slots = msg.payload.data.slots;
+					for ( var i = 0, length = slots.length; i < length; i++ ) {
+						updateSlotInfo( slots[ i ].elementId, slots[ i ] );
+					}
 				}
 				maybeUpdateMenuText( 'refreshes' );
 				maybeUpdateMenuText( 'slots' );
@@ -72,10 +74,10 @@ function handleIncomingMessage( msg ) {
 						adData.refreshes[ msg.payload.data.index ] = {};
 					}
 					if ( msg.payload.data.slot ) {
-						if ( ! adData.refreshes[ msg.payload.data.index ].slots ) {
-							adData.refreshes[ msg.payload.data.index ].slots = [];
+						if ( ! adData.refreshes[ msg.payload.data.index ].slotIds ) {
+							adData.refreshes[ msg.payload.data.index ].slotIds = [];
 						}
-						adData.refreshes[ msg.payload.data.index ].slots.push( msg.payload.data.slot );
+						adData.refreshes[ msg.payload.data.index ].slotIds.push( msg.payload.data.slot );
 					}
 
 					if ( msg.payload.data.timestamp ) {
@@ -263,8 +265,8 @@ function generateRefreshInfo() {
 			);
 		}
 
-		slots = adData.refreshes[ i ].slots;
-		slotCount = slots.length;
+		slots = adData.refreshes[ i ].slotIds;
+		slotCount = slots ? slots.length : 0;
 
 		refreshListItem = document.createElement( 'li' );
 		refreshListItem.id = 'refresh-' + ( i + 1 );
@@ -289,7 +291,13 @@ function generateRefreshInfo() {
 		refreshSlotList = document.createElement( 'ul' );
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
-			refreshSlotList.appendChild( buildSlotListItem( slots[ s ], 'refresh-' + ( i + 1 ), i ) );
+			refreshSlotList.appendChild(
+				buildSlotListItem(
+					adData.slots[ slots[ s ] ],
+					'refresh-' + ( i + 1 ),
+					i
+				)
+			);
 		}
 		refreshListItem.appendChild( refreshSlotList );
 
@@ -426,7 +434,8 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 	var refreshResults = adData.slots[ slotId ].refreshResults;
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
-		if ( 'undefined' !== typeof refreshIndex && i !== refreshIndex ) {
+		if ( 'undefined' !== typeof refreshIndex &&
+				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
 			continue;
 		}
 		item = document.createElement( 'li' );
