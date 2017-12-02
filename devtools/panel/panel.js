@@ -28,7 +28,8 @@ var currentScreen,
 		disabledInitialLoad: [],
 		enabledSingleRequest: []
 	},
-	debug = 1;
+	debug = 1,
+	dash = '\u2014'; // Unicode value for an mdash.
 
 function handleIncomingMessage( msg ) {
 	var skipDetermineIssues = 0;
@@ -266,7 +267,7 @@ function generateRefreshInfo() {
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
 		// Unicode for mdash html entity.
-		text += ' \u2014 ';
+		text += ' ' + dash + ' ';
 
 		// Time since page load.
 		pageTimeDiffMs = adData.refreshes[ i ].timestamp - adData.pageLoadTimestamp;
@@ -1117,7 +1118,7 @@ function checkForDuplicateFetches() {
 
 		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingSlots[ d ].id + ' \u2014 ' +
+			text = offendingSlots[ d ].id + ' ' + dash + ' ' +
 				offendingSlots[ d ].count + ' fetches';
 			listItem.appendChild( document.createTextNode( text ) );
 			list.appendChild( listItem );
