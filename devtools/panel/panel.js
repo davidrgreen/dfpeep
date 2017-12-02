@@ -347,9 +347,7 @@ function buildSlotListItem( slot, parentListName, refreshIndex ) {
 					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
 				text = 'Fetches: 1';
 			} else {
-				text = 'Fetches: ' + slot.refreshedIndexes.length + ' of ' +
-					adData.slots[ slot.elementId ].refreshedIndexes.length +
-					' total.';
+				text = 'Fetches: ' + adData.slots[ slot.elementId ].refreshedIndexes.length;
 			}
 		} else {
 			text = 'Fetches: 0';
