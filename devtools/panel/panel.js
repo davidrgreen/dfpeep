@@ -52,7 +52,11 @@ function handleIncomingMessage( msg ) {
 				}
 				break;
 			case 'GPTRefresh':
-				adData.refreshes.push( msg.payload.data );
+				var refreshData = {
+					timestamp: msg.payload.data.timestamp,
+					slotIds: msg.payload.data.slotIds
+				};
+				adData.refreshes.push( refreshData );
 				var slots = msg.payload.data.slots;
 				for ( var i = 0, length = slots.length; i < length; i++ ) {
 					updateSlotInfo( slots[ i ].elementId, slots[ i ] );
