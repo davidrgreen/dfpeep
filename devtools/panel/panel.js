@@ -31,6 +31,14 @@ var currentScreen,
 	debug = 1,
 	dash = '\u2014'; // Unicode value for an mdash.
 
+/**
+ * Take action on messages passed in from the background page through
+ * devtools.js.
+ *
+ * @param {object} msg Message containing data or commands.
+ *
+ * @return {void}
+ */
 function handleIncomingMessage( msg ) {
 	var skipDetermineIssues = 0;
 	if ( debug ) {
@@ -257,6 +265,11 @@ function getMenuElement() {
 	return menuElement ? menuElement : document.getElementById( 'menu' );
 }
 
+/**
+ * Attach the event listeners for the menu.
+ *
+ * @return {void}
+ */
 function setupMenuEventListeners() {
 	menuElement = getMenuElement();
 	if ( ! menuElement ) {
@@ -272,10 +285,22 @@ function setupMenuEventListeners() {
 	} );
 }
 
+/**
+ * Fallback function. Converts JSON data to a string and outputs to the panel.
+ *
+ * @param {object} data JSON data to display on the screen.
+ *
+ * @return {void}
+ */
 function outputDataToScreen( data ) {
 	document.body.innerHTML += 'No incoming message handler for the following data:<br><br>' + JSON.stringify( data, null, 4 );
 }
 
+/**
+ * Generate a document fragment containing the refresh screen DOM nodes.
+ *
+ * @return {DocumentFragment} The DOM nodes for the refresh screen.
+ */
 function generateRefreshInfo() {
 	if ( ! adData || ! adData.refreshes ) {
 		var noRefreshes = document.createElement( 'p' );
@@ -310,7 +335,6 @@ function generateRefreshInfo() {
 		refreshListItem.id = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
-		// Unicode for mdash html entity.
 		text += ' ' + dash + ' ';
 
 		// Time since page load.
