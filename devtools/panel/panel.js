@@ -168,7 +168,9 @@ function maybeUpdateScreen( screen ) {
  */
 function maybeUpdateMenuText( item ) {
 	var toUpdate,
-		currentLength;
+		currentLength,
+		span,
+		newLabel;
 
 	if ( ! item || 'refreshes' === item ) {
 		currentLength = adData.refreshes.length;
@@ -176,7 +178,14 @@ function maybeUpdateMenuText( item ) {
 				UIState.refreshesShown !== currentLength ) {
 			UIState.refreshesShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#refreshes"]' );
-			toUpdate.innerText = 'Refreshes (' + currentLength + ')';
+			newLabel = document.createDocumentFragment();
+			newLabel.appendChild( document.createTextNode( 'Refreshes' ) );
+			span = document.createElement( 'span' );
+			span.className = 'notice notice--refreshes notice--new';
+			span.appendChild( document.createTextNode( currentLength ) );
+			newLabel.appendChild( span );
+			emptyElement( toUpdate );
+			toUpdate.appendChild( newLabel );
 		}
 	}
 
@@ -185,7 +194,14 @@ function maybeUpdateMenuText( item ) {
 		if ( ! UIState.slotsShown || UIState.slotsShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#slots"]' );
-			toUpdate.innerText = 'Slots (' + currentLength + ')';
+			newLabel = document.createDocumentFragment();
+			newLabel.appendChild( document.createTextNode( 'Slots' ) );
+			span = document.createElement( 'span' );
+			span.className = 'notice notice--slots notice--new';
+			span.appendChild( document.createTextNode( currentLength ) );
+			newLabel.appendChild( span );
+			emptyElement( toUpdate );
+			toUpdate.appendChild( newLabel );
 		}
 	}
 
@@ -196,7 +212,14 @@ function maybeUpdateMenuText( item ) {
 				UIState.issuesShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#issues"]' );
-			toUpdate.innerText = 'Issues (' + currentLength + ')';
+			newLabel = document.createDocumentFragment();
+			newLabel.appendChild( document.createTextNode( 'Issues' ) );
+			span = document.createElement( 'span' );
+			span.className = 'notice notice--issues notice--new';
+			span.appendChild( document.createTextNode( currentLength ) );
+			newLabel.appendChild( span );
+			emptyElement( toUpdate );
+			toUpdate.appendChild( newLabel );
 		}
 	}
 }
