@@ -215,7 +215,7 @@ h2 + p {
 	border-radius: 4px;
 }
 
-.refresh-label {
+h2.refresh-label {
 	font-size: 14px;
-	margin: 0 0 10px 0;
+	margin: 0 0 20px 0;
 }
