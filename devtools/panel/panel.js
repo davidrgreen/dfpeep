@@ -328,6 +328,7 @@ function generateRefreshInfo() {
 			);
 		}
 
+		console.log( adData.refreshes[ i ] );
 		slots = adData.refreshes[ i ].slotIds;
 		slotCount = slots ? slots.length : 0;
 
@@ -377,7 +378,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 	slotListItem.className = 'tree-with-children';
 
 	if ( refreshIndex ) {
-		slotListItem.id = 'refresh-' + ( i + 1 ) + '_' + slot.elementId;
+		slotListItem.id = 'refresh-' + ( refreshIndex + 1 ) + '_' + slot.elementId;
 	} else {
 		slotListItem.id = slot.elementId;
 	}
