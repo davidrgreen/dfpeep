@@ -86,17 +86,12 @@ ul.tree-list li {
 	line-height: 20px;
 }
 
-ul.tree-list li:last-child {
-}
-
-ul.tree-list > li:first-child {
-}
-
-ul.tree-list li.tree-time-diff {
-	padding-top: 15px;
-	padding-bottom: 15px;
+.tree-time-diff {
+	padding: 15px 10px;
+	margin-bottom: 10px;
 	font-size: 110%;
 	font-style: italic;
+	border-left: solid 2px lightgray;
 }
 
 ul.tree-list li.tree-with-children {
