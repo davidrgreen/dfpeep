@@ -136,6 +136,13 @@ function handleIncomingMessage( msg ) {
 	}
 }
 
+/**
+ * Update the screen if data came in that impacts the current screen.
+ *
+ * @param {string} screen Name of the screen that is impacted by recently
+ *                        updated data.
+ * @return {void}
+ */
 function maybeUpdateScreen( screen ) {
 	if ( screen !== currentScreen ) {
 		// Only update if data coming in is for the current screen.
@@ -144,6 +151,13 @@ function maybeUpdateScreen( screen ) {
 	changeScreen( screen );
 }
 
+/**
+ * Update the menu text links which can show counts, such as refresh count.
+ *
+ * @param {string} item Name of a menu item, corresponds to screen names.
+ *
+ * @return {void}
+ */
 function maybeUpdateMenuText( item ) {
 	var toUpdate,
 		currentLength;
@@ -179,6 +193,14 @@ function maybeUpdateMenuText( item ) {
 	}
 }
 
+/**
+ * Update the data stored for a slot with the data passed into this function.
+ *
+ * @param {string} name The name of a slot, corresponds to slot ID.
+ * @param {object} data The data to be used for the slot.
+ *
+ * @return {void}
+ */
 function updateSlotInfo( name, data ) {
 	if ( ! name || ! data ) {
 		return;
@@ -190,6 +212,17 @@ function updateSlotInfo( name, data ) {
 	adData.slots[ name ] = data;
 }
 
+/**
+ * Set variables to their default state.
+ *
+ * This needs to happen because a page refresh does not cause a refresh in the
+ * panel, so the panel's variables must be reset to keep from carrying over
+ * data from the previous page view.
+ *
+ * @param {object} data Optional. Data about the page at the time it was loaded.
+ *
+ * @return {void}
+ */
 function setupVariables( data ) {
 	UIState = {
 		refreshesShown: 0,
@@ -215,6 +248,11 @@ function setupVariables( data ) {
 	}
 }
 
+/**
+ * Get the menu's DOM node.
+ *
+ * @return {HTMLElement} The menu's DOM node.
+ */
 function getMenuElement() {
 	return menuElement ? menuElement : document.getElementById( 'menu' );
 }
