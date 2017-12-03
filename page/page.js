@@ -144,9 +144,9 @@ var DFPeep = ( function() {
 					slots: []
 				};
 			}
-			if ( -1 === adData.refreshes[0].slots.indexOf( adData.slots[ elementId ] ) ) {
+			if ( -1 === adData.refreshes[0].slotIds.indexOf( adData.slots[ elementId ] ) ) {
 				// var copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
-				adData.refreshes[0].slots.push( elementId );
+				adData.refreshes[0].slotIds.push( elementId );
 				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
 			}
 		}
@@ -211,26 +211,25 @@ var DFPeep = ( function() {
 
 				adData.refreshes[0] = {
 					timestamp: newTimestamp,
-					slots: []
+					slotIds: []
 				};
 			}
 
 			setCurrentTargeting( event.slot, elementId );
 
-			if ( 0 === adData.refreshes[0].slots.length ) {
+			if ( 0 === adData.refreshes[0].slotIds.length ) {
 				// copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
-				adData.refreshes[0].slots.push( elementId );
+				adData.refreshes[0].slotIds.push( elementId );
 				updateRefresh = 1;
 			}
 			var slotNotInRefresh = 1;
-			for ( var i = 0, length = adData.refreshes[0].slots.length; i < length; i++ ) {
-				if ( adData.refreshes[0].slots[ i ].elementId === elementId ) {
+			for ( var i = 0, length = adData.refreshes[0].slotIds.length; i < length; i++ ) {
+				if ( adData.refreshes[0].slotIds[ i ].elementId === elementId ) {
 					slotNotInRefresh = 0;
 				}
 			}
 			if ( slotNotInRefresh ) {
-				// copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
-				adData.refreshes[0].slots.push( elementId );
+				adData.refreshes[0].slotIds.push( elementId );
 				updateRefresh = 1;
 			}
 		}
