@@ -349,6 +349,7 @@ function generateRefreshesScreen() {
 		// Might should change to since GPT loaded.
 		text += ' after page load.';
 		refreshLabel.appendChild( document.createTextNode( text ) );
+		refreshLabel.className = 'refresh-label';
 		refreshListItem.appendChild( refreshLabel );
 
 		refreshSlotList = document.createDocumentFragment();
