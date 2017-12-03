@@ -66,6 +66,7 @@ ul {
 }
 
 #menu .notice {
+	pointer-events: none;
 	position: relative;
 	top: 0;
 	display: inline-block;
