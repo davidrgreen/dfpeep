@@ -170,6 +170,7 @@ function maybeUpdateMenuText( item ) {
 	var toUpdate,
 		currentLength,
 		span,
+		text,
 		newLabel;
 
 	if ( ! item || 'refreshes' === item ) {
@@ -179,11 +180,15 @@ function maybeUpdateMenuText( item ) {
 			UIState.refreshesShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#refreshes"]' );
 			newLabel = document.createDocumentFragment();
-			newLabel.appendChild( document.createTextNode( 'Refreshes' ) );
 			span = document.createElement( 'span' );
-			span.className = 'notice notice--refreshes notice--new';
+			span.className = 'notice notice--refreshes';
+			if ( currentLength > 0 ) {
+				span.className += ' notice--new';
+			}
 			span.appendChild( document.createTextNode( currentLength ) );
 			newLabel.appendChild( span );
+			text = currentLength > 1 ? 'Refreshes' : 'Refresh';
+			newLabel.appendChild( document.createTextNode( text ) );
 			emptyElement( toUpdate );
 			toUpdate.appendChild( newLabel );
 		}
@@ -195,29 +200,41 @@ function maybeUpdateMenuText( item ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#slots"]' );
 			newLabel = document.createDocumentFragment();
-			newLabel.appendChild( document.createTextNode( 'Slots' ) );
 			span = document.createElement( 'span' );
-			span.className = 'notice notice--slots notice--new';
+			span.className = 'notice notice--slots';
+			if ( currentLength > 0 ) {
+				span.className += ' notice--new';
+			}
 			span.appendChild( document.createTextNode( currentLength ) );
 			newLabel.appendChild( span );
+			text = currentLength > 1 ? 'Slots' : 'slot';
+			newLabel.appendChild( document.createTextNode( text ) );
 			emptyElement( toUpdate );
 			toUpdate.appendChild( newLabel );
 		}
 	}
 
 	if ( ! item || 'issues' === item ) {
-		currentLength = Object.keys( issues.warnings ).length +
-			Object.keys( issues.errors ).length;
+		var warningsLength = Object.keys( issues.warnings ).length,
+			errorsLength = Object.keys( issues.errors ).length;
+		currentLength = warningsLength + errorsLength;
 		if ( ! UIState.issuesShown ||
 				UIState.issuesShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#issues"]' );
 			newLabel = document.createDocumentFragment();
-			newLabel.appendChild( document.createTextNode( 'Issues' ) );
 			span = document.createElement( 'span' );
-			span.className = 'notice notice--issues notice--new';
+			span.className = 'notice notice--issues';
+			if ( currentLength > 0 ) {
+				span.className += ' notice--new';
+			}
+			if ( errorsLength > 0 ) {
+				span.className += ' notice--error';
+			}
 			span.appendChild( document.createTextNode( currentLength ) );
 			newLabel.appendChild( span );
+			text = currentLength > 1 ? 'Issues' : 'Issue';
+			newLabel.appendChild( document.createTextNode( text ) );
 			emptyElement( toUpdate );
 			toUpdate.appendChild( newLabel );
 		}
@@ -1059,6 +1076,13 @@ function changeSelectedMenuItem( menuItem ) {
 
 	var newlySelected = menuElement.querySelector( 'a[href="#' + menuItem + '"]' );
 	newlySelected.classList.add( 'selected' );
+
+	var notice = newlySelected.querySelector( '.notice' );
+	if ( notice ) {
+		if ( notice.classList.contains( 'notice--new' ) ) {
+			notice.classList.remove( 'notice--new' );
+		}
+	}
 }
 
 /**
