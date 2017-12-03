@@ -55,6 +55,7 @@ ul {
 	text-align: center;
 	letter-spacing: 0.01rem;
 	color: #FFF;
+	transition: background-color 120ms ease-in-out;
 }
 
 #menu a:hover {
