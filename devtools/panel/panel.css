@@ -29,28 +29,32 @@ ul {
 
 #menu li {
 	display: inline-block;
-	padding: 0 12px 0 0;
-	margin: 0 8px 11px 0;
+	padding: 0;
+	margin: 0 0 11px 0;
 	border-right: solid 1px #ccc;
 	line-height: 21px;
 }
 
-#menu li:first-of-type {
-	padding-left: 0;
+#menu li:first-of-type a {
+	border-radius: 6px 0 0 6px;
 }
 
 #menu li:last-of-type {
 	border-right: none;
-	padding-right: 0;
+}
+
+#menu li:last-of-type a {
+	border-radius: 0 6px 6px 0;
 }
 
 #menu a {
 	display: inline-block;
-	padding: 12px;
-	background-color: light;
+	padding: 6px 12px;
+	background-color: lightseagreen;
 	text-decoration: none;
 	text-align: center;
 	letter-spacing: 0.01rem;
+	color: #FFF;
 }
 
 #menu a:hover {
@@ -58,7 +62,7 @@ ul {
 }
 
 #menu a.selected {
-	text-decoration: underline;
+	background-color: #23c1b8
 }
 
 #content li {
