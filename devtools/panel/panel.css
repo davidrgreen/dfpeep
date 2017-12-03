@@ -215,6 +215,10 @@ h2 + p {
 	border-radius: 4px;
 }
 
+.refresh-item.card {
+	background-color: #f6f2f2;
+}
+
 h2.refresh-label {
 	font-size: 14px;
 	margin: 0 0 20px 0;
