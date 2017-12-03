@@ -301,7 +301,7 @@ function outputDataToScreen( data ) {
  *
  * @return {DocumentFragment} The DOM nodes for the refresh screen.
  */
-function generateRefreshInfo() {
+function generateRefreshesScreen() {
 	if ( ! adData || ! adData.refreshes ) {
 		var noRefreshes = document.createElement( 'p' );
 		var explanation = document.createTextNode( 'No ad refreshes yet.' );
@@ -371,6 +371,15 @@ function generateRefreshInfo() {
 	return toReturn;
 }
 
+/**
+ * Build the LI node representing a slot's data.
+ *
+ * @param {object} slot         A slot's data.
+ * @param {number} refreshIndex Optional. Index of the refreshes array that
+ *                              this slot is being displayed for.
+ *
+ * @return {HTMLElement} LI element containing the slot's data.
+ */
 function buildSlotListItem( slot, refreshIndex ) {
 	var text;
 
@@ -427,7 +436,6 @@ function buildSlotListItem( slot, refreshIndex ) {
 		} else {
 			text = 'Fetches: 0';
 		}
-
 
 		previousRefreshes.appendChild( document.createTextNode( text ) );
 		previousRefreshes.appendChild(
@@ -486,6 +494,15 @@ function buildSlotListItem( slot, refreshIndex ) {
 	return slotListItem;
 }
 
+/**
+ * Build the UL node representing the results of a slot's refreshes.
+ *
+ * @param {string} slotId       The slot's element ID.
+ * @param {number} refreshIndex Optional. Index of the refreshes array that
+ *                              this slot is being displayed for.
+ *
+ * @return {HTMLElement} UL element containing the slot's refresh results.
+ */
 function buildRefreshResultList( slotId, refreshIndex ) {
 	var item, text, detailList, detail, ms, seconds;
 	var refreshResultList = document.createElement( 'ul' );
@@ -591,6 +608,14 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 	return refreshResultList;
 }
 
+/**
+ * Build the LI node showing the time that passed between refreshes.
+ *
+ * @param {array}  refreshes Refreshes data,
+ * @param {number} i         Index of the current refresh.
+ *
+ * @return {HTMLElement} LI element showing the time between refreshes.
+ */
 function buildTimeIntervalListItem( refreshes, i ) {
 	var timeDiffMs, timeDiffSecs, timeDiffText, timeListItem;
 
@@ -614,6 +639,10 @@ function buildTimeIntervalListItem( refreshes, i ) {
 
 /**
  * Build a nested list from targeting data passed into it.
+ *
+ * @param {object} targets Key-value targeting data.
+ *
+ * @return {HTMLElement} UL element listing key-value targets.
  */
 function buildKeyTargetingList( targets ) {
 	var targetingList = document.createElement( 'ul' ),
@@ -653,6 +682,14 @@ function buildKeyTargetingList( targets ) {
 	return targetingList;
 }
 
+/**
+ * Build an UL list containing the sizes an ad will use if no sizeMapping is
+ * set.
+ *
+ * @param {array} sizes List of sizes.
+ *
+ * @return {HTMLElement} UL element listing the sizes.
+ */
 function buildFallbackSizeList( sizes ) {
 	var sizeList = document.createElement( 'ul' ),
 		sizeItem, size;
@@ -682,6 +719,14 @@ function buildFallbackSizeList( sizes ) {
 	return sizeList;
 }
 
+/**
+ * Build the string representation of a sizing pair.
+ *
+ * @param {number} first  First size.
+ * @param {number} second Second size.
+ *
+ * @param {string} String representation of the sizing pair.
+ */
 function buildSizePairText( first, second ) {
 	if ( ! first ) {
 		return 'No size. Do not show ad.';
@@ -690,6 +735,13 @@ function buildSizePairText( first, second ) {
 	}
 }
 
+/**
+ * Build an UL list containing the size mapping set for a slot.
+ *
+ * @param {array} sizes List of sizes. Very deeply nested.
+ *
+ * @return {HTMLElement} UL element listing the sizes.
+ */
 function buildSizeMappingList( sizeMapping ) {
 	var screenSizeList = document.createElement( 'ul' ),
 		screenSizeItem, screenSize, adSize, adSizeList, adSizeItem;
@@ -727,7 +779,12 @@ function buildSizeMappingList( sizeMapping ) {
 	return screenSizeList;
 }
 
-function generateSlotInfo() {
+/**
+ * Generate a document fragment containing the slots screen DOM nodes.
+ *
+ * @return {DocumentFragment} The DOM nodes for the slots screen.
+ */
+function generateSlotsScreen() {
 	var toReturn = document.createDocumentFragment();
 
 	if ( ! adData || ! adData.slots || 0 === Object.keys( adData.slots ).length ) {
@@ -757,7 +814,12 @@ function generateSlotInfo() {
 	return toReturn;
 }
 
-function generateOverview() {
+/**
+ * Generate a document fragment containing the overview screen DOM nodes.
+ *
+ * @return {DocumentFragment} The DOM nodes for the overview screen.
+ */
+function generateOverviewScreen() {
 	var text, list, item;
 	var overview = document.createDocumentFragment();
 
@@ -823,6 +885,11 @@ function generateOverview() {
 	return overview;
 }
 
+/**
+ * Generate a document fragment containing the issues screen DOM nodes.
+ *
+ * @return {DocumentFragment} The DOM nodes for the issues screen.
+ */
 function generateIssuesScreen() {
 	var title, text, intro,
 		toReturn = document.createDocumentFragment(),
@@ -877,13 +944,22 @@ function generateIssuesScreen() {
 	return toReturn;
 }
 
-function buildIssueList( recs, type ) {
+/**
+ * Build an UL list representing the currently discovered issues.
+ *
+ * @param {object} issueData An object representing a subset of the data on
+ *                           the issues found.
+ * @param {string} type      The type of issue. warning or error.
+ *
+ * @return {HTMLElement} UL element listing the errors.
+ */
+function buildIssueList( issueData, type ) {
 	var listItem, title;
 	var list = document.createElement( 'ul' );
 	list.className = type + '-list issue-list';
 
-	for ( var rec in recs ) {
-		if ( ! recs.hasOwnProperty( rec ) ) {
+	for ( var issue in issueData ) {
+		if ( ! issueData.hasOwnProperty( issue ) ) {
 			continue;
 		}
 
@@ -891,35 +967,42 @@ function buildIssueList( recs, type ) {
 
 		title = document.createElement( 'h4' );
 		title.className = type + '-title issue-title';
-		title.appendChild( document.createTextNode( recs[ rec ].title ) );
+		title.appendChild( document.createTextNode( issueData[ issue ].title ) );
 		listItem.appendChild( title );
 
-		listItem.appendChild( recs[ rec ].description.cloneNode( true ) );
+		listItem.appendChild( issueData[ issue ].description.cloneNode( true ) );
 		list.appendChild( listItem );
 	}
 
 	return list;
 }
 
+/**
+ * Change the screen being displayed.
+ *
+ * @param {string} screen Name of the screen to show.
+ *
+ * @return {void}
+ */
 function changeScreen( screen ) {
 	var nextScreen = screen;
 	switch ( screen ) {
 		case 'init':
 			nextScreen = 'overview';
 			setupMenuEventListeners();
-			displayContent( generateOverview(), nextScreen );
+			displayContent( generateOverviewScreen(), nextScreen );
 			break;
 		case 'refreshes':
-			displayContent( generateRefreshInfo(), nextScreen );
+			displayContent( generateRefreshesScreen(), nextScreen );
 			break;
 		case 'slots':
-			displayContent( generateSlotInfo(), nextScreen );
+			displayContent( generateSlotsScreen(), nextScreen );
 			break;
 		case 'issues':
 			displayContent( generateIssuesScreen(), nextScreen );
 			break;
 		case 'overview':
-			displayContent( generateOverview(), nextScreen );
+			displayContent( generateOverviewScreen(), nextScreen );
 			break;
 		default:
 			changeScreen( 'overview' );
@@ -930,6 +1013,13 @@ function changeScreen( screen ) {
 	currentScreen = nextScreen;
 }
 
+/**
+ * Change the visual representation of which menu item is selected.
+ *
+ * @param {string} menuItem Name of the menu item.
+ *
+ * @return {void}
+ */
 function changeSelectedMenuItem( menuItem ) {
 	menuElement = getMenuElement();
 	if ( ! menuElement ) {
@@ -946,6 +1036,17 @@ function changeSelectedMenuItem( menuItem ) {
 	newlySelected.classList.add( 'selected' );
 }
 
+/**
+ * Display content within the content area.
+ *
+ * If this is outputting data for the same screen that is already being
+ * displayed then preserve expanded elements and make the screen update
+ * as smooth as possible.
+ *
+ * @param {DocumentFragment} content    The DOM nodes to insert into the content
+ *                                      element.
+ * @param {string}           nextScreen Name of screen being changed to.
+ */
 function displayContent( content, nextScreen ) {
 	var expandedElementIds;
 	if ( ! content ) {
@@ -970,6 +1071,14 @@ function displayContent( content, nextScreen ) {
 	contentElement.appendChild( content );
 }
 
+/**
+ * Get a list of DOM element IDs that represent expanded items within a tree
+ * list.
+ *
+ * @param {HTMLElement} content The content to search for expanded tree items.
+ *
+ * @return {array} List of element IDs.
+ */
 function getExpandedElementIds( content ) {
 	var expandedIds = [];
 	var expandedElements = content.querySelectorAll( '.tree-plus-sign--expanded' );
@@ -982,6 +1091,18 @@ function getExpandedElementIds( content ) {
 	return expandedIds;
 }
 
+/**
+ * Expand tree element list items within a piece of content.
+ *
+ * This is used on content being inserted into the panel so that the new content
+ * will preserve the expanded elements.
+ *
+ * @param {DocumentFragment} content            The content in which to
+ *                                              expand items.
+ * @param {array}            expandedElementIds The list of element ids.
+ *
+ * @return {void}
+ */
 function reExpandElements( content, expandedElementIds ) {
 	var element, plusSign, hidden;
 
@@ -1003,6 +1124,13 @@ function reExpandElements( content, expandedElementIds ) {
 	}
 }
 
+/**
+ * Initialize the content area.
+ *
+ * Adds event listeners and stored a reference to the content element.
+ *
+ * @return {void}
+ */
 function setupContentArea() {
 	contentElement = document.getElementById( 'content' );
 	if ( ! contentElement ) {
@@ -1038,26 +1166,47 @@ function setupContentArea() {
 	} );
 }
 
+/**
+ * Empty the children from a DOM element.
+ *
+ * @param {HTMLElement} element DOM element to have its children removed.
+ *
+ * @return {void}
+ */
 function emptyElement( element ) {
 	while ( element.firstChild ) {
 		element.removeChild( element.firstChild );
 	}
 }
 
-function makeCollapsible( dom, screen ) {
+/**
+ * For screens possibly having collapsible items, hide any children that should
+ * be collapsed.
+ *
+ * @param {HTMLElement} content DOM node holding the content.
+ * @param {string}      screen  Name of the screen being displayed.
+ *
+ * @return {void}
+ */
+function makeCollapsible( content, screen ) {
 	var exclude = [ 'issues' ];
 	if ( screen && -1 !== exclude.indexOf( screen ) ) {
 		return;
 	}
-	if ( ! dom ) {
-		dom = document;
+	if ( ! content ) {
+		content = document;
 	}
-	var listsToHide = dom.querySelectorAll( '.tree-with-children' );
+	var listsToHide = content.querySelectorAll( '.tree-with-children' );
 	for ( var i = 0, length = listsToHide.length; i < length; i++ ) {
 		listsToHide[ i ].querySelector( 'ul' ).classList.add( 'tree-hidden' );
 	}
 }
 
+/**
+ * Call all functions necessary for checking for ad implementation issues.
+ *
+ * @return {void}
+ */
 function determineIssues() {
 	checkForLateDisableInitialLoad();
 	checkForMoveAfterRender();
@@ -1067,6 +1216,12 @@ function determineIssues() {
 	maybeUpdateScreen( 'issues' );
 }
 
+/**
+ * Check to see if googletag.pubads().disableInitialLoad() was called
+ * after googletag.enableServices().
+ *
+ * @return {void}
+ */
 function checkForLateDisableInitialLoad() {
 	if ( issues.warnings.lateDisableInitialLoad ) {
 		return;
@@ -1089,6 +1244,12 @@ function checkForLateDisableInitialLoad() {
 	}
 }
 
+/**
+ * Check to see if googletag.pubads().enableSingleRequest() was called
+ * after googletag.enableServices().
+ *
+ * @return {void}
+ */
 function checkForLateEnableSingleRequest() {
 	if ( issues.errors.lateEnableSingleRequest ) {
 		return;
@@ -1111,6 +1272,12 @@ function checkForLateEnableSingleRequest() {
 	}
 }
 
+/**
+ * Check to see if a slot was moved within the DOM after the slot was fetched,
+ * causing the slot's iFrame to reload and no longer display the creative.
+ *
+ * @return {void}
+ */
 function checkForMoveAfterRender() {
 	var refreshResults, slot,
 		offendingSlots = [],
@@ -1167,6 +1334,11 @@ function checkForMoveAfterRender() {
 	}
 }
 
+/**
+ * Check to see if any slots have been fetched more than once.
+ *
+ * @return {void}
+ */
 function checkForDuplicateFetches() {
 	var slot, text,
 		offendingSlots = [],
@@ -1209,6 +1381,14 @@ function checkForDuplicateFetches() {
 	}
 }
 
+/**
+ * Create a document fragment representing a value and its label.
+ *
+ * @param {string}           label Label for the data.
+ * @param {DocumentFragment} value A document fragment containing the value.
+ *
+ * @return {DocumentFragment} The label-value document fragment.
+ */
 function createLabelAndValue( label, value ) {
 	var fragment = document.createDocumentFragment();
 	var labelElement = document.createElement( 'span' );
