@@ -332,7 +332,6 @@ function generateRefreshInfo() {
 			refreshSlotList.appendChild(
 				buildSlotListItem(
 					adData.slots[ slots[ s ] ],
-					'refresh-' + ( i + 1 ),
 					i
 				)
 			);
@@ -347,14 +346,14 @@ function generateRefreshInfo() {
 	return toReturn;
 }
 
-function buildSlotListItem( slot, parentListName, refreshIndex ) {
+function buildSlotListItem( slot, refreshIndex ) {
 	var text;
 
 	var slotListItem = document.createElement( 'li' );
 	slotListItem.className = 'tree-with-children';
 
-	if ( parentListName ) {
-		slotListItem.id = parentListName + '_' + slot.elementId;
+	if ( refreshIndex ) {
+		slotListItem.id = 'refresh-' + ( i + 1 ) + '_' + slot.elementId;
 	} else {
 		slotListItem.id = slot.elementId;
 	}
