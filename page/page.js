@@ -201,7 +201,6 @@ var DFPeep = ( function() {
 			if ( ! adData.slots[ elementId ].targeting ) {
 				adData.slots[ elementId ].targeting = {};
 			}
-			adData.slots[ elementId ].viewed.push( 0 );
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
 				if ( adData.enabledServices.length > 0 ) {
 					newTimestamp = adData.enabledServices[ 0 ];
@@ -254,6 +253,7 @@ var DFPeep = ( function() {
 			refresh.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
 			refresh.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
 		}
+		refresh.viewed = 0;
 
 		if ( updateRefresh ) {
 			// This was a refresh caused by initial load. Need
@@ -304,7 +304,7 @@ var DFPeep = ( function() {
 
 	var processImpressionViewable = function( viewed ) {
 		var slotName = viewed.slot.getSlotElementId();
-		adData.slots[ slotName ].viewed[ adData.slots[ slotName ].viewed.length - 1 ] = 1;
+		adData.slots[ slotName ].refreshResults[ adData.slots[ slotName ].refreshResults.length - 1 ].viewed = 1;
 		// TODO: Store creative viewable info.
 		sendSlotDataToDevTools( slotName, adData.slots[ slotName ] );
 	};
@@ -353,7 +353,6 @@ var DFPeep = ( function() {
 				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
 				slot.elementId = slotElementId;
 				slot.targeting = {};
-				slot.viewed.push( 0 );
 				// Use length here, no length-1, because this refresh's data
 				// has not been pushed to the adData.refreshes array yet.
 				slot.refreshedIndexes.push( adData.refreshes.length );
@@ -484,7 +483,6 @@ var DFPeep = ( function() {
 		adData.slots[ name ] = {
 			refreshedIndexes: [],
 			refreshResults: [],
-			viewed: [],
 			movedInDOM: [],
 			targeting: {}
 		};
