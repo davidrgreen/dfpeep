@@ -236,6 +236,10 @@ h2 + p {
 	border-radius: 4px;
 }
 
+.card .card {
+	width: 99.5%;
+}
+
 .refresh-item.card {
 	background-color: #f6f2f2;
 }
