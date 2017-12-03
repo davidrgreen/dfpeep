@@ -25,6 +25,7 @@ ul {
 #menu ul {
 	list-style: none;
 	padding: 0;
+	margin-bottom: 4px;
 }
 
 #menu li {
@@ -45,7 +46,7 @@ ul {
 	text-decoration: none;
 	text-align: center;
 	letter-spacing: 0.01rem;
-	color: #000;
+	color: dodgerblue;
 	transition: text-decoration 120ms ease-in-out;
 }
 
@@ -68,12 +69,12 @@ ul {
 	text-align: center;
 	border-radius: 4px;
 	margin-right: 3px;
-	background-color: rebeccapurple;
+	background-color: #74AAE9;
 	color: #FFF;
 }
 
 #menu .notice--new {
-	background-color: orange;
+	background-color: #EF0421;
 }
 
 #menu .notice--new.notice--error {
@@ -130,7 +131,7 @@ ul.tree-list li.tree-with-children:last-child {
 	margin: 0 6px 0 -3px;
 	width: 18px;
 	height: 24px;
-	background: url(img/egg-plus.svg);
+	background: url(img/egg-plus-blue.svg);
 	background-size: 18px 24px;
 	position: relative;
 	vertical-align: top;
@@ -141,7 +142,7 @@ ul ul .tree-plus-sign {
 }
 
 .tree-plus-sign.tree-plus-sign--expanded {
-	background-image: url(img/egg-minus.svg);
+	background-image: url(img/egg-minus-blue.svg);
 }
 
 .slot-options {
