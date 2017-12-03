@@ -313,10 +313,6 @@ function generateRefreshesScreen() {
 
 	var toReturn = document.createDocumentFragment();
 
-	var title = document.createElement( 'h2' );
-	title.appendChild( document.createTextNode( 'History of Refreshes:' ) );
-	toReturn.appendChild( title );
-
 	var refreshList = document.createDocumentFragment();
 
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
@@ -810,10 +806,6 @@ function generateSlotsScreen() {
 		return noSlots;
 	}
 
-	var title = document.createElement( 'h2' );
-	title.appendChild( document.createTextNode( 'Slots:' ) );
-	toReturn.appendChild( title );
-
 	var slotList = document.createElement( 'div' );
 	slotList.className = 'tree-list';
 
@@ -839,13 +831,7 @@ function generateOverviewScreen() {
 	var text, list, item;
 	var overview = document.createDocumentFragment();
 
-	var title = document.createElement( 'h2' );
-	text = 'Overview';
-	title.appendChild( document.createTextNode( text ) );
-	overview.appendChild( title );
-
 	if ( ! adData ) {
-
 		return overview;
 	}
 
