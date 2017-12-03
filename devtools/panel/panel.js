@@ -489,6 +489,12 @@ function buildSlotListItem( slot, refreshIndex ) {
 	collapseDiv.appendChild( document.createTextNode( text ) );
 	slotInfoList.appendChild( collapseDiv );
 
+	if ( slot.outOfPage ) {
+		var outOfPage = document.createElement( 'li' );
+		outOfPage.appendChild( document.createTextNode( 'Out of Page slot' ) );
+		slotInfoList.appendChild( outOfPage );
+	}
+
 	slotListItem.appendChild( slotInfoList );
 
 	return slotListItem;
