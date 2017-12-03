@@ -546,6 +546,11 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			}
 
 			detail = document.createElement( 'li' );
+			text = 'Viewed: ' + ( refreshResults[ i ].viewed ? 'Yes' : 'No' );
+			detail.appendChild( document.createTextNode( text ) );
+			detailList.appendChild( detail );
+
+			detail = document.createElement( 'li' );
 			text = 'Creative ID: ' + refreshResults[ i ].creativeId;
 			detail.appendChild( document.createTextNode( text ) );
 			detailList.appendChild( detail );
@@ -590,7 +595,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			}
 
 			detail = document.createElement( 'li' );
-			text = 'Backfill? ' + ( refreshResults[ i ].isBackfill ? 'Yes' : 'No' );
+			text = 'Backfill: ' + ( refreshResults[ i ].isBackfill ? 'Yes' : 'No' );
 			detail.appendChild( document.createTextNode( text ) );
 			detailList.appendChild( detail );
 
