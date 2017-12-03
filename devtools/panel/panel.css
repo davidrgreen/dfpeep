@@ -64,10 +64,11 @@ ul {
 	line-height: 23px;
 }
 
+.
+
 ul.tree-list,
 .tree-list ul {
 	list-style-type: none;
-	background: url(img/vline.svg) repeat-y;
 	margin: 0;
 	padding: 0;
 }
@@ -80,21 +81,15 @@ ul.tree-list li {
 	margin: 0 0 3px;
 	padding: 0 12px;
 	line-height: 20px;
-	background: url(img/node.svg) no-repeat;
-	background-position: top left -1px;
 }
 
 ul.tree-list li:last-child {
-	background: #fff url(img/lastnode.svg) no-repeat;
-	background-position: left top -17px;
 }
 
 ul.tree-list > li:first-child {
-	background: url(img/topnode.svg) no-repeat !important;
 }
 
 ul.tree-list li.tree-time-diff {
-	background: url(img/vline.svg) repeat-y;
 	padding-top: 15px;
 	padding-bottom: 15px;
 	font-size: 110%;
@@ -102,11 +97,9 @@ ul.tree-list li.tree-time-diff {
 }
 
 ul.tree-list li.tree-with-children {
-	background-position: -1px 7px;
 }
 
 ul.tree-list li.tree-with-children:last-child {
-	background-position: left top -10px;
 }
 
 .tree-hidden {
@@ -139,13 +132,10 @@ ul ul .tree-plus-sign {
 }
 
 .tree-plus-sign--expanded ~ .slot-options {
-	background: url(img/vline.svg) repeat-y;
-	background-position: left 10px top;
 	padding-bottom: 5px;
 }
 
 ul ul .tree-plus-sign--expanded ~ .slot-options {
-		background-position: left 9.5px top;
 }
 
 .slot-options span {
