@@ -44,12 +44,16 @@ ul {
 }
 
 #menu a {
-	padding: 2px 5px;
+	display: inline-block;
+	padding: 12px;
+	background-color: light;
 	text-decoration: none;
+	text-align: center;
+	letter-spacing: 0.01rem;
 }
 
 #menu a:hover {
-	text-decoration: underline;
+	background-color: #dd7777;
 }
 
 #menu a.selected {
