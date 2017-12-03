@@ -117,8 +117,14 @@ ul.tree-list li.tree-with-children {
 ul.tree-list li.tree-with-children:last-child {
 }
 
-.tree-hidden {
-	display: none;
+.tree-with-children ul {
+	transition: max-height 390ms ease-in-out;
+	overflow: hidden;
+	max-height: 1000px;
+}
+.tree-with-children ul.tree-hidden {
+	max-height: 0;
+	margin-bottom: -10px;
 }
 
 .tree-plus-sign {
@@ -147,7 +153,7 @@ ul ul .tree-plus-sign {
 }
 
 .tree-plus-sign--expanded ~ .slot-options {
-	padding-bottom: 5px;
+	/* padding-bottom: 5px; */
 }
 
 ul ul .tree-plus-sign--expanded ~ .slot-options {
