@@ -317,8 +317,7 @@ function generateRefreshesScreen() {
 	title.appendChild( document.createTextNode( 'History of Refreshes:' ) );
 	toReturn.appendChild( title );
 
-	var refreshList = document.createElement( 'ul' );
-	refreshList.className = 'tree-list refresh-list';
+	var refreshList = document.createDocumentFragment();
 
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 
@@ -332,7 +331,8 @@ function generateRefreshesScreen() {
 		slots = adData.refreshes[ i ].slotIds;
 		slotCount = slots ? slots.length : 0;
 
-		refreshListItem = document.createElement( 'li' );
+		refreshListItem = document.createElement( 'div' );
+		refreshListItem.className = 'refresh-item card';
 		refreshListItem.id = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'b' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
@@ -351,7 +351,7 @@ function generateRefreshesScreen() {
 		refreshLabel.appendChild( document.createTextNode( text ) );
 		refreshListItem.appendChild( refreshLabel );
 
-		refreshSlotList = document.createElement( 'ul' );
+		refreshSlotList = document.createDocumentFragment();
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
 			refreshSlotList.appendChild(
@@ -383,8 +383,8 @@ function generateRefreshesScreen() {
 function buildSlotListItem( slot, refreshIndex ) {
 	var text;
 
-	var slotListItem = document.createElement( 'li' );
-	slotListItem.className = 'tree-with-children';
+	var slotListItem = document.createElement( 'div' );
+	slotListItem.className = 'tree-with-children card';
 
 	if ( refreshIndex ) {
 		slotListItem.id = 'refresh-' + ( refreshIndex + 1 ) + '_' + slot.elementId;
@@ -511,6 +511,8 @@ function buildSlotListItem( slot, refreshIndex ) {
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
 	var item, text, detailList, detail, ms, seconds;
+	var card = document.createElement( 'div' );
+	card.className = 'card';
 	var refreshResultList = document.createElement( 'ul' );
 
 	if ( ! adData.slots[ slotId ] ) {
@@ -616,7 +618,9 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		refreshResultList.appendChild( item );
 	}
 
-	return refreshResultList;
+	card.appendChild( refreshResultList );
+
+	return card;
 }
 
 /**
@@ -641,7 +645,7 @@ function buildTimeIntervalListItem( refreshes, i ) {
 
 	timeDiffText += ' passed';
 
-	timeListItem = document.createElement( 'li' );
+	timeListItem = document.createElement( 'div' );
 	timeListItem.className = 'tree-time-diff';
 	timeListItem.appendChild( document.createTextNode( timeDiffText ) );
 
@@ -809,7 +813,7 @@ function generateSlotsScreen() {
 	title.appendChild( document.createTextNode( 'Slots:' ) );
 	toReturn.appendChild( title );
 
-	var slotList = document.createElement( 'ul' );
+	var slotList = document.createElement( 'div' );
 	slotList.className = 'tree-list';
 
 	var slotNames = Object.keys( adData.slots ).sort();
