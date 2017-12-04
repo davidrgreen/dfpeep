@@ -1322,6 +1322,7 @@ function determineIssues() {
 	checkForLateEnableSingleRequest();
 	checkForDuplicateFetches();
 	checkForCreativesWiderThanViewport();
+	checkForDefinedNoFetch();
 }
 
 /**
@@ -1515,6 +1516,56 @@ function checkForDuplicateFetches() {
 		};
 
 		return fragment;
+	}
+}
+
+/**
+ * Check for slots that were defined but never fetched.
+ *
+ * @return {void}
+ */
+function checkForDefinedNoFetch() {
+	if ( 0 === adData.refreshes.length ) {
+		return;
+	}
+
+	var slot, text,
+		offendingSlots = [],
+		slotNames = Object.keys( adData.slots ).sort();
+
+	for ( var i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		if ( ! Array.isArray( slot.refreshedIndexes ) ||
+				0 === slot.refreshedIndexes.length ) {
+			offendingSlots.push( slotNames[ i ] );
+		}
+	}
+
+	if ( offendingSlots.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following slots have been defined but not fetched. This may be normal in cases such as lazy loading the slots further down the page, but this should be confirmed.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			listItem.appendChild( document.createTextNode( offendingSlots[ d ] ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		issues.warnings.definedNoFetch = {
+			title: 'Slots Defined But Not Yet Fetched',
+			description: fragment
+		};
+
+		return fragment;
+	} else if ( issues.warnings.definedNoFetch ) {
+		delete issues.warnings.definedNoFetch;
 	}
 }
 
