@@ -496,7 +496,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 	if ( slot.fallbackSize ) {
 		var fallbackSizes = document.createElement( 'li' );
 		labelValue = createLabelAndValue(
-			'Default sizes:',
+			'Default Sizes:',
 			buildFallbackSizeList( slot.fallbackSize )
 		);
 		fallbackSizes.appendChild( labelValue );
@@ -900,7 +900,8 @@ function generateSlotsScreen() {
  */
 function generateOverviewScreen() {
 	var text, list, item;
-	var overview = document.createDocumentFragment();
+	var overview = document.createElement( 'div' );
+	overview.className = 'card';
 
 	if ( ! adData ) {
 		return overview;
