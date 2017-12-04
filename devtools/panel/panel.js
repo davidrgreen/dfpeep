@@ -547,26 +547,28 @@ function buildSlotListItem( slot, refreshIndex ) {
  * @return {HTMLElement} UL element containing the slot's refresh results.
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
-	var item, text, detailList, detail, ms, seconds;
-	var card = document.createElement( 'div' );
-	card.className = 'card';
-	var refreshResultList = document.createElement( 'ul' );
+	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment;
 
 	if ( ! adData.slots[ slotId ] ) {
-		return refreshResultList;
+		return document.createElement( 'div' );
 	}
 	var refreshResults = adData.slots[ slotId ].refreshResults;
+
+	fragment = document.createDocumentFragment();
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
 		if ( 'undefined' !== typeof refreshIndex &&
 				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
 			continue;
 		}
+		card = document.createElement( 'div' );
+		card.className = 'card';
+		refreshResultList = document.createElement( 'ul' );
 		item = document.createElement( 'li' );
 		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
 			( refreshResults[ i ].overallRefreshIndex + 1 );
-		item.appendChild( document.createTextNode( text ) );
-		detailList = document.createElement( 'ul' );
+		card.appendChild( document.createTextNode( text ) );
+		detailList = document.createDocumentFragment();
 
 		if ( refreshResults[ i ].isEmpty ) {
 			detail = document.createElement( 'li' );
@@ -653,11 +655,12 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 
 		item.appendChild( detailList );
 		refreshResultList.appendChild( item );
+		card.appendChild( refreshResultList );
+		fragment.appendChild( card );
 	}
 
-	card.appendChild( refreshResultList );
 
-	return card;
+	return fragment;
 }
 
 /**
