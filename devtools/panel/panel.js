@@ -567,7 +567,8 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
 		if ( 'undefined' !== typeof refreshIndex &&
-				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+			refreshResults[ i ].overallRefreshIndex &&
+			refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
 			continue;
 		}
 		card = document.createElement( 'div' );
