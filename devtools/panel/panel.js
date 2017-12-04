@@ -1325,6 +1325,7 @@ function determineIssues() {
 	checkForCreativesWiderThanViewport();
 	checkForDefinedNoFetch();
 	checkForRefreshOfNonViewedAd();
+	checkForFetchTooQuickly();
 }
 
 /**
@@ -1649,7 +1650,8 @@ function checkForRefreshOfNonViewedAd() {
 			continue;
 		}
 		for ( r = 1, rlength = slot.refreshResults.length; r < rlength; r++ ) {
-			if ( ! slot.refreshResults[ r - 1 ].viewed ) {
+			if ( ! slot.refreshResults[ r - 1 ] ||
+					! slot.refreshResults[ r - 1 ].viewed ) {
 				if ( ! offendingSlots[ slotNames[ i ] ] ) {
 					offendingSlots[ slotNames[ i ] ] = { refreshes: [] };
 				}
@@ -1691,6 +1693,70 @@ function checkForRefreshOfNonViewedAd() {
 
 		issues.warnings.nonViewedRefresh = {
 			title: 'Refresh of Non-Viewed Slots',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+/**
+ * Check to see if a slot was fetched too soon after its previous fetch.
+ *
+ * @return {void}
+ */
+function checkForFetchTooQuickly() {
+	var slot, text, i, length, r, rlength,
+		offendingSlots = {},
+		slotNames = Object.keys( adData.slots ).sort();
+
+	for ( i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		if ( ! Array.isArray( slot.refreshedIndexes ) ||
+				slot.refreshedIndexes.length < 2 ) {
+			continue;
+		}
+		for ( r = 1, rlength = slot.refreshedIndexes.length; r < rlength; r++ ) {
+
+			if ( ! adData.refreshes[ slot.refreshedIndexes[ r - 1 ] ] ||
+					! adData.refreshes[ slot.refreshedIndexes[ r - 1 ] ].timestamp ||
+					! adData.refreshes[ slot.refreshedIndexes[ r ] ] ||
+					! adData.refreshes[ slot.refreshedIndexes[ r ] ] ) {
+				continue;
+			}
+
+			if ( adData.refreshes[ slot.refreshedIndexes[ r ] ].timestamp - adData.refreshes[ slot.refreshedIndexes[ r - 1 ] ].timestamp < 10000 ) {
+				if ( ! offendingSlots[ slotNames[ i ] ] ) {
+					offendingSlots[ slotNames[ i ] ] = { refreshes: [] };
+				}
+				offendingSlots[ slotNames[ i ] ].refreshes.push( r + 1 );
+			}
+		}
+	}
+
+	var offendingNames = Object.keys( offendingSlots ).sort();
+
+	if ( offendingNames.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following slots were fetched less than 10 seconds after their previous fetch. This is typically seen as too fast, so you should confirm this was intentional.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			text = offendingNames[ d ] + ' during following fetches: ' +
+			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			listItem.appendChild( document.createTextNode( text ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		issues.warnings.fetchedSlotsTooQuickly = {
+			title: 'Fetched Slots too Quickly',
 			description: fragment
 		};
 
