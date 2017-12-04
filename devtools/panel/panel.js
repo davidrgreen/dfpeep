@@ -106,7 +106,7 @@ function handleIncomingMessage( msg ) {
 				break;
 			case 'GPTCollapseEmptyDivs':
 				if ( msg.payload.data.collapsed ) {
-					adData.collapseEmptyDivs = msg.payload.data.collapse;
+					adData.collapseEmptyDivs = msg.payload.data.collapsed;
 					maybeUpdateScreen( 'overview' );
 					maybeUpdateScreen( 'issues' );
 				}
@@ -1390,7 +1390,8 @@ function checkForLateCollapseEmptyDivs() {
 		return;
 	}
 
-	if ( 0 === adData.collapseEmptyDivs.timestamp.length ||
+	if ( ! adData.collapseEmptyDivs.timestamp ||
+			0 === adData.collapseEmptyDivs.timestamp.length ||
 			0 === adData.enabledServices.length ) {
 		return;
 	}
