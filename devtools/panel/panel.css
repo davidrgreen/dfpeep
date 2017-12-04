@@ -202,23 +202,25 @@ ul ul .tree-plus-sign--expanded ~ .slot-options {
 	margin-bottom: 5px;
 }
 
-.error-list > li {
+.issue-title {
+	margin: 0 0 2px;
+	padding-top: 14px;
+	padding-left: 28px;
+	min-height: 31px;
+}
+
+.error-list .issue-title {
 	background: url(img/egg-error.svg) no-repeat top left;
 	background-size: 23px 31px;
 }
 
-.warning-list > li {
+.warning-list .issue-title {
 	background: url(img/egg-warning.svg) no-repeat top left;
 	background-size: 23px 31px;
 }
 
 .issue-list p {
 	line-height: 19px;
-}
-
-.issue-title {
-	margin: 0;
-	padding-top: 0;
 }
 
 .issue-title + p {

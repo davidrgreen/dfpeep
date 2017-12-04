@@ -1041,7 +1041,7 @@ function generateIssuesScreen() {
  */
 function buildIssueList( issueData, type ) {
 	var listItem, title;
-	var list = document.createElement( 'ul' );
+	var list = document.createElement( 'div' );
 	list.className = type + '-list issue-list';
 
 	for ( var issue in issueData ) {
@@ -1049,7 +1049,8 @@ function buildIssueList( issueData, type ) {
 			continue;
 		}
 
-		listItem = document.createElement( 'li' );
+		listItem = document.createElement( 'div' );
+		listItem.className = 'card';
 
 		title = document.createElement( 'h4' );
 		title.className = type + '-title issue-title';
