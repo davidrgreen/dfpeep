@@ -269,7 +269,11 @@ li .card {
 
 h2.refresh-label {
 	font-size: 14px;
-	margin: 0 0 20px 0;
+	margin: 0;
+}
+
+.refresh-sublabel {
+	margin: 0 0 20px;
 }
 
 h3.fetch-label {

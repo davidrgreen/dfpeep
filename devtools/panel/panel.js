@@ -349,7 +349,8 @@ function generateRefreshesScreen() {
 		return noRefreshes;
 	}
 	var i, length, s, slots, slotCount, sizeMappings, target, refreshListItem,
-		refreshLabel, text, refreshSlotList, pageTimeDiffMs, pageTimeDiffSecs;
+		refreshLabel, text, refreshSlotList, pageTimeDiffMs, pageTimeDiffSecs,
+		whenRefreshed;
 
 	var toReturn = document.createDocumentFragment();
 
@@ -363,7 +364,6 @@ function generateRefreshesScreen() {
 			);
 		}
 
-		console.log( adData.refreshes[ i ] );
 		slots = adData.refreshes[ i ].slotIds;
 		slotCount = slots ? slots.length : 0;
 
@@ -372,21 +372,24 @@ function generateRefreshesScreen() {
 		refreshListItem.id = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'h2' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
-		text += ' ' + dash + ' ';
+		refreshLabel.appendChild( document.createTextNode( text ) );
+		refreshLabel.className = 'refresh-label';
+		refreshListItem.appendChild( refreshLabel );
 
 		// Time since page load.
 		pageTimeDiffMs = adData.refreshes[ i ].timestamp - adData.pageLoadTimestamp;
 		pageTimeDiffSecs = Math.round( pageTimeDiffMs / 1000 * 100 ) / 100;
 		if ( 0 !== pageTimeDiffMs % 1000 ) {
-			text += pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
+			text = pageTimeDiffSecs + ' seconds (' + pageTimeDiffMs + 'ms)';
 		} else {
-			text += pageTimeDiffSecs + ' seconds';
+			text = pageTimeDiffSecs + ' seconds';
 		}
 		// Might should change to since GPT loaded.
 		text += ' after page load.';
-		refreshLabel.appendChild( document.createTextNode( text ) );
-		refreshLabel.className = 'refresh-label';
-		refreshListItem.appendChild( refreshLabel );
+		whenRefreshed = document.createElement( 'p' );
+		whenRefreshed.className = 'refresh-sublabel';
+		whenRefreshed.appendChild( document.createTextNode( text ) );
+		refreshListItem.appendChild( whenRefreshed );
 
 		refreshSlotList = document.createDocumentFragment();
 		// Begin list of slots sent in this refresh.
