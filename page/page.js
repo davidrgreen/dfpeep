@@ -18,6 +18,7 @@ var DFPeep = ( function() {
 		wrappedOutOfPageSlotFunctions,
 		inited,
 		debug = 0,
+		windowHasFocus,
 		activeAdIds = []; // Ids which have been refreshed at least once.
 
 	var adData = {
@@ -53,6 +54,7 @@ var DFPeep = ( function() {
 		wrapGPTFunctions();
 		addGPTListeners();
 		setupMutationObservers();
+		setupBrowserFocusDetection();
 	};
 
 	var setupMutationObservers = function() {
@@ -143,7 +145,9 @@ var DFPeep = ( function() {
 			whichRefresh = 0;
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
 				adData.refreshes[0] = {
-					slotIds: []
+					slotIds: [],
+					timestamp: getTimestamp(),
+					windowHadFocus: windowHasFocus
 				};
 			}
 			if ( -1 === adData.refreshes[0].slotIds.indexOf( adData.slots[ elementId ] ) ) {
@@ -212,7 +216,8 @@ var DFPeep = ( function() {
 
 				adData.refreshes[0] = {
 					timestamp: newTimestamp,
-					slotIds: []
+					slotIds: [],
+					windowHadFocus: windowHasFocus
 				};
 			}
 
@@ -265,7 +270,8 @@ var DFPeep = ( function() {
 			toSend = {
 				index: 0,
 				slot: elementId,
-				timestamp: adData.refreshes[0].timestamp
+				timestamp: adData.refreshes[0].timestamp,
+				windowHadFocus: windowHasFocus
 			};
 			sendDataToDevTools( 'GPTRefreshUpdate', toSend );
 		}
@@ -333,7 +339,8 @@ var DFPeep = ( function() {
 		googletag.pubads().refresh = function() {
 			var refreshData = {
 				timestamp: getTimestamp(),
-				slotIds: []
+				slotIds: [],
+				windowHadFocus: windowHasFocus
 			};
 			var slot,
 				slotsData = [],
@@ -702,6 +709,29 @@ var DFPeep = ( function() {
 	var peep = function() {
 		console.log( '\n MMMMMMMMMMMMMMMMMMMMMMMMd+oymMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMMMMMMMMm/o/omdsdMMMMMMMMMMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMMMMMMMMMd/:::+hMMMMMMMMMMMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMMMMMMMMMM+:::/hMMMMMMMMMMMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMMMMMMms+:::::::+ymMMMdNMMMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMMMNmo:::::::::::::omy::sNMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMNdhssssso+:::::/ossssso/::sMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMmyoso+/+osos+//ososo+++so+::/hMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMhos/     /sosyys+y-    `so+:::sMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMhoos/-::/soso/+y+oo::-:+so/::::dMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMhooysssssso/:/+y+sssssssyy:::::+MMMMMMMMMMMM\n MMMMMMMMMMMMMMMMmyoss+++++o::::ososo++++ho:::::sMMMMMMMMMMMM\n MMMMMMMMMMMMMhsNMmhsssssssy/::::+ssssssss/::::/NMMMMMMMMMMMM\n MMMMMMMMMMMMm-.:mMMNo////:::::::::://+os/::::+mMMMMMMMMMMMMM\n MMMMMMMMMMMM+...-sNy/.-::::::::::::..-:::-::+MhyMMMMMMMMMMMM\n MMMMMMMMMMMm-.....--....---..:::::.............-NMMMMMMMMMMM\n MMMMMMMMMMMd.................-:::-..............hMMMMMMMMMMM\n MMMMMMMMMMM/..................-:-...............dMMMMMMMMMMM\n MMMMMMMMMMM/...................-................dMMMMMMMMMMM\n MMMMMMMMMMM/....................................dMMMMMMMMMMM\n MMMMMMMMMMMs....................................dMMMMMMMMMMM\n MMMMMMMMMMMh....................................dMMMMMMMMMMM\n MMMMMMMMMMMN-..................................:MMMMMMMMMMMM\n MMMMMMMMMMMMy..................................hMMMMMMMMMMMM\n MMMMMMMMMMMMN/................................/MMMMMMMMMMMMM\n MMMMMMMMMMMMMm-............................../MMMMMMMMMMMMMM\n MMMMMMMMMMMMMMM+............................sMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMy:......................../mMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMh+-..................-+mMMMMMMMMMMMMMMMMMM\n MMMMMMMMMMMMMMMMMMMMMho+:..........:+ymMMMMMMMMMMMMMMMMMMMMM\n' );
 		console.log( 'Hello! My name is Douglas Frederick Peepington. This egg-ceptional extension needs more easter eggs to find.' );
+	};
+
+	var setupBrowserFocusDetection = function() {
+		if ( 'undefined' !== typeof document.hidden ) {
+			windowHasFocus = ! document.hidden;
+			document.addEventListener( 'visibilitychange', function() {
+				windowHasFocus = ! document.hidden;
+			} );
+		} else if ( 'undefined' !== typeof document.onfocusin ) {
+			document.onfocusin = indicatePageIsFocused;
+			document.onfocusout = indicatePageIsNotFocused;
+		} else {
+			window.onfocus = indicatePageIsFocused;
+			window.onblur = indicatePageIsNotFocused;
+		}
+	};
+
+	var indicatePageIsFocused = function() {
+		windowHasFocus = true;
+	};
+
+	var indicatePageIsNotFocused = function() {
+		windowHasFocus = false;
 	};
 
 	return {
