@@ -246,6 +246,7 @@ var DFPeep = ( function() {
 				updateRefresh = 1;
 			}
 		}
+
 		if ( ! adData.slots[ elementId ].refreshResults[ whichRefresh ] ) {
 			adData.slots[ elementId ].refreshResults[ whichRefresh ] = {};
 		}

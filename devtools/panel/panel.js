@@ -577,13 +577,27 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 	fragment = document.createDocumentFragment();
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
-		if ( ! refreshResults[ i ] || ( 'undefined' !== typeof refreshIndex &&
-			refreshResults[ i ].overallRefreshIndex &&
-			refreshResults[ i ].overallRefreshIndex !== refreshIndex ) ) {
+		if ( ! refreshResults[ i ] ) {
 			continue;
 		}
+
 		card = document.createElement( 'div' );
 		card.className = 'card';
+
+		if ( refreshResults[ i ].onloadTimestamp &&
+				! refreshResults[ i ].renderEndedTimestamp ) {
+			text = 'Error. No creative data returned';
+			card.appendChild( document.createTextNode( text ) );
+			fragment.appendChild( card );
+			continue;
+		}
+
+		if ( 'undefined' !== typeof refreshIndex &&
+				refreshResults[ i ].overallRefreshIndex &&
+				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+			continue;
+		}
+
 		refreshResultList = document.createElement( 'ul' );
 		item = document.createElement( 'li' );
 		label = document.createElement( 'h3' );
@@ -1877,12 +1891,14 @@ function checkForTargetingValuesThatShouldBeArrays() {
 			continue;
 		}
 		for ( r = 0, rlength = slotKeys.length; r < rlength; r++ ) {
+			toCheck = undefined;
 			if ( 'string' === typeof slot.targeting[ slotKeys[ r ] ] ) {
 				toCheck = slot.targeting[ slotKeys[ r ] ];
 			} else if ( Array.isArray( slot.targeting[ slotKeys[ r ] ] ) ) {
 				toCheck = slot.targeting[ slotKeys[ r ] ][0];
 			}
-			if ( toCheck && -1 !== toCheck.indexOf( ',' ) &&
+
+			if ( toCheck && toCheck.indexOf && -1 !== toCheck.indexOf( ',' ) &&
 					-1 === offendingPageKeys.indexOf( slotKeys[ r ] ) ) {
 				if ( ! offendingSlots[ slotNames[ i ] ] ) {
 					offendingSlots[ slotNames[ i ] ] = { keys: [] };
