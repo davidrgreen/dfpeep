@@ -26,7 +26,8 @@ var currentScreen,
 		refreshes: [],
 		enabledServices: [],
 		disabledInitialLoad: [],
-		enabledSingleRequest: []
+		enabledSingleRequest: [],
+		collapseEmptyDivs: []
 	},
 	debug = 1,
 	dash = '\u2014'; // Unicode value for an mdash.
@@ -286,7 +287,8 @@ function setupVariables( data ) {
 		refreshes: [],
 		enabledServices: [],
 		disabledInitialLoad: [],
-		enabledSingleRequest: []
+		enabledSingleRequest: [],
+		collapseEmptyDivs: []
 	};
 	if ( data && data.pageLoadTimestamp ) {
 		adData.pageLoadTimestamp = data.pageLoadTimestamp;
@@ -1306,6 +1308,7 @@ function makeCollapsible( content, screen ) {
  */
 function determineIssues() {
 	checkForLateDisableInitialLoad();
+	checkForLateCollapseEmptyDivs();
 	checkForMoveAfterRender();
 	checkForLateEnableSingleRequest();
 	checkForDuplicateFetches();
@@ -1365,6 +1368,34 @@ function checkForLateEnableSingleRequest() {
 
 		issues.errors.lateEnableSingleRequest = {
 			title: 'Enabled Single Request Mode Too Late',
+			description: description
+		};
+	}
+}
+
+/**
+ * Check to see if googletag.pubads().collapseEmptyDivs() was called
+ * after googletag.enableServices().
+ *
+ * @return {void}
+ */
+function checkForLateCollapseEmptyDivs() {
+	if ( issues.warnings.lateCollapseEmptyDivs ) {
+		return;
+	}
+
+	if ( 0 === adData.disabledInitialLoad.length ||
+			0 === adData.enabledServices.length ) {
+		return;
+	}
+
+	if ( adData.enabledServices[0] < adData.collapseEmptyDivs[0] ) {
+		var description = document.createElement( 'p' );
+		var text = 'googletag.pubads().collapseEmptyDivs() had no effect because it was called after googletag.enableServices().';
+		description.appendChild( document.createTextNode( text ) );
+
+		issues.warnings.lateCollapseEmptyDivs = {
+			title: 'Disabled Initial Load Too Late',
 			description: description
 		};
 	}
