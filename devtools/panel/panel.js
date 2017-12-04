@@ -136,6 +136,7 @@ function handleIncomingMessage( msg ) {
 					adData.pageTargeting = msg.payload.data.targets;
 					maybeUpdateScreen( 'slots' );
 					maybeUpdateScreen( 'refreshes' );
+					maybeUpdateScreen( 'overview' );
 					skipDetermineIssues = 1;
 				}
 				break;
