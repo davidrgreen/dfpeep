@@ -104,6 +104,13 @@ function handleIncomingMessage( msg ) {
 					maybeUpdateScreen( 'overview' );
 				}
 				break;
+			case 'GPTCollapseEmptyDivs':
+				if ( msg.payload.data.collapsed ) {
+					adData.collapseEmptyDivs = msg.payload.data.collapse;
+					maybeUpdateScreen( 'overview' );
+					maybeUpdateScreen( 'issues' );
+				}
+				break;
 			case 'GPTEnableSingleRequest':
 				if ( msg.payload.data.time ) {
 					adData.enabledSingleRequest.push( msg.payload.data.time );
@@ -142,6 +149,7 @@ function handleIncomingMessage( msg ) {
 	if ( ! skipDetermineIssues ) {
 		determineIssues();
 		maybeUpdateMenuText( 'issues' );
+		maybeUpdateScreen( 'issues' );
 	}
 }
 
@@ -1313,8 +1321,6 @@ function determineIssues() {
 	checkForLateEnableSingleRequest();
 	checkForDuplicateFetches();
 	checkForCreativesWiderThanViewport();
-
-	maybeUpdateScreen( 'issues' );
 }
 
 /**
@@ -1380,22 +1386,22 @@ function checkForLateEnableSingleRequest() {
  * @return {void}
  */
 function checkForLateCollapseEmptyDivs() {
-	if ( issues.warnings.lateCollapseEmptyDivs ) {
+	if ( issues.errors.lateCollapseEmptyDivs ) {
 		return;
 	}
 
-	if ( 0 === adData.disabledInitialLoad.length ||
+	if ( 0 === adData.collapseEmptyDivs.timestamp.length ||
 			0 === adData.enabledServices.length ) {
 		return;
 	}
 
-	if ( adData.enabledServices[0] < adData.collapseEmptyDivs[0] ) {
+	if ( adData.enabledServices[0] < adData.collapseEmptyDivs.timestamp[0] ) {
 		var description = document.createElement( 'p' );
 		var text = 'googletag.pubads().collapseEmptyDivs() had no effect because it was called after googletag.enableServices().';
 		description.appendChild( document.createTextNode( text ) );
 
-		issues.warnings.lateCollapseEmptyDivs = {
-			title: 'Disabled Initial Load Too Late',
+		issues.errors.lateCollapseEmptyDivs = {
+			title: 'Enabled Collapsing of Slot Divs if Empty Too Late',
 			description: description
 		};
 	}

@@ -446,12 +446,6 @@ var DFPeep = ( function() {
 	var wrapGPTCollapseEmptyDivs = function() {
 		var oldVersion = googletag.pubads().collapseEmptyDivs;
 		googletag.pubads().collapseEmptyDivs = function() {
-			if ( adData.collapseEmptyDivs.timestamp &&
-					adData.enabledServices.length > 0 ) {
-				// Only need to take note of trying to collapse empty divs
-				// after enableServices one time. Past that is redundant.
-				return;
-			}
 			adData.collapseEmptyDivs.timestamp.push( getTimestamp() );
 			if ( arguments.length > 0 && arguments[0] ) {
 				adData.collapseEmptyDivs.before = 1;
@@ -460,6 +454,7 @@ var DFPeep = ( function() {
 			if ( ! result ) {
 				adData.collapseEmptyDivs.error = 1;
 			}
+			sendDataToDevTools( 'GPTCollapseEmptyDivs', { collapsed: adData.collapseEmptyDivs } );
 			return result;
 		};
 	};
