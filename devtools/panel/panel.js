@@ -711,7 +711,6 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		fragment.appendChild( card );
 	}
 
-
 	return fragment;
 }
 
@@ -1606,7 +1605,8 @@ function checkForCreativesWiderThanViewport() {
 					slot.refreshResults[ r ].isEmpty ) {
 				continue;
 			}
-			if ( slot.refreshResults[ r ].size[0] > slot.refreshResults[ r ].documentWidth ) {
+			if ( slot.refreshResults[ r ].size &&
+					slot.refreshResults[ r ].size[0] > slot.refreshResults[ r ].documentWidth ) {
 				if ( ! offendingSlots[ slotNames[ i ] ] ) {
 					offendingSlots[ slotNames[ i ] ] = { refreshes: [] };
 				}
