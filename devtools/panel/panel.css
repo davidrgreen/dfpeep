@@ -230,6 +230,8 @@ h2 + p {
 }
 
 .info-label {
+	display: inline-block;
+	margin-right: 5px;
 	color: darkslategray;
 	font-weight: 700;
 }
