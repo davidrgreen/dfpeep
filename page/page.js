@@ -26,7 +26,9 @@ var DFPeep = ( function() {
 		enabledServices: [],
 		enabledSingleRequest: [],
 		disabledInitialLoad: [],
-		collapseEmptyDivs: {},
+		collapseEmptyDivs: {
+			timestamp: []
+		},
 		slots: {}, // Make each slot an array to contain instance data for each refresh
 		refreshes: [],
 		pageTargeting: {},
@@ -450,7 +452,7 @@ var DFPeep = ( function() {
 				// after enableServices one time. Past that is redundant.
 				return;
 			}
-			adData.collapseEmptyDivs.timestamp = getTimestamp();
+			adData.collapseEmptyDivs.timestamp.push( getTimestamp() );
 			if ( arguments.length > 0 && arguments[0] ) {
 				adData.collapseEmptyDivs.before = 1;
 			}
