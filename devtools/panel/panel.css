@@ -24,7 +24,7 @@ ul {
 
 ul.bulleted,
 ul.bulleted ul {
-	list-style: disc;
+	list-style: disc !important;
 	margin-left: 8px;
 }
 
