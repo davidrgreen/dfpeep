@@ -1376,6 +1376,7 @@ function determineIssues() {
 	checkForFetchTooQuickly();
 	checkForRefreshWhenNotFocused();
 	checkForTargetingValuesThatShouldBeArrays();
+	checkForLateSetPageTargeting();
 }
 
 /**
@@ -1404,6 +1405,60 @@ function checkForLateDisableInitialLoad() {
 			description: description
 		};
 	}
+}
+
+/**
+ * Check to see if page-wide key-values were set after
+ * googletag.enableServices().
+ *
+ * @return {void}
+ */
+function checkForLateSetPageTargeting() {
+	var offendingKeys = [];
+
+	if ( 0 === adData.setPageTargeting.length ||
+			0 === adData.enabledServices.length ) {
+		return;
+	}
+
+	if ( adData.setPageTargeting[ adData.setPageTargeting.length - 1 ].timestamp < adData.enabledServices[0] ) {
+		// Most recently set page targeting is good, so no need to loop through it all.
+		return;
+	}
+
+	for ( var i = 0, length = adData.setPageTargeting.length; i < length; i++ ) {
+		if ( adData.setPageTargeting[ i ].timestamp > adData.enabledServices[0] ) {
+			offendingKeys.push( adData.setPageTargeting[ i ].key );
+		}
+	}
+
+	if ( 0 === offendingKeys.length ) {
+		return;
+	}
+
+	var fragment = document.createDocumentFragment();
+	var description = document.createElement( 'p' );
+	var text = 'It is best to use googletag.pubads().setTargeting() before googletag.enableServices() to guarantee the targeting is in place before any slots are fetched. The following page-level key-value targeting keys may have been set too late to affect your slots.';
+	description.appendChild( document.createTextNode( text ) );
+	fragment.appendChild( description );
+
+	var list = document.createElement( 'ul' ),
+		listItem;
+
+	for ( var d = 0, dlength = offendingKeys.length; d < dlength; d++ ) {
+		listItem = document.createElement( 'li' );
+		text = offendingKeys[ d ];
+		listItem.appendChild( document.createTextNode( text ) );
+		list.appendChild( listItem );
+	}
+	fragment.appendChild( list );
+
+	issues.warnings.pageTargetingTooLate = {
+		title: 'Page-wide Key-Value Targeting Set Too Late',
+		description: fragment
+	};
+
+	return fragment;
 }
 
 /**
