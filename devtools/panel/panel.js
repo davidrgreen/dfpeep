@@ -1824,11 +1824,18 @@ function checkForTargetingValuesThatShouldBeArrays() {
 	var slot, text, i, length, r, rlength,
 		offendingPageKeys = [],
 		offendingSlots = {},
-		slotNames = Object.keys( adData.slots ).sort(),
-		pageKeys = Object.keys( adData.pageTargeting ).sort(),
+		slotNames = [],
+		pageKeys = [],
 		slotKeys,
 		description,
-		fragment, list, listItem, toCheck, obKeys;
+		fragment, list, listItem, toCheck;
+
+	if ( ! adData || ! adData.slots || ! adData.pageTargeting ) {
+		return;
+	}
+
+	slotNames = Object.keys( adData.slots ).sort();
+	pageKeys = Object.keys( adData.pageTargeting ).sort();
 
 	for ( i = 0, length = pageKeys.length; i < length; i++ ) {
 		if ( 'string' !== typeof adData.pageTargeting[ pageKeys[ i ] ] ) {
