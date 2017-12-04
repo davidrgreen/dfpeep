@@ -1239,6 +1239,7 @@ function reExpandElements( content, expandedElementIds ) {
 		hidden = element.querySelector( '.tree-hidden' );
 		if ( hidden ) {
 			hidden.classList.remove( 'tree-hidden' );
+			hidden.style.maxHeight = '';
 		}
 	}
 }
@@ -1257,12 +1258,32 @@ function setupContentArea() {
 		return;
 	}
 	contentElement.addEventListener( 'click', function( e ) {
+		var height;
 		if ( e.target && 'SPAN' === e.target.nodeName && e.target.classList.contains( 'tree-plus-sign' ) ) {
 			e.preventDefault();
 			e.target.classList.toggle( 'tree-plus-sign--expanded' );
 			var parentToggle = e.target.parentElement.querySelector( 'ul' );
-			if ( parentToggle ) {
-				parentToggle.classList.toggle( 'tree-hidden' );
+			if ( ! parentToggle.classList.contains( 'tree-hidden' ) ) {
+				// Tree needs to collapse.
+				requestAnimationFrame( function() {
+					if ( ! parentToggle.style.maxHeight ) {
+						parentToggle.style.maxHeight = parentToggle.offsetHeight + 'px';
+					}
+					parentToggle.classList.add( 'tree-hidden' );
+					parentToggle.style.maxHeight = '0px';
+				} );
+			} else {
+				// Tree needs to expand.
+				requestAnimationFrame( function() {
+					parentToggle.style.maxHeight = '';
+					height = parentToggle.offsetHeight;
+					parentToggle.style.maxHeight = '0px';
+					requestAnimationFrame( function() {
+						parentToggle.classList.remove( 'tree-hidden' );
+						parentToggle.style.maxHeight = height + 'px';
+					} );
+				} );
+
 			}
 		}
 	} );
@@ -1315,9 +1336,12 @@ function makeCollapsible( content, screen ) {
 	if ( ! content ) {
 		content = document;
 	}
-	var listsToHide = content.querySelectorAll( '.tree-with-children' );
+	var listsToHide = content.querySelectorAll( '.tree-with-children' ),
+		hiding;
 	for ( var i = 0, length = listsToHide.length; i < length; i++ ) {
-		listsToHide[ i ].querySelector( 'ul' ).classList.add( 'tree-hidden' );
+		hiding = listsToHide[ i ].querySelector( 'ul' );
+		hiding.classList.add( 'tree-hidden' );
+		hiding.style.maxHeight = '0px';
 	}
 }
 
