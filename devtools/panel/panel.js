@@ -1324,6 +1324,7 @@ function determineIssues() {
 	checkForDuplicateFetches();
 	checkForCreativesWiderThanViewport();
 	checkForDefinedNoFetch();
+	checkForRefreshOfNonViewableAd();
 }
 
 /**
@@ -1621,6 +1622,73 @@ function checkForCreativesWiderThanViewport() {
 
 		issues.warnings.tooWidecreative = {
 			title: 'Creatives Wider Than Viewport',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+/**
+ * Check to see if a slot was refreshed when it had not yet been recognized as
+ * viewable by GPT.
+ *
+ * @return {void}
+ */
+function checkForRefreshOfNonViewableAd() {
+	var slot, text, i, length, r, rlength,
+		offendingSlots = {},
+		slotNames = Object.keys( adData.slots ).sort();
+
+	for ( i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		if ( ! Array.isArray( slot.refreshResults ) ||
+				slot.refreshResults.length < 2 ) {
+			continue;
+		}
+		for ( r = 1, rlength = slot.refreshResults.length; r < rlength; r++ ) {
+			if ( ! slot.refreshResults[ r - 1 ].viewed ) {
+				if ( ! offendingSlots[ slotNames[ i ] ] ) {
+					offendingSlots[ slotNames[ i ] ] = { refreshes: [] };
+				}
+				offendingSlots[ slotNames[ i ] ].refreshes.push( r + 1 );
+			}
+		}
+	}
+
+	var offendingNames = Object.keys( offendingSlots ).sort();
+
+	if ( offendingNames.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following slots were refreshed before being recognized as viewable. Viewable typically means having at least 50% of the creative visible on the screen for at least one consecutive second.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			text = offendingNames[ d ] + ' during following fetches: ' +
+			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			listItem.appendChild( document.createTextNode( text ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		description = document.createElement( 'p' );
+		text = 'You might consider adding an event listener to googletag.pubads() for the impressionViewable event to know when GPT considers the slot as having been viewed. More info is available ';
+		description.appendChild( document.createTextNode( text ) );
+		var link = document.createElement( 'a' );
+		link.href = 'https://developers.google.com/doubleclick-gpt/reference#googletageventsimpressionviewableevent';
+		link.target = '_blank';
+		link.innerText = 'in Google\'s GPT reference.';
+		description.appendChild( link );
+		fragment.appendChild( description );
+
+		issues.warnings.nonViewableRefresh = {
+			title: 'Refresh of Non-Viewable Slots',
 			description: fragment
 		};
 
