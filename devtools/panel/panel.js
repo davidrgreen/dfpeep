@@ -1335,6 +1335,7 @@ function determineIssues() {
 	checkForRefreshOfNonViewedAd();
 	checkForFetchTooQuickly();
 	checkForRefreshWhenNotFocused();
+	checkForTargetingValuesThatShouldBeArrays();
 }
 
 /**
@@ -1803,6 +1804,106 @@ function checkForRefreshWhenNotFocused() {
 
 		issues.warnings.refreshWhenNotFocused = {
 			title: 'Refreshed Slots While Page Not Focused',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+/**
+ * Check to see if any key-values are strings containing commas when it
+ * should be an array of strings.
+ *
+ * @return {void}
+ */
+function checkForTargetingValuesThatShouldBeArrays() {
+	var slot, text, i, length, r, rlength,
+		offendingPageKeys = [],
+		offendingSlots = {},
+		slotNames = Object.keys( adData.slots ).sort(),
+		pageKeys = Object.keys( adData.pageTargeting ).sort(),
+		slotKeys,
+		description,
+		fragment, list, listItem, toCheck, obKeys;
+
+	for ( i = 0, length = pageKeys.length; i < length; i++ ) {
+		if ( 'string' !== typeof adData.pageTargeting[ pageKeys[ i ] ] ) {
+			continue;
+		}
+		if ( -1 !== adData.pageTargeting[ pageKeys[ i ] ].indexOf( ',' ) ) {
+			offendingPageKeys.push( pageKeys[ i ] );
+		}
+	}
+
+	for ( i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		slotKeys = Object.keys( slot.targeting ).sort();
+		if ( 0 === slotKeys.length ) {
+			continue;
+		}
+		for ( r = 0, rlength = slotKeys.length; r < rlength; r++ ) {
+			if ( 'string' === typeof slot.targeting[ slotKeys[ r ] ] ) {
+				toCheck = slot.targeting[ slotKeys[ r ] ];
+			} else if ( Array.isArray( slot.targeting[ slotKeys[ r ] ] ) ) {
+				toCheck = slot.targeting[ slotKeys[ r ] ][0];
+			}
+			if ( toCheck && -1 !== toCheck.indexOf( ',' ) &&
+					-1 === offendingPageKeys.indexOf( slotKeys[ r ] ) ) {
+				if ( ! offendingSlots[ slotNames[ i ] ] ) {
+					offendingSlots[ slotNames[ i ] ] = { keys: [] };
+				}
+				offendingSlots[ slotNames[ i ] ].keys.push( slotKeys[ r ] );
+			}
+		}
+	}
+
+	var offendingNames = Object.keys( offendingSlots ).sort();
+
+	if ( offendingPageKeys.length > 0 || offendingNames.length > 0 ) {
+		fragment = document.createDocumentFragment();
+		description = document.createElement( 'p' );
+		text = 'To send multiple values for a key you should use an array of strings, not a comma-dilineated string.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		if ( offendingPageKeys.length > 0 ) {
+			description = document.createElement( 'p' );
+			text = 'The following page-level keys have values that should be arrays:';
+			description.appendChild( document.createTextNode( text ) );
+			fragment.appendChild( description );
+
+			list = document.createElement( 'ul' );
+
+			for ( var d = 0, dlength = offendingPageKeys.length; d < dlength; d++ ) {
+				listItem = document.createElement( 'li' );
+				text = offendingPageKeys[ d ];
+				listItem.appendChild( document.createTextNode( text ) );
+				list.appendChild( listItem );
+			}
+			fragment.appendChild( list );
+		}
+
+		if ( offendingNames.length > 0 ) {
+			description = document.createElement( 'p' );
+			text = 'The following slots have keys with values that should be arrays:';
+			description.appendChild( document.createTextNode( text ) );
+			fragment.appendChild( description );
+
+			list = document.createElement( 'ul' );
+
+			for ( i = 0, length = offendingNames.length; i < length; i++ ) {
+				listItem = document.createElement( 'li' );
+				text = 'Slot: ' + offendingNames[ i ] + ' ' + dash + ' Keys: ' +
+					offendingSlots[ offendingNames[ i ] ].keys.join( ', ' );
+				listItem.appendChild( document.createTextNode( text ) );
+				list.appendChild( listItem );
+			}
+			fragment.appendChild( list );
+		}
+
+		issues.errors.targetingValueShouldBeArray = {
+			title: 'Key-Value Used a String With Commas Instead of an Array',
 			description: fragment
 		};
 
