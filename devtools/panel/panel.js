@@ -542,7 +542,7 @@ function buildSlotListItem( slot, refreshIndex ) {
  * @return {HTMLElement} UL element containing the slot's refresh results.
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
-	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment;
+	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment, labelValue;
 
 	if ( ! adData.slots[ slotId ] ) {
 		return document.createElement( 'div' );
@@ -576,74 +576,101 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 				refreshResults[ i ].renderEndedTimestamp;
 				seconds = Math.round( ms / 1000 * 100 ) / 100;
 				detail = document.createElement( 'li' );
-				text = 'Load time: ' + seconds + ' seconds (' + ms + 'ms)';
-				detail.appendChild( document.createTextNode( text ) );
+				labelValue = createLabelAndValue(
+					'Load time:',
+					seconds + ' seconds (' + ms + 'ms)'
+				);
+				detail.appendChild( labelValue );
 				detailList.appendChild( detail );
 			}
 
 			detail = document.createElement( 'li' );
-			text = 'Viewed: ' + ( refreshResults[ i ].viewed ? 'Yes' : 'No' );
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Viewed',
+				refreshResults[ i ].viewed ? 'Yes' : 'No'
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Creative ID: ' + refreshResults[ i ].creativeId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Creative ID:',
+				refreshResults[ i ].creativeId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Line Item ID: ' + refreshResults[ i ].lineItemId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Line Item ID:',
+				refreshResults[ i ].lineItemId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Advertiser ID: ' + refreshResults[ i ].advertiserId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Advertiser ID:',
+				refreshResults[ i ].advertiserId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Campaign ID: ' + refreshResults[ i ].campaignId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Campaign ID:',
+				refreshResults[ i ].campaignId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			if ( refreshResults[ i ].size &&
 					Array.isArray( refreshResults[ i ].size ) ) {
 				detail = document.createElement( 'li' );
-				text = 'Creative Size: ';
 				if ( refreshResults[ i ].size[0] && 0 !== refreshResults[ i ].size[0] ) {
-					text += buildSizePairText(
+					text = buildSizePairText(
 							refreshResults[ i ].size[0],
 							refreshResults[ i ].size[1]
 					);
 				} else {
 					if ( adData.slots[ slotId ].fallbackSize &&
 							-1 !== adData.slots[ slotId ].fallbackSize.indexOf( 'fluid' ) ) {
-						text += 'fluid';
+						text = 'fluid';
 					} else {
-						text += buildSizePairText(
+						text = buildSizePairText(
 								refreshResults[ i ].size[0],
 								refreshResults[ i ].size[1]
 						);
 					}
 				}
-				detail.appendChild( document.createTextNode( text ) );
+				labelValue = createLabelAndValue(
+					'Creative Size:',
+					text
+				);
+				detail.appendChild( labelValue );
 				detailList.appendChild( detail );
 			}
 
 			detail = document.createElement( 'li' );
-			text = 'Backfill: ' + ( refreshResults[ i ].isBackfill ? 'Yes' : 'No' );
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Backfill:',
+				text
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			if ( refreshResults[ i ].labelIds ) {
 				detail = document.createElement( 'li' );
-				text = 'Label IDs: ';
 				if ( Array.isArray( refreshResults[ i ].labelIds ) ) {
-					text += refreshResults[ i ].labelIds.join( ', ' );
+					text = refreshResults[ i ].labelIds.join( ', ' );
 				} else {
-					text += refreshResults[ i ].labelIds;
+					text = refreshResults[ i ].labelIds;
 				}
-				detail.appendChild( document.createTextNode( text ) );
+				labelValue = createLabelAndValue(
+					'Label IDs:',
+					text
+				);
+				detail.appendChild( labelValue );
 				detailList.appendChild( detail );
 			}
 		}
