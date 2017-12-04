@@ -900,6 +900,7 @@ function generateSlotsScreen() {
  */
 function generateOverviewScreen() {
 	var text, list, item;
+	var fragment = document.createDocumentFragment();
 	var overview = document.createElement( 'div' );
 	overview.className = 'card';
 
@@ -955,8 +956,15 @@ function generateOverviewScreen() {
 	}
 
 	overview.appendChild( list );
+	fragment.appendChild( overview );
 
-	return overview;
+	var img = document.createElement( 'img' );
+	img.src = 'img/dfpeep-logo.svg';
+	img.className = 'logo';
+	fragment.appendChild( img );
+
+
+	return fragment;
 }
 
 /**
