@@ -1309,6 +1309,7 @@ function determineIssues() {
 	checkForMoveAfterRender();
 	checkForLateEnableSingleRequest();
 	checkForDuplicateFetches();
+	checkForCreativesWiderThanViewport();
 
 	maybeUpdateScreen( 'issues' );
 }
@@ -1471,6 +1472,65 @@ function checkForDuplicateFetches() {
 
 		issues.warnings.duplicateAdFetch = {
 			title: 'Duplicate Ad Slot Fetches',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+/**
+ * Check to see if any slots have been fetched more than once.
+ *
+ * @return {void}
+ */
+function checkForCreativesWiderThanViewport() {
+	var slot, text, i, length, r, rlength,
+		offendingSlots = {},
+		slotNames = Object.keys( adData.slots ).sort();
+
+	for ( i = 0, length = slotNames.length; i < length; i++ ) {
+		slot = adData.slots[ slotNames[ i ] ];
+		if ( ! Array.isArray( slot.refreshResults ) ) {
+			continue;
+		}
+		for ( r = 0, rlength = slot.refreshResults.length; r < rlength; r++ ) {
+			if ( slot.refreshResults[ r ].isEmpty ) {
+				continue;
+			}
+			if ( slot.refreshResults[ r ].size[0] > slot.refreshResults[ r ].documentWidth ) {
+				if ( ! offendingSlots[ slotNames[ i ] ] ) {
+					offendingSlots[ slotNames[ i ] ] = { refreshes: [] };
+				}
+				offendingSlots[ slotNames[ i ] ].refreshes.push( ( r + 1 ) );
+			}
+		}
+	}
+	console.log( offendingSlots );
+
+	var offendingNames = Object.keys( offendingSlots ).sort();
+
+	if ( offendingNames.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following slots received creatives wider than the viewport, limiting the percentage viewable for the ad.';
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		var list = document.createElement( 'ul' ),
+			listItem;
+
+		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
+			listItem = document.createElement( 'li' );
+			text = offendingNames[ d ] + ' during following fetches: ' +
+			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			listItem.appendChild( document.createTextNode( text ) );
+			list.appendChild( listItem );
+		}
+		fragment.appendChild( list );
+
+		issues.warnings.tooWidecreative = {
+			title: 'Creatives Wider Than Viewport',
 			description: fragment
 		};
 
