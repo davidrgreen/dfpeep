@@ -1326,6 +1326,7 @@ function determineIssues() {
 	checkForDefinedNoFetch();
 	checkForRefreshOfNonViewedAd();
 	checkForFetchTooQuickly();
+	checkForRefreshWhenNotFocused();
 }
 
 /**
@@ -1757,6 +1758,43 @@ function checkForFetchTooQuickly() {
 
 		issues.warnings.fetchedSlotsTooQuickly = {
 			title: 'Fetched Slots too Quickly',
+			description: fragment
+		};
+
+		return fragment;
+	}
+}
+
+/**
+ * Check to see if a refresh occurred while the page was not in focus.
+ *
+ * @return {void}
+ */
+function checkForRefreshWhenNotFocused() {
+	if ( ! Array.isArray( adData.refreshes ) ||
+			adData.refreshes.length < 2 ) {
+		return;
+	}
+
+	var offendingRefreshes = [],
+		text;
+
+	for ( var i = 0, length = adData.refreshes.length; i < length; i++ ) {
+		if ( ! adData.refreshes[ i ].windowHadFocus ) {
+			offendingRefreshes.push( i + 1 );
+		}
+	}
+
+	if ( offendingRefreshes.length > 0 ) {
+		var fragment = document.createDocumentFragment();
+		var description = document.createElement( 'p' );
+		text = 'The following refreshes occurred while the page was not focused, likely because you had changed to another browser tab. This can lead to fetches without giving users an opportunity to view an ad, so you should confirm the following refreshes were intentional: ';
+		text += offendingRefreshes.join( ', ' );
+		description.appendChild( document.createTextNode( text ) );
+		fragment.appendChild( description );
+
+		issues.warnings.refreshWhenNotFocused = {
+			title: 'Refreshed Slots While Page Not Focused',
 			description: fragment
 		};
 
