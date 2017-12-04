@@ -240,7 +240,7 @@ function maybeUpdateMenuText( item ) {
 		currentLength = warningsLength + errorsLength;
 		if ( ! UIState.issuesShown ||
 				UIState.issuesShown !== currentLength ) {
-			UIState.slotsShown = currentLength;
+			UIState.issuesShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#issues"]' );
 			newLabel = document.createDocumentFragment();
 			span = document.createElement( 'span' );
