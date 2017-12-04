@@ -371,7 +371,7 @@ function generateRefreshesScreen() {
 		refreshListItem.className = 'refresh-item card';
 		refreshListItem.id = 'refresh-' + ( i + 1 );
 		refreshLabel = document.createElement( 'h2' );
-		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
+		text = 'Refresh #' + ( i + 1 ) + ' of ' + length + ' ' + dash + ' ' + slotCount + ' slots';
 		refreshLabel.appendChild( document.createTextNode( text ) );
 		refreshLabel.className = 'refresh-label';
 		refreshListItem.appendChild( refreshLabel );
