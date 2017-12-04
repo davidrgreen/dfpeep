@@ -18,7 +18,7 @@ var DFPeep = ( function() {
 		wrappedOutOfPageSlotFunctions,
 		inited,
 		debug = 0,
-		windowHasFocus,
+		windowHasFocus = true,
 		activeAdIds = []; // Ids which have been refreshed at least once.
 
 	var adData = {
@@ -153,7 +153,13 @@ var DFPeep = ( function() {
 			if ( -1 === adData.refreshes[0].slotIds.indexOf( adData.slots[ elementId ] ) ) {
 				// var copyOfSlotData = Object.assign( {}, adData.slots[ elementId ] );
 				adData.refreshes[0].slotIds.push( elementId );
-				sendDataToDevTools( 'GPTRefreshUpdate', { index: 0, slot: elementId } );
+				sendDataToDevTools( 'GPTRefreshUpdate',
+					{
+						index: 0,
+						slot: elementId,
+						windowHadFocus: windowHasFocus
+					}
+				);
 			}
 		}
 

@@ -63,7 +63,8 @@ function handleIncomingMessage( msg ) {
 			case 'GPTRefresh':
 				var refreshData = {
 					timestamp: msg.payload.data.timestamp,
-					slotIds: msg.payload.data.slotIds
+					slotIds: msg.payload.data.slotIds,
+					windowHadFocus: msg.payload.data.windowHadFocus
 				};
 				adData.refreshes.push( refreshData );
 				if ( msg.payload.data.slots ) {
@@ -82,6 +83,7 @@ function handleIncomingMessage( msg ) {
 					if ( ! adData.refreshes[ msg.payload.data.index ] ) {
 						adData.refreshes[ msg.payload.data.index ] = {};
 					}
+
 					if ( msg.payload.data.slot ) {
 						if ( ! adData.refreshes[ msg.payload.data.index ].slotIds ) {
 							adData.refreshes[ msg.payload.data.index ].slotIds = [];
@@ -92,6 +94,12 @@ function handleIncomingMessage( msg ) {
 					if ( msg.payload.data.timestamp ) {
 						adData.refreshes[ msg.payload.data.index ].timestamp = msg.payload.data.timestamp;
 					}
+
+					if ( 'undefined' !== typeof msg.payload.data.windowHadFocus &&
+							'undefined' !== typeof adData.refreshes[ msg.payload.data.index ].windowHadFocus ) {
+						adData.refreshes[ msg.payload.data.index ].windowHadFocus = msg.payload.data.windowHadFocus;
+					}
+
 					maybeUpdateMenuText( 'refreshes' );
 					maybeUpdateMenuText( 'slots' );
 					maybeUpdateScreen( 'refreshes' );
