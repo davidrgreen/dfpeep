@@ -655,6 +655,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			}
 
 			detail = document.createElement( 'li' );
+			text = refreshResults[ i ].isBackfill ? 'Yes' : 'No';
 			labelValue = createLabelAndValue(
 				'Backfill:',
 				text
