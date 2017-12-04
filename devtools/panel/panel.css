@@ -28,6 +28,10 @@ ul.bulleted ul {
 	margin-left: 8px;
 }
 
+#content ul.bulleted li {
+	line-height: 19px;
+}
+
 #menu ul {
 	list-style: none;
 	padding: 0;
@@ -247,6 +251,10 @@ h2 + p {
 .card .card {
 	width: 98%;
 	margin-left: 5px;
+}
+
+.card > ul {
+	padding-left: 0;
 }
 
 li .card {
