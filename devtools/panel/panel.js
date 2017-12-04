@@ -1324,7 +1324,7 @@ function determineIssues() {
 	checkForDuplicateFetches();
 	checkForCreativesWiderThanViewport();
 	checkForDefinedNoFetch();
-	checkForRefreshOfNonViewableAd();
+	checkForRefreshOfNonViewedAd();
 }
 
 /**
@@ -1635,7 +1635,7 @@ function checkForCreativesWiderThanViewport() {
  *
  * @return {void}
  */
-function checkForRefreshOfNonViewableAd() {
+function checkForRefreshOfNonViewedAd() {
 	var slot, text, i, length, r, rlength,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
@@ -1687,8 +1687,8 @@ function checkForRefreshOfNonViewableAd() {
 		description.appendChild( link );
 		fragment.appendChild( description );
 
-		issues.warnings.nonViewableRefresh = {
-			title: 'Refresh of Non-Viewable Slots',
+		issues.warnings.nonViewedRefresh = {
+			title: 'Refresh of Non-Viewed Slots',
 			description: fragment
 		};
 
