@@ -9,7 +9,7 @@
 
 /* global chrome */
 
-var debug = 1;
+var debug = 0;
 
 /**
  * Insert a script into the page.

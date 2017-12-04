@@ -29,7 +29,7 @@ var currentScreen,
 		enabledSingleRequest: [],
 		collapseEmptyDivs: []
 	},
-	debug = 1,
+	debug = 0,
 	dash = '\u2014'; // Unicode value for an mdash.
 
 /**

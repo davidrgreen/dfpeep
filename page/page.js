@@ -17,7 +17,7 @@ var DFPeep = ( function() {
 	var wrappedSlotFunctions,
 		wrappedOutOfPageSlotFunctions,
 		inited,
-		debug = 1,
+		debug = 0,
 		activeAdIds = []; // Ids which have been refreshed at least once.
 
 	var adData = {
