@@ -253,6 +253,8 @@ var DFPeep = ( function() {
 			refresh.sourceAgnosticCreativeId = event.sourceAgnosticCreativeId;
 			refresh.sourceAgnosticLineItemId = event.sourceAgnosticLineItemId;
 		}
+		refresh.documentWidth = document.body.clientWidth;
+		refresh.documentHeight = document.body.clientHeight;
 		refresh.viewed = 0;
 
 		if ( updateRefresh ) {
