@@ -418,7 +418,7 @@ function generateRefreshesScreen() {
  * @return {HTMLElement} LI element containing the slot's data.
  */
 function buildSlotListItem( slot, refreshIndex ) {
-	var text;
+	var text, labelValue;
 
 	var slotListItem = document.createElement( 'div' );
 	slotListItem.className = 'tree-with-children card';
@@ -451,30 +451,22 @@ function buildSlotListItem( slot, refreshIndex ) {
 	var slotInfoList = document.createElement( 'ul' );
 
 	var adUnit = document.createElement( 'li' );
-	text = 'Ad Unit: ' + slot.adUnitPath;
-	adUnit.appendChild( document.createTextNode( text ) );
+	labelValue = createLabelAndValue( 'Ad Unit:', slot.adUnitPath );
+	adUnit.appendChild( labelValue );
 	slotInfoList.appendChild( adUnit );
 
 	var elementId = document.createElement( 'li' );
-	text = 'DOM Element ID: ' + slot.elementId;
-	elementId.appendChild( document.createTextNode( text ) );
+	labelValue = createLabelAndValue( 'DOM ID:', slot.elementId );
+	elementId.appendChild( labelValue );
 	slotInfoList.appendChild( elementId );
 
 	if ( slot.refreshedIndexes ) {
 		var previousRefreshes = document.createElement( 'li' );
 
-		if ( adData.slots[ slot.elementId ] ) {
-			if ( adData.slots[ slot.elementId ].refreshedIndexes &&
-					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
-				text = 'Fetches: 1';
-			} else {
-				text = 'Fetches: ' + adData.slots[ slot.elementId ].refreshedIndexes.length;
-			}
-		} else {
-			text = 'Fetches: 0';
-		}
-
-		previousRefreshes.appendChild( document.createTextNode( text ) );
+		var count = adData.slots[ slot.elementId ].refreshedIndexes.length ?
+				adData.slots[ slot.elementId ].refreshedIndexes.length : 0;
+		labelValue = createLabelAndValue( 'Fetches:', count );
+		previousRefreshes.appendChild( labelValue );
 		previousRefreshes.appendChild(
 			buildRefreshResultList( slot.elementId, refreshIndex )
 		);
@@ -483,52 +475,55 @@ function buildSlotListItem( slot, refreshIndex ) {
 
 	if ( slot.targeting ) {
 		var targeting = document.createElement( 'li' );
-		text = 'Key-Value Targeting:';
-		targeting.appendChild( document.createTextNode( text ) );
-		targeting.appendChild( buildKeyTargetingList( slot.targeting ) );
+		labelValue = createLabelAndValue(
+			'Key-Value Targeting:',
+			buildKeyTargetingList( slot.targeting )
+		);
+		targeting.appendChild( labelValue );
 		slotInfoList.appendChild( targeting );
 	}
 
 	if ( slot.sizeMappings ) {
 		var sizeMapping = document.createElement( 'li' );
-		text = 'Size Mapping:';
-		sizeMapping.appendChild( document.createTextNode( text ) );
-		sizeMapping.appendChild(
+		labelValue = createLabelAndValue(
+			'Size Mapping:',
 			buildSizeMappingList( slot.sizeMappings[0] )
 		);
+		sizeMapping.appendChild( labelValue );
 		slotInfoList.appendChild( sizeMapping );
 	}
 
 	if ( slot.fallbackSize ) {
 		var fallbackSizes = document.createElement( 'li' );
-		text = 'Fallback sizes:';
-		fallbackSizes.appendChild( document.createTextNode( text ) );
-		fallbackSizes.appendChild(
+		labelValue = createLabelAndValue(
+			'Default sizes:',
 			buildFallbackSizeList( slot.fallbackSize )
 		);
+		fallbackSizes.appendChild( labelValue );
 		slotInfoList.appendChild( fallbackSizes );
 	}
 
 	var collapseDiv = document.createElement( 'li' );
-	text = 'Collapse if Empty: ';
 	if ( slot.collapseEmptyDiv || ( adData.collapseEmptyDivs &&
 			adData.collapseEmptyDivs.timestamp &&
 			! adData.collapseEmptyDivs.error ) ) {
-		text += 'Yes';
+		text = 'Yes';
 
 		if ( 'before' === slot.collapseEmptyDiv || ( adData.collapseEmptyDivs &&
 			adData.collapseEmptyDivs.before ) ) {
 			text += ', before ad is fetched';
 		}
 	} else {
-		text += 'No';
+		text = 'No';
 	}
-	collapseDiv.appendChild( document.createTextNode( text ) );
+	labelValue = createLabelAndValue( 'Collapse if Empty:', text );
+	collapseDiv.appendChild( labelValue );
 	slotInfoList.appendChild( collapseDiv );
 
 	if ( slot.outOfPage ) {
 		var outOfPage = document.createElement( 'li' );
-		outOfPage.appendChild( document.createTextNode( 'Out of Page slot' ) );
+		labelValue = createLabelAndValue( 'Out of Page Slot:', 'Yes' );
+		outOfPage.appendChild( labelValue );
 		slotInfoList.appendChild( outOfPage );
 	}
 
