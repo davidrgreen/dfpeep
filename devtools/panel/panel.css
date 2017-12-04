@@ -249,6 +249,10 @@ h2 + p {
 	margin-left: 5px;
 }
 
+li .card {
+	margin-top: 5px;
+}
+
 .refresh-item.card {
 	background-color: #f6f2f2;
 }
