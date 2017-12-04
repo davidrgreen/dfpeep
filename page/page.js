@@ -373,7 +373,8 @@ var DFPeep = ( function() {
 				refreshData.slotIds.push( slot.elementId );
 			}
 			adData.refreshes.push( refreshData );
-			refreshData.slots = slotsData;
+			var toSend = Object.assign( {}, refreshData );
+			toSend.slots = slotsData;
 			sendDataToDevTools( 'GPTRefresh', refreshData );
 			var result = oldVersion.apply( this, arguments );
 			return result;
