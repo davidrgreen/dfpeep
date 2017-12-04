@@ -1480,7 +1480,7 @@ function checkForDuplicateFetches() {
 }
 
 /**
- * Check to see if any slots have been fetched more than once.
+ * Check to see if any creatives came in wider than the viewport width.
  *
  * @return {void}
  */
@@ -1506,7 +1506,6 @@ function checkForCreativesWiderThanViewport() {
 			}
 		}
 	}
-	console.log( offendingSlots );
 
 	var offendingNames = Object.keys( offendingSlots ).sort();
 
