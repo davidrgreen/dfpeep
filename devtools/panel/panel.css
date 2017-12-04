@@ -124,7 +124,7 @@ ul.tree-list li.tree-with-children:last-child {
 }
 
 .tree-with-children ul {
-	transition: max-height 390ms ease-in-out;
+	transition: max-height 240ms ease-in-out;
 	overflow: hidden;
 }
 
