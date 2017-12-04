@@ -27,7 +27,8 @@ var currentScreen,
 		enabledServices: [],
 		disabledInitialLoad: [],
 		enabledSingleRequest: [],
-		collapseEmptyDivs: []
+		collapseEmptyDivs: [],
+		setPageTargeting: []
 	},
 	debug = 0,
 	dash = '\u2014'; // Unicode value for an mdash.
@@ -142,6 +143,7 @@ function handleIncomingMessage( msg ) {
 			case 'pageTargetingData':
 				if ( msg.payload.data.targets ) {
 					adData.pageTargeting = msg.payload.data.targets;
+					adData.setPageTargeting.push( msg.payload.data.timestamp );
 					maybeUpdateScreen( 'slots' );
 					maybeUpdateScreen( 'refreshes' );
 					maybeUpdateScreen( 'overview' );
@@ -305,7 +307,8 @@ function setupVariables( data ) {
 		enabledServices: [],
 		disabledInitialLoad: [],
 		enabledSingleRequest: [],
-		collapseEmptyDivs: []
+		collapseEmptyDivs: [],
+		setPageTargeting: []
 	};
 	if ( data && data.pageLoadTimestamp ) {
 		adData.pageLoadTimestamp = data.pageLoadTimestamp;

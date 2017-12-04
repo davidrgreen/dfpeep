@@ -30,7 +30,8 @@ var DFPeep = ( function() {
 		collapseEmptyDivs: {
 			timestamp: []
 		},
-		slots: {}, // Make each slot an array to contain instance data for each refresh
+		setPageTargeting: [],
+		slots: {},
 		refreshes: [],
 		pageTargeting: {},
 		creatives: {}
@@ -436,7 +437,15 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().setTargeting;
 		googletag.pubads().setTargeting = function() {
 			adData.pageTargeting[ arguments[0] ] = arguments[1];
-			sendDataToDevTools( 'pageTargetingData', { targets: adData.pageTargeting } );
+			var timestamp = getTimestamp();
+			adData.setPageTargeting.push( timestamp );
+			sendDataToDevTools(
+				'pageTargetingData',
+				{
+					targets: adData.pageTargeting,
+					timestamp: timestamp
+				}
+			);
 			var result = oldVersion.apply( this, arguments );
 			return result;
 		};
