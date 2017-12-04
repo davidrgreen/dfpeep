@@ -542,7 +542,7 @@ function buildSlotListItem( slot, refreshIndex ) {
  * @return {HTMLElement} UL element containing the slot's refresh results.
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
-	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment, labelValue;
+	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment, labelValue, label;
 
 	if ( ! adData.slots[ slotId ] ) {
 		return document.createElement( 'div' );
@@ -560,9 +560,12 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		card.className = 'card';
 		refreshResultList = document.createElement( 'ul' );
 		item = document.createElement( 'li' );
+		label = document.createElement( 'h3' );
+		label.className = 'fetch-label';
 		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
 			( refreshResults[ i ].overallRefreshIndex + 1 );
-		card.appendChild( document.createTextNode( text ) );
+		label.appendChild( document.createTextNode( text ) );
+		card.appendChild( label );
 		detailList = document.createDocumentFragment();
 
 		if ( refreshResults[ i ].isEmpty ) {
