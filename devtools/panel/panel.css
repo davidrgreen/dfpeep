@@ -18,7 +18,7 @@ body {
 }
 
 ul {
-	list-style: disc;
+	list-style: none;
 	padding: 0 0 0 20px;
 }
 
@@ -86,9 +86,7 @@ ul {
 
 ul.tree-list,
 .tree-list ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+	list-style: none;
 }
 
 ul.tree-list ul {
@@ -226,6 +224,8 @@ h2 + p {
 }
 
 .info-label {
+	color: darkslategray;
+	font-weight: 700;
 }
 
 .card {
@@ -237,7 +237,8 @@ h2 + p {
 }
 
 .card .card {
-	width: 99.5%;
+	width: 98%;
+	margin-left: 5px;
 }
 
 .refresh-item.card {
