@@ -437,13 +437,16 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.pubads().setTargeting;
 		googletag.pubads().setTargeting = function() {
 			adData.pageTargeting[ arguments[0] ] = arguments[1];
-			var timestamp = getTimestamp();
-			adData.setPageTargeting.push( timestamp );
+			var log = {
+				timestamp: getTimestamp(),
+				key: arguments[0]
+			};
+			adData.setPageTargeting.push( log );
 			sendDataToDevTools(
 				'pageTargetingData',
 				{
 					targets: adData.pageTargeting,
-					timestamp: timestamp
+					log: log
 				}
 			);
 			var result = oldVersion.apply( this, arguments );

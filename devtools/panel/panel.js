@@ -143,7 +143,7 @@ function handleIncomingMessage( msg ) {
 			case 'pageTargetingData':
 				if ( msg.payload.data.targets ) {
 					adData.pageTargeting = msg.payload.data.targets;
-					adData.setPageTargeting.push( msg.payload.data.timestamp );
+					adData.setPageTargeting.push( msg.payload.data.log );
 					maybeUpdateScreen( 'slots' );
 					maybeUpdateScreen( 'refreshes' );
 					maybeUpdateScreen( 'overview' );
