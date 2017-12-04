@@ -566,9 +566,9 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 	fragment = document.createDocumentFragment();
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
-		if ( 'undefined' !== typeof refreshIndex &&
+		if ( ! refreshResults[ i ] || ( 'undefined' !== typeof refreshIndex &&
 			refreshResults[ i ].overallRefreshIndex &&
-			refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+			refreshResults[ i ].overallRefreshIndex !== refreshIndex ) ) {
 			continue;
 		}
 		card = document.createElement( 'div' );
@@ -583,7 +583,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		card.appendChild( label );
 		detailList = document.createDocumentFragment();
 
-		if ( refreshResults[ i ].isEmpty ) {
+		if ( ! refreshResults[ i ] || refreshResults[ i ].isEmpty ) {
 			detail = document.createElement( 'li' );
 			text = 'No creative returned.';
 			detail.appendChild( document.createTextNode( text ) );
@@ -1436,7 +1436,8 @@ function checkForMoveAfterRender() {
 		}
 
 		for ( var r = 0, rlength = refreshResults.length; r < rlength; r++ ) {
-			if ( refreshResults[ r ].renderEndedTimestamp &&
+			if ( refreshResults[ r ] &&
+				refreshResults[ r ].renderEndedTimestamp &&
 				refreshResults[ r ].renderEndedTimestamp < slot.movedInDOM[0] ) {
 				offendingSlots.push( slotNames[ i ] );
 				break;
@@ -1587,7 +1588,8 @@ function checkForCreativesWiderThanViewport() {
 			continue;
 		}
 		for ( r = 0, rlength = slot.refreshResults.length; r < rlength; r++ ) {
-			if ( slot.refreshResults[ r ].isEmpty ) {
+			if ( ! slot.refreshResults[ r ] ||
+					slot.refreshResults[ r ].isEmpty ) {
 				continue;
 			}
 			if ( slot.refreshResults[ r ].size[0] > slot.refreshResults[ r ].documentWidth ) {
