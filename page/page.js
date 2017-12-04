@@ -141,7 +141,7 @@ var DFPeep = ( function() {
 			whichRefresh = 0;
 			if ( ! adData.refreshes || 0 === adData.refreshes.length ) {
 				adData.refreshes[0] = {
-					slots: []
+					slotIds: []
 				};
 			}
 			if ( -1 === adData.refreshes[0].slotIds.indexOf( adData.slots[ elementId ] ) ) {
@@ -223,7 +223,7 @@ var DFPeep = ( function() {
 			}
 			var slotNotInRefresh = 1;
 			for ( var i = 0, length = adData.refreshes[0].slotIds.length; i < length; i++ ) {
-				if ( adData.refreshes[0].slotIds[ i ].elementId === elementId ) {
+				if ( adData.refreshes[0].slotIds[ i ] === elementId ) {
 					slotNotInRefresh = 0;
 				}
 			}

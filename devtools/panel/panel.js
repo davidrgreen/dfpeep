@@ -168,7 +168,10 @@ function maybeUpdateScreen( screen ) {
  */
 function maybeUpdateMenuText( item ) {
 	var toUpdate,
-		currentLength;
+		currentLength,
+		span,
+		text,
+		newLabel;
 
 	if ( ! item || 'refreshes' === item ) {
 		currentLength = adData.refreshes.length;
@@ -176,7 +179,18 @@ function maybeUpdateMenuText( item ) {
 				UIState.refreshesShown !== currentLength ) {
 			UIState.refreshesShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#refreshes"]' );
-			toUpdate.innerText = 'Refreshes (' + currentLength + ')';
+			newLabel = document.createDocumentFragment();
+			span = document.createElement( 'span' );
+			span.className = 'notice notice--refreshes';
+			if ( currentLength > 0 ) {
+				span.className += ' notice--new';
+			}
+			span.appendChild( document.createTextNode( currentLength ) );
+			newLabel.appendChild( span );
+			text = currentLength > 1 ? 'Refreshes' : 'Refresh';
+			newLabel.appendChild( document.createTextNode( text ) );
+			emptyElement( toUpdate );
+			toUpdate.appendChild( newLabel );
 		}
 	}
 
@@ -185,18 +199,44 @@ function maybeUpdateMenuText( item ) {
 		if ( ! UIState.slotsShown || UIState.slotsShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#slots"]' );
-			toUpdate.innerText = 'Slots (' + currentLength + ')';
+			newLabel = document.createDocumentFragment();
+			span = document.createElement( 'span' );
+			span.className = 'notice notice--slots';
+			if ( currentLength > 0 ) {
+				span.className += ' notice--new';
+			}
+			span.appendChild( document.createTextNode( currentLength ) );
+			newLabel.appendChild( span );
+			text = currentLength > 1 ? 'Slots' : 'slot';
+			newLabel.appendChild( document.createTextNode( text ) );
+			emptyElement( toUpdate );
+			toUpdate.appendChild( newLabel );
 		}
 	}
 
 	if ( ! item || 'issues' === item ) {
-		currentLength = Object.keys( issues.warnings ).length +
-			Object.keys( issues.errors ).length;
+		var warningsLength = Object.keys( issues.warnings ).length,
+			errorsLength = Object.keys( issues.errors ).length;
+		currentLength = warningsLength + errorsLength;
 		if ( ! UIState.issuesShown ||
 				UIState.issuesShown !== currentLength ) {
 			UIState.slotsShown = currentLength;
 			toUpdate = menuElement.querySelector( 'a[href="#issues"]' );
-			toUpdate.innerText = 'Issues (' + currentLength + ')';
+			newLabel = document.createDocumentFragment();
+			span = document.createElement( 'span' );
+			span.className = 'notice notice--issues';
+			if ( currentLength > 0 ) {
+				span.className += ' notice--new';
+			}
+			if ( errorsLength > 0 ) {
+				span.className += ' notice--error';
+			}
+			span.appendChild( document.createTextNode( currentLength ) );
+			newLabel.appendChild( span );
+			text = currentLength > 1 ? 'Issues' : 'Issue';
+			newLabel.appendChild( document.createTextNode( text ) );
+			emptyElement( toUpdate );
+			toUpdate.appendChild( newLabel );
 		}
 	}
 }
@@ -313,12 +353,7 @@ function generateRefreshesScreen() {
 
 	var toReturn = document.createDocumentFragment();
 
-	var title = document.createElement( 'h2' );
-	title.appendChild( document.createTextNode( 'History of Refreshes:' ) );
-	toReturn.appendChild( title );
-
-	var refreshList = document.createElement( 'ul' );
-	refreshList.className = 'tree-list refresh-list';
+	var refreshList = document.createDocumentFragment();
 
 	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 
@@ -332,9 +367,10 @@ function generateRefreshesScreen() {
 		slots = adData.refreshes[ i ].slotIds;
 		slotCount = slots ? slots.length : 0;
 
-		refreshListItem = document.createElement( 'li' );
+		refreshListItem = document.createElement( 'div' );
+		refreshListItem.className = 'refresh-item card';
 		refreshListItem.id = 'refresh-' + ( i + 1 );
-		refreshLabel = document.createElement( 'b' );
+		refreshLabel = document.createElement( 'h2' );
 		text = 'Refresh #' + ( i + 1 ) + ' (' + slotCount + ' slots)';
 		text += ' ' + dash + ' ';
 
@@ -349,9 +385,10 @@ function generateRefreshesScreen() {
 		// Might should change to since GPT loaded.
 		text += ' after page load.';
 		refreshLabel.appendChild( document.createTextNode( text ) );
+		refreshLabel.className = 'refresh-label';
 		refreshListItem.appendChild( refreshLabel );
 
-		refreshSlotList = document.createElement( 'ul' );
+		refreshSlotList = document.createDocumentFragment();
 		// Begin list of slots sent in this refresh.
 		for ( s = 0; s < slotCount; s++ ) {
 			refreshSlotList.appendChild(
@@ -381,10 +418,10 @@ function generateRefreshesScreen() {
  * @return {HTMLElement} LI element containing the slot's data.
  */
 function buildSlotListItem( slot, refreshIndex ) {
-	var text;
+	var text, labelValue;
 
-	var slotListItem = document.createElement( 'li' );
-	slotListItem.className = 'tree-with-children';
+	var slotListItem = document.createElement( 'div' );
+	slotListItem.className = 'tree-with-children card';
 
 	if ( refreshIndex ) {
 		slotListItem.id = 'refresh-' + ( refreshIndex + 1 ) + '_' + slot.elementId;
@@ -414,30 +451,22 @@ function buildSlotListItem( slot, refreshIndex ) {
 	var slotInfoList = document.createElement( 'ul' );
 
 	var adUnit = document.createElement( 'li' );
-	text = 'Ad Unit: ' + slot.adUnitPath;
-	adUnit.appendChild( document.createTextNode( text ) );
+	labelValue = createLabelAndValue( 'Ad Unit:', slot.adUnitPath );
+	adUnit.appendChild( labelValue );
 	slotInfoList.appendChild( adUnit );
 
 	var elementId = document.createElement( 'li' );
-	text = 'DOM Element ID: ' + slot.elementId;
-	elementId.appendChild( document.createTextNode( text ) );
+	labelValue = createLabelAndValue( 'DOM ID:', slot.elementId );
+	elementId.appendChild( labelValue );
 	slotInfoList.appendChild( elementId );
 
 	if ( slot.refreshedIndexes ) {
 		var previousRefreshes = document.createElement( 'li' );
 
-		if ( adData.slots[ slot.elementId ] ) {
-			if ( adData.slots[ slot.elementId ].refreshedIndexes &&
-					1 === adData.slots[ slot.elementId ].refreshedIndexes.length ) {
-				text = 'Fetches: 1';
-			} else {
-				text = 'Fetches: ' + adData.slots[ slot.elementId ].refreshedIndexes.length;
-			}
-		} else {
-			text = 'Fetches: 0';
-		}
-
-		previousRefreshes.appendChild( document.createTextNode( text ) );
+		var count = adData.slots[ slot.elementId ].refreshedIndexes.length ?
+				adData.slots[ slot.elementId ].refreshedIndexes.length : 0;
+		labelValue = createLabelAndValue( 'Fetches:', count );
+		previousRefreshes.appendChild( labelValue );
 		previousRefreshes.appendChild(
 			buildRefreshResultList( slot.elementId, refreshIndex )
 		);
@@ -446,52 +475,55 @@ function buildSlotListItem( slot, refreshIndex ) {
 
 	if ( slot.targeting ) {
 		var targeting = document.createElement( 'li' );
-		text = 'Key-Value Targeting:';
-		targeting.appendChild( document.createTextNode( text ) );
-		targeting.appendChild( buildKeyTargetingList( slot.targeting ) );
+		labelValue = createLabelAndValue(
+			'Key-Value Targeting:',
+			buildKeyTargetingList( slot.targeting )
+		);
+		targeting.appendChild( labelValue );
 		slotInfoList.appendChild( targeting );
 	}
 
 	if ( slot.sizeMappings ) {
 		var sizeMapping = document.createElement( 'li' );
-		text = 'Size Mapping:';
-		sizeMapping.appendChild( document.createTextNode( text ) );
-		sizeMapping.appendChild(
+		labelValue = createLabelAndValue(
+			'Size Mapping:',
 			buildSizeMappingList( slot.sizeMappings[0] )
 		);
+		sizeMapping.appendChild( labelValue );
 		slotInfoList.appendChild( sizeMapping );
 	}
 
 	if ( slot.fallbackSize ) {
 		var fallbackSizes = document.createElement( 'li' );
-		text = 'Fallback sizes:';
-		fallbackSizes.appendChild( document.createTextNode( text ) );
-		fallbackSizes.appendChild(
+		labelValue = createLabelAndValue(
+			'Default Sizes:',
 			buildFallbackSizeList( slot.fallbackSize )
 		);
+		fallbackSizes.appendChild( labelValue );
 		slotInfoList.appendChild( fallbackSizes );
 	}
 
 	var collapseDiv = document.createElement( 'li' );
-	text = 'Collapse if Empty: ';
 	if ( slot.collapseEmptyDiv || ( adData.collapseEmptyDivs &&
 			adData.collapseEmptyDivs.timestamp &&
 			! adData.collapseEmptyDivs.error ) ) {
-		text += 'Yes';
+		text = 'Yes';
 
 		if ( 'before' === slot.collapseEmptyDiv || ( adData.collapseEmptyDivs &&
 			adData.collapseEmptyDivs.before ) ) {
 			text += ', before ad is fetched';
 		}
 	} else {
-		text += 'No';
+		text = 'No';
 	}
-	collapseDiv.appendChild( document.createTextNode( text ) );
+	labelValue = createLabelAndValue( 'Collapse if Empty:', text );
+	collapseDiv.appendChild( labelValue );
 	slotInfoList.appendChild( collapseDiv );
 
 	if ( slot.outOfPage ) {
 		var outOfPage = document.createElement( 'li' );
-		outOfPage.appendChild( document.createTextNode( 'Out of Page slot' ) );
+		labelValue = createLabelAndValue( 'Out of Page Slot:', 'Yes' );
+		outOfPage.appendChild( labelValue );
 		slotInfoList.appendChild( outOfPage );
 	}
 
@@ -510,24 +542,31 @@ function buildSlotListItem( slot, refreshIndex ) {
  * @return {HTMLElement} UL element containing the slot's refresh results.
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
-	var item, text, detailList, detail, ms, seconds;
-	var refreshResultList = document.createElement( 'ul' );
+	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment, labelValue, label;
 
 	if ( ! adData.slots[ slotId ] ) {
-		return refreshResultList;
+		return document.createElement( 'div' );
 	}
 	var refreshResults = adData.slots[ slotId ].refreshResults;
+
+	fragment = document.createDocumentFragment();
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
 		if ( 'undefined' !== typeof refreshIndex &&
 				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
 			continue;
 		}
+		card = document.createElement( 'div' );
+		card.className = 'card';
+		refreshResultList = document.createElement( 'ul' );
 		item = document.createElement( 'li' );
+		label = document.createElement( 'h3' );
+		label.className = 'fetch-label';
 		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
 			( refreshResults[ i ].overallRefreshIndex + 1 );
-		item.appendChild( document.createTextNode( text ) );
-		detailList = document.createElement( 'ul' );
+		label.appendChild( document.createTextNode( text ) );
+		card.appendChild( label );
+		detailList = document.createDocumentFragment();
 
 		if ( refreshResults[ i ].isEmpty ) {
 			detail = document.createElement( 'li' );
@@ -540,83 +579,114 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 				refreshResults[ i ].renderEndedTimestamp;
 				seconds = Math.round( ms / 1000 * 100 ) / 100;
 				detail = document.createElement( 'li' );
-				text = 'Load time: ' + seconds + ' seconds (' + ms + 'ms)';
-				detail.appendChild( document.createTextNode( text ) );
+				labelValue = createLabelAndValue(
+					'Load time:',
+					seconds + ' seconds (' + ms + 'ms)'
+				);
+				detail.appendChild( labelValue );
 				detailList.appendChild( detail );
 			}
 
 			detail = document.createElement( 'li' );
-			text = 'Viewed: ' + ( refreshResults[ i ].viewed ? 'Yes' : 'No' );
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Viewed',
+				refreshResults[ i ].viewed ? 'Yes' : 'No'
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Creative ID: ' + refreshResults[ i ].creativeId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Creative ID:',
+				refreshResults[ i ].creativeId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Line Item ID: ' + refreshResults[ i ].lineItemId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Line Item ID:',
+				refreshResults[ i ].lineItemId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Advertiser ID: ' + refreshResults[ i ].advertiserId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Advertiser ID:',
+				refreshResults[ i ].advertiserId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			detail = document.createElement( 'li' );
-			text = 'Campaign ID: ' + refreshResults[ i ].campaignId;
-			detail.appendChild( document.createTextNode( text ) );
+			labelValue = createLabelAndValue(
+				'Campaign ID:',
+				refreshResults[ i ].campaignId
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			if ( refreshResults[ i ].size &&
 					Array.isArray( refreshResults[ i ].size ) ) {
 				detail = document.createElement( 'li' );
-				text = 'Creative Size: ';
 				if ( refreshResults[ i ].size[0] && 0 !== refreshResults[ i ].size[0] ) {
-					text += buildSizePairText(
+					text = buildSizePairText(
 							refreshResults[ i ].size[0],
 							refreshResults[ i ].size[1]
 					);
 				} else {
 					if ( adData.slots[ slotId ].fallbackSize &&
 							-1 !== adData.slots[ slotId ].fallbackSize.indexOf( 'fluid' ) ) {
-						text += 'fluid';
+						text = 'fluid';
 					} else {
-						text += buildSizePairText(
+						text = buildSizePairText(
 								refreshResults[ i ].size[0],
 								refreshResults[ i ].size[1]
 						);
 					}
 				}
-				detail.appendChild( document.createTextNode( text ) );
+				labelValue = createLabelAndValue(
+					'Creative Size:',
+					text
+				);
+				detail.appendChild( labelValue );
 				detailList.appendChild( detail );
 			}
 
 			detail = document.createElement( 'li' );
-			text = 'Backfill: ' + ( refreshResults[ i ].isBackfill ? 'Yes' : 'No' );
-			detail.appendChild( document.createTextNode( text ) );
+			text = refreshResults[ i ].isBackfill ? 'Yes' : 'No';
+			labelValue = createLabelAndValue(
+				'Backfill:',
+				text
+			);
+			detail.appendChild( labelValue );
 			detailList.appendChild( detail );
 
 			if ( refreshResults[ i ].labelIds ) {
 				detail = document.createElement( 'li' );
-				text = 'Label IDs: ';
 				if ( Array.isArray( refreshResults[ i ].labelIds ) ) {
-					text += refreshResults[ i ].labelIds.join( ', ' );
+					text = refreshResults[ i ].labelIds.join( ', ' );
 				} else {
-					text += refreshResults[ i ].labelIds;
+					text = refreshResults[ i ].labelIds;
 				}
-				detail.appendChild( document.createTextNode( text ) );
+				labelValue = createLabelAndValue(
+					'Label IDs:',
+					text
+				);
+				detail.appendChild( labelValue );
 				detailList.appendChild( detail );
 			}
 		}
 
 		item.appendChild( detailList );
 		refreshResultList.appendChild( item );
+		card.appendChild( refreshResultList );
+		fragment.appendChild( card );
 	}
 
-	return refreshResultList;
+
+	return fragment;
 }
 
 /**
@@ -641,7 +711,7 @@ function buildTimeIntervalListItem( refreshes, i ) {
 
 	timeDiffText += ' passed';
 
-	timeListItem = document.createElement( 'li' );
+	timeListItem = document.createElement( 'div' );
 	timeListItem.className = 'tree-time-diff';
 	timeListItem.appendChild( document.createTextNode( timeDiffText ) );
 
@@ -659,6 +729,8 @@ function buildKeyTargetingList( targets ) {
 	var targetingList = document.createElement( 'ul' ),
 		targetingItem, text, valueList, valueItem,
 		i, length;
+
+	targetingList.className = 'bulleted';
 
 	for ( var target in targets ) {
 		if ( ! targets.hasOwnProperty( target ) ) {
@@ -704,6 +776,8 @@ function buildKeyTargetingList( targets ) {
 function buildFallbackSizeList( sizes ) {
 	var sizeList = document.createElement( 'ul' ),
 		sizeItem, size;
+
+	sizeList.className = 'bulleted';
 
 	if ( ! Array.isArray( sizes ) ) {
 		sizeItem = document.createElement( 'li' );
@@ -757,6 +831,8 @@ function buildSizeMappingList( sizeMapping ) {
 	var screenSizeList = document.createElement( 'ul' ),
 		screenSizeItem, screenSize, adSize, adSizeList, adSizeItem;
 
+	screenSizeList.className = 'bulleted';
+
 	for ( var j = 0, jlength = sizeMapping.length; j < jlength; j++ ) {
 		screenSizeItem = document.createElement( 'li' );
 		screenSize = sizeMapping[ j ][0][0] + 'x' + sizeMapping[ j ][0][1] + ':';
@@ -805,11 +881,7 @@ function generateSlotsScreen() {
 		return noSlots;
 	}
 
-	var title = document.createElement( 'h2' );
-	title.appendChild( document.createTextNode( 'Slots:' ) );
-	toReturn.appendChild( title );
-
-	var slotList = document.createElement( 'ul' );
+	var slotList = document.createElement( 'div' );
 	slotList.className = 'tree-list';
 
 	var slotNames = Object.keys( adData.slots ).sort();
@@ -832,15 +904,11 @@ function generateSlotsScreen() {
  */
 function generateOverviewScreen() {
 	var text, list, item;
-	var overview = document.createDocumentFragment();
-
-	var title = document.createElement( 'h2' );
-	text = 'Overview';
-	title.appendChild( document.createTextNode( text ) );
-	overview.appendChild( title );
+	var fragment = document.createDocumentFragment();
+	var overview = document.createElement( 'div' );
+	overview.className = 'card';
 
 	if ( ! adData ) {
-
 		return overview;
 	}
 
@@ -892,8 +960,15 @@ function generateOverviewScreen() {
 	}
 
 	overview.appendChild( list );
+	fragment.appendChild( overview );
 
-	return overview;
+	var img = document.createElement( 'img' );
+	img.src = 'img/dfpeep-logo.svg';
+	img.className = 'logo';
+	fragment.appendChild( img );
+
+
+	return fragment;
 }
 
 /**
@@ -1045,6 +1120,13 @@ function changeSelectedMenuItem( menuItem ) {
 
 	var newlySelected = menuElement.querySelector( 'a[href="#' + menuItem + '"]' );
 	newlySelected.classList.add( 'selected' );
+
+	var notice = newlySelected.querySelector( '.notice' );
+	if ( notice ) {
+		if ( notice.classList.contains( 'notice--new' ) ) {
+			notice.classList.remove( 'notice--new' );
+		}
+	}
 }
 
 /**
