@@ -22,6 +22,12 @@ ul {
 	padding: 0 0 0 20px;
 }
 
+ul.bulleted,
+ul.bulleted ul {
+	list-style: disc;
+	margin-left: 8px;
+}
+
 #menu ul {
 	list-style: none;
 	padding: 0;

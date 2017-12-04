@@ -704,6 +704,8 @@ function buildKeyTargetingList( targets ) {
 		targetingItem, text, valueList, valueItem,
 		i, length;
 
+	targetingList.className = 'bulleted';
+
 	for ( var target in targets ) {
 		if ( ! targets.hasOwnProperty( target ) ) {
 			continue;
@@ -748,6 +750,8 @@ function buildKeyTargetingList( targets ) {
 function buildFallbackSizeList( sizes ) {
 	var sizeList = document.createElement( 'ul' ),
 		sizeItem, size;
+
+	sizeList.className = 'bulleted';
 
 	if ( ! Array.isArray( sizes ) ) {
 		sizeItem = document.createElement( 'li' );
@@ -800,6 +804,8 @@ function buildSizePairText( first, second ) {
 function buildSizeMappingList( sizeMapping ) {
 	var screenSizeList = document.createElement( 'ul' ),
 		screenSizeItem, screenSize, adSize, adSizeList, adSizeItem;
+
+	screenSizeList.className = 'bulleted';
 
 	for ( var j = 0, jlength = sizeMapping.length; j < jlength; j++ ) {
 		screenSizeItem = document.createElement( 'li' );
