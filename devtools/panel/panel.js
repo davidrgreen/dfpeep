@@ -1816,7 +1816,7 @@ function checkForCreativesWiderThanViewport() {
  * @return {void}
  */
 function checkForRefreshOfNonViewedAd() {
-	var slot, text, i, length, r, rlength,
+	var slot, text, i, length, r, rlength, links, offendingSlotRefresh,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
 
@@ -1851,10 +1851,25 @@ function checkForRefreshOfNonViewedAd() {
 
 		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingNames[ d ] + ' during following fetches: ' +
-			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			text = offendingNames[ d ] + ' during its following fetches: ';
 			listItem.appendChild( document.createTextNode( text ) );
 			list.appendChild( listItem );
+
+
+			links = document.createDocumentFragment();
+			offendingSlotRefresh = offendingSlots[ offendingNames[ d ] ].refreshes;
+			for ( i = 0, length = offendingSlotRefresh.length; i < length; i++ ) {
+				if ( i > 0 ) {
+					links.appendChild( document.createTextNode( ', ' ) );
+				}
+				links.appendChild(
+					makePanelLink(
+						offendingSlotRefresh[ i ],
+						offendingNames[ d ]
+					)
+				);
+			}
+			listItem.appendChild( links );
 		}
 		fragment.appendChild( list );
 
