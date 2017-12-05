@@ -579,11 +579,8 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 	fragment = document.createDocumentFragment();
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
-		if ( ! refreshResults[ i ] ) {
-			continue;
-		}
-
 		if ( 'undefined' !== typeof refreshIndex &&
+				refreshResults[ i ] &&
 				refreshResults[ i ].overallRefreshIndex &&
 				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
 			// This is being shown for a specific refresh, so skip this entry if
@@ -611,10 +608,16 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		card = document.createElement( 'div' );
 		card.className = 'card';
 
-		if ( refreshResults[ i ].onloadTimestamp &&
+		if ( ! refreshResults[ i ] || refreshResults[ i ].onloadTimestamp &&
 				! refreshResults[ i ].renderEndedTimestamp ||
 				refreshResults[ i ].isEmpty ) {
-			text = 'Error. No creative data returned.';
+			label = document.createElement( 'h3' );
+			label.className = 'fetch-label';
+			text = 'Fetch #' + ( i + 1 );
+			label.appendChild( document.createTextNode( text ) );
+			card.appendChild( label );
+			card.className += ' fetch-error';
+			text = 'No creative data returned. May have been an error or a subsequent fetch happened too quickly.';
 			card.appendChild( document.createTextNode( text ) );
 			fragment.appendChild( card );
 			cardsInserted += 1;
