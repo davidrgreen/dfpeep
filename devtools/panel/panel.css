@@ -302,3 +302,8 @@ h3.fetch-label {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+.refresh-jump-to-slot {
+	display: block;
+	margin: -3px 0 7px 5px;
+}

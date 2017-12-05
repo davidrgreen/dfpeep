@@ -496,6 +496,15 @@ function buildSlotListItem( slot, refreshIndex ) {
 			buildRefreshResultList( slot.elementId, refreshIndex )
 		);
 		slotInfoList.appendChild( previousRefreshes );
+
+		if ( 'undefined' !== typeof refreshIndex && count > 1 ) {
+			var link = makePanelLink(
+				'Jump to full slot data',
+				slot.elementId
+			);
+			link.className = 'refresh-jump-to-slot';
+			slotInfoList.appendChild( link );
+		}
 	}
 
 	if ( slot.targeting ) {
