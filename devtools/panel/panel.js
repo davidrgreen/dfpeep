@@ -1372,6 +1372,13 @@ function setupContentArea() {
 			} else {
 				// Try jumping to a slot.
 				// Maybe see if the slot exists before jump.
+				requestAnimationFrame( function() {
+					changeScreen( 'slots', [ hash ] );
+					toFocus = document.getElementById( hash );
+					if ( toFocus ) {
+						toFocus.scrollIntoView( 1 );
+					}
+				} );
 			}
 			var targetScreen = e.target.hash.replace( '#', '' );
 			var id = e.target.getAttribute( 'data-ref' );
