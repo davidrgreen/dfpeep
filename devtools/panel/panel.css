@@ -177,7 +177,13 @@ ul ul .tree-plus-sign--expanded ~ .slot-options {
 	padding: 0 14px;
 }
 
-.slot-options span:hover {
+#content a {
+	color: dodgerblue;
+	text-decoration: none;
+}
+
+.slot-options span:hover,
+#content a:hover {
 	text-decoration: underline;
 	cursor: pointer;
 }
