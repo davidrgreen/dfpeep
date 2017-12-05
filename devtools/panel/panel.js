@@ -614,11 +614,16 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 				refreshResults[ i ].isEmpty ) {
 			label = document.createElement( 'h3' );
 			label.className = 'fetch-label';
-			text = 'Fetch #' + ( i + 1 );
+			text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
+				( adData.slots[ slotId ].refreshedIndexes[ i ] + 1 );
 			label.appendChild( document.createTextNode( text ) );
 			card.appendChild( label );
 			card.className += ' fetch-error';
-			text = 'No creative data returned. May have been an error or a subsequent fetch happened too quickly.';
+			if ( refreshResults[ i ] && refreshResults[ i ].isEmpty ) {
+				text = 'No creative filled for this fetch.';
+			} else {
+				text = 'No creative data returned. May have been an error or a subsequent fetch happened too quickly.';
+			}
 			card.appendChild( document.createTextNode( text ) );
 			fragment.appendChild( card );
 			cardsInserted += 1;
