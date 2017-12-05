@@ -1,3 +1,5 @@
+![DFPeep](img/dfpeep-logo.svg?raw=true)
+
 Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extension that collects data about DoubleClick for Publishers(DFP) ads that are implemented with Google Publisher Tags(GPT) for Doubleclick. Beyond collecting the data and presenting it to you in a Chrome dev tools panel for easy review, I also make recommendations based on the data collected.
 
 ## Issues I Can Recognize
