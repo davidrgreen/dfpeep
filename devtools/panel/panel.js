@@ -567,7 +567,9 @@ function buildSlotListItem( slot, refreshIndex ) {
  * @return {HTMLElement} UL element containing the slot's refresh results.
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
-	var item, text, detailList, detail, ms, seconds, card, refreshResultList, fragment, labelValue, label;
+	var item, text, detailList, detail, ms, seconds, card, refreshResultList,
+		fragment, labelValue, label, timeListItem,
+		cardsInserted = 0;
 
 	if ( ! adData.slots[ slotId ] ) {
 		return document.createElement( 'div' );
@@ -581,20 +583,41 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			continue;
 		}
 
+		if ( 'undefined' !== typeof refreshIndex &&
+				refreshResults[ i ].overallRefreshIndex &&
+				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+			// This is being shown for a specific refresh, so skip this entry if
+			// this is not data for that refresh.
+			continue;
+		}
+
+		if ( cardsInserted > 0 && refreshResults[ i - 1 ] &&
+				refreshResults[ i - 1 ].renderEndedTimestamp &&
+				refreshResults[ i ].renderEndedTimestamp ) {
+			ms = refreshResults[ i ].renderEndedTimestamp -
+					refreshResults[ i - 1 ].renderEndedTimestamp;
+			seconds = Math.round( ms / 1000 * 100 ) / 100;
+			if ( 0 !== ms % 1000 ) {
+				text = seconds + ' seconds (' + ms + 'ms)';
+			} else {
+				text = seconds + ' seconds';
+			}
+			timeListItem = document.createElement( 'div' );
+			timeListItem.className = 'tree-time-diff fetch-interval';
+			timeListItem.appendChild( document.createTextNode( text ) );
+			fragment.appendChild( timeListItem );
+		}
+
 		card = document.createElement( 'div' );
 		card.className = 'card';
 
 		if ( refreshResults[ i ].onloadTimestamp &&
-				! refreshResults[ i ].renderEndedTimestamp ) {
+				! refreshResults[ i ].renderEndedTimestamp ||
+				refreshResults[ i ].isEmpty ) {
 			text = 'Error. No creative data returned';
 			card.appendChild( document.createTextNode( text ) );
 			fragment.appendChild( card );
-			continue;
-		}
-
-		if ( 'undefined' !== typeof refreshIndex &&
-				refreshResults[ i ].overallRefreshIndex &&
-				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+			cardsInserted += 1;
 			continue;
 		}
 
@@ -723,6 +746,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		refreshResultList.appendChild( item );
 		card.appendChild( refreshResultList );
 		fragment.appendChild( card );
+		cardsInserted += 1;
 	}
 
 	return fragment;

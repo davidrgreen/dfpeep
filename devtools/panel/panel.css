@@ -117,6 +117,12 @@ ul.tree-list li {
 	border-left: solid 2px lightgray;
 }
 
+.tree-time-diff.fetch-interval {
+	padding: 4px 10px;
+	font-size: 92%;
+	margin-left: 4px;
+}
+
 ul.tree-list li.tree-with-children {
 }
 
