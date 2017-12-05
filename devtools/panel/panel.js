@@ -578,6 +578,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 function buildRefreshResultList( slotId, refreshIndex ) {
 	var item, text, detailList, detail, ms, seconds, card, refreshResultList,
 		fragment, labelValue, label, timeListItem, currentRefresh, previousRefresh,
+		refreshToDisplay,
 		cardsInserted = 0;
 
 	if ( ! adData.slots[ slotId ] ) {
@@ -623,9 +624,20 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 				refreshResults[ i ].isEmpty ) {
 			label = document.createElement( 'h3' );
 			label.className = 'fetch-label';
-			text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
-				( adData.slots[ slotId ].refreshedIndexes[ i ] + 1 );
-			label.appendChild( document.createTextNode( text ) );
+			text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch ';
+			refreshToDisplay = adData.slots[ slotId ].refreshedIndexes[ i ] + 1;
+			if ( 'undefined' !== typeof refreshIndex ) {
+				text += '#' + refreshToDisplay;
+				label.appendChild( document.createTextNode( text ) );
+			} else {
+				label.appendChild( document.createTextNode( text ) );
+				label.appendChild(
+					makePanelLink(
+						'#' + refreshToDisplay,
+						'refresh-' + refreshToDisplay
+					)
+				);
+			}
 			card.appendChild( label );
 			card.className += ' fetch-error';
 			if ( refreshResults[ i ] && refreshResults[ i ].isEmpty ) {
@@ -643,9 +655,21 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		item = document.createElement( 'li' );
 		label = document.createElement( 'h3' );
 		label.className = 'fetch-label';
-		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
-			( refreshResults[ i ].overallRefreshIndex + 1 );
-		label.appendChild( document.createTextNode( text ) );
+		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch ';
+		refreshToDisplay = adData.slots[ slotId ].refreshedIndexes[ i ] + 1;
+		if ( 'undefined' !== typeof refreshIndex ) {
+			text += '#' + refreshToDisplay;
+			label.appendChild( document.createTextNode( text ) );
+		} else {
+			label.appendChild( document.createTextNode( text ) );
+			label.appendChild(
+				makePanelLink(
+					'#' + refreshToDisplay,
+					'refresh-' + refreshToDisplay
+				)
+			);
+		}
+			// ( refreshResults[ i ].overallRefreshIndex + 1 );
 		card.appendChild( label );
 		detailList = document.createDocumentFragment();
 
