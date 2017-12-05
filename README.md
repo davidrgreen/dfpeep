@@ -2,25 +2,6 @@
 
 Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extension that collects data about DoubleClick for Publishers(DFP) ads that are implemented with Google Publisher Tags(GPT). Beyond collecting the data and presenting it to you in a Chrome DevTools panel for easy review, I also make recommendations based on the data collected.
 
-## Issues I Can Recognize
-Issues are categorized as either warnings or errors. Warnings are most likely a problem, but there are cases where it may not be a concern. Errors are most definitely an issue. More information and context is given for issues within DFPeep.
-
-### Errors
-- Enabled single request mode after enabling services.
-- Set key-value targeting values as comma dilineated strings instead of arrays of strings.
-- Enabled collapseEmptyDivs too late.
-
-### Warnings
-- Disabled initial load too late.
-- Moved an ad slot in the DOM after the slot was fetched.
-- Fetched the same slot more than once.
-- Fetched a slot before its previous fetch was marked viewable.
-- Ad slot was defined but never fetched.
-- Fetches for a slot occurred less than 10 seconds apart.
-- Refreshed ad slot(s) when the page was not in focus.
-- A creative is wider than the viewport when rendered.
-- Page-wide key-value targeting set after enabling services.
-
 ## How to Install
 1. Download the zip file from https://github.com/davidrgreen/dfpeep/archive/master.zip and unzip it or git clone this locally: git clone https://github.com/davidrgreen/dfpeep.git
 3. Click the "Developer mode" checkbox in the top-right.
@@ -39,3 +20,22 @@ Once open you'll see menu options within the panel.
 
 Possible problems when using DFPeep:
 - If the DFPeep panel does not seem to be receiving data then close DevTools completely and reopen them. That will attempt to sync the data. If that fails reload the page.
+
+## Issues I Can Recognize
+Issues are categorized as either warnings or errors. Warnings are most likely a problem, but there are cases where it may not be a concern. Errors are most definitely an issue. More information and context is given for issues within DFPeep.
+
+### Errors
+- Enabled single request mode after enabling services.
+- Set key-value targeting values as comma dilineated strings instead of arrays of strings.
+- Enabled collapseEmptyDivs too late.
+
+### Warnings
+- Disabled initial load too late.
+- Moved an ad slot in the DOM after the slot was fetched.
+- Fetched the same slot more than once.
+- Fetched a slot before its previous fetch was marked viewable.
+- Ad slot was defined but never fetched.
+- Fetches for a slot occurred less than 10 seconds apart.
+- Refreshed ad slot(s) when the page was not in focus.
+- A creative is wider than the viewport when rendered.
+- Page-wide key-value targeting set after enabling services.
