@@ -568,7 +568,7 @@ function buildSlotListItem( slot, refreshIndex ) {
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
 	var item, text, detailList, detail, ms, seconds, card, refreshResultList,
-		fragment, labelValue, label, timeListItem,
+		fragment, labelValue, label, timeListItem, currentRefresh, previousRefresh,
 		cardsInserted = 0;
 
 	if ( ! adData.slots[ slotId ] ) {
@@ -588,11 +588,13 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			continue;
 		}
 
-		if ( cardsInserted > 0 && refreshResults[ i - 1 ] &&
-				refreshResults[ i - 1 ].renderEndedTimestamp &&
-				refreshResults[ i ].renderEndedTimestamp ) {
-			ms = refreshResults[ i ].renderEndedTimestamp -
-					refreshResults[ i - 1 ].renderEndedTimestamp;
+		currentRefresh = adData.refreshes[ adData.slots[ slotId ].refreshedIndexes[ i ] ];
+		if ( adData.refreshes[ adData.slots[ slotId ].refreshedIndexes[ i - 1 ] ] ) {
+			previousRefresh = adData.refreshes[ adData.slots[ slotId ].refreshedIndexes[ i - 1 ] ];
+		}
+		if ( cardsInserted > 0 && currentRefresh && currentRefresh.timestamp &&
+					previousRefresh && previousRefresh.timestamp ) {
+			ms = currentRefresh.timestamp - previousRefresh.timestamp;
 			seconds = Math.round( ms / 1000 * 100 ) / 100;
 			if ( 0 !== ms % 1000 ) {
 				text = seconds + ' seconds (' + ms + 'ms)';
