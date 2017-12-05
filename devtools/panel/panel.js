@@ -1907,7 +1907,7 @@ function checkForRefreshOfNonViewedAd() {
  * @return {void}
  */
 function checkForFetchTooQuickly() {
-	var slot, text, i, length, r, rlength,
+	var slot, text, i, length, r, rlength, d, dlength, offendingSlotRefreshes, links,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
 
@@ -1947,12 +1947,27 @@ function checkForFetchTooQuickly() {
 		var list = document.createElement( 'ul' ),
 			listItem;
 
-		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
+		for ( d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingNames[ d ] + ' during following fetches: ' +
-			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			text = offendingNames[ d ] + ' during following fetches: ';
 			listItem.appendChild( document.createTextNode( text ) );
 			list.appendChild( listItem );
+			links = document.createDocumentFragment();
+			offendingSlotRefreshes = offendingSlots[ offendingNames[ d ] ].refreshes;
+			for ( i = 0, length = offendingSlotRefreshes.length; i < length; i++ ) {
+				if ( i > 0 ) {
+					links.appendChild( document.createTextNode( ', ' ) );
+				}
+				links.appendChild(
+					makePanelLink(
+						offendingSlotRefreshes[ i ],
+						offendingNames[ d ]
+					)
+				);
+			}
+
+			listItem.appendChild( links );
+
 		}
 		fragment.appendChild( list );
 
