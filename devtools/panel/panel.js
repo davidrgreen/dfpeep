@@ -1683,9 +1683,14 @@ function checkForDuplicateFetches() {
 
 		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingSlots[ d ].id + ' ' + dash + ' ' +
-				offendingSlots[ d ].count + ' fetches';
+			text = offendingSlots[ d ].id + ' ' + dash + ' ';
 			listItem.appendChild( document.createTextNode( text ) );
+			listItem.appendChild(
+				makePanelLink(
+					offendingSlots[ d ].count + ' fetches',
+					offendingSlots[ d ].id
+				)
+			);
 			list.appendChild( listItem );
 		}
 		fragment.appendChild( list );
