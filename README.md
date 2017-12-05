@@ -1,6 +1,6 @@
 ![DFPeep](./img/dfpeep-logo.svg)
 
-Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extension that collects data about DoubleClick for Publishers(DFP) ads that are implemented with Google Publisher Tags(GPT) for Doubleclick. Beyond collecting the data and presenting it to you in a Chrome dev tools panel for easy review, I also make recommendations based on the data collected.
+Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extension that collects data about DoubleClick for Publishers(DFP) ads that are implemented with Google Publisher Tags(GPT). Beyond collecting the data and presenting it to you in a Chrome dev tools panel for easy review, I also make recommendations based on the data collected.
 
 ## Issues I Can Recognize
 Issues are categorized as either warnings or errors. Warnings are most likely a problem, but there are cases where it may not be a concern. Errors are most definitely an issue.
