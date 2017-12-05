@@ -3,7 +3,7 @@
  *
  * @since 0.1.0
  * @package DFPeep
- * @copyright 2017 David Green
+ * @copyright 2017 David Green <https://davidrg.com>
  * @license MIT
  */
 
