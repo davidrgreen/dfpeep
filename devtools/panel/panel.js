@@ -614,7 +614,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		if ( refreshResults[ i ].onloadTimestamp &&
 				! refreshResults[ i ].renderEndedTimestamp ||
 				refreshResults[ i ].isEmpty ) {
-			text = 'Error. No creative data returned';
+			text = 'Error. No creative data returned.';
 			card.appendChild( document.createTextNode( text ) );
 			fragment.appendChild( card );
 			cardsInserted += 1;
@@ -1130,11 +1130,12 @@ function buildIssueList( issueData, type ) {
 /**
  * Change the screen being displayed.
  *
- * @param {string} screen Name of the screen to show.
+ * @param {string} screen           Name of the screen to show.
+ * @param {string} elementsToExpand Ids of element to expand on the next screen.
  *
  * @return {void}
  */
-function changeScreen( screen ) {
+function changeScreen( screen, elementsToExpand ) {
 	var nextScreen = screen;
 	switch ( screen ) {
 		case 'init':
@@ -1143,10 +1144,18 @@ function changeScreen( screen ) {
 			displayContent( generateOverviewScreen(), nextScreen );
 			break;
 		case 'refreshes':
-			displayContent( generateRefreshesScreen(), nextScreen );
+			displayContent(
+				generateRefreshesScreen(),
+				nextScreen,
+				elementsToExpand
+			);
 			break;
 		case 'slots':
-			displayContent( generateSlotsScreen(), nextScreen );
+			displayContent(
+				generateSlotsScreen(),
+				nextScreen,
+				elementsToExpand
+			);
 			break;
 		case 'issues':
 			displayContent( generateIssuesScreen(), nextScreen );
@@ -1200,12 +1209,12 @@ function changeSelectedMenuItem( menuItem ) {
  * displayed then preserve expanded elements and make the screen update
  * as smooth as possible.
  *
- * @param {DocumentFragment} content    The DOM nodes to insert into the content
- *                                      element.
- * @param {string}           nextScreen Name of screen being changed to.
+ * @param {DocumentFragment} content            The DOM nodes to insert into the
+ *                                              content element.
+ * @param {string}           nextScreen         Name of screen being changed to.
+ * @param {array}            expandedElementIds List of element Ids to expand.
  */
-function displayContent( content, nextScreen ) {
-	var expandedElementIds;
+function displayContent( content, nextScreen, expandedElementIds ) {
 	if ( ! content ) {
 		console.error( 'No content passed to displayContent' );
 		return;
@@ -1222,7 +1231,7 @@ function displayContent( content, nextScreen ) {
 	}
 	emptyElement( contentElement );
 	makeCollapsible( content, nextScreen );
-	if ( nextScreen === currentScreen && expandedElementIds ) {
+	if ( expandedElementIds ) {
 		reExpandElements( content, expandedElementIds );
 	}
 	contentElement.appendChild( content );
@@ -1327,12 +1336,43 @@ function setupContentArea() {
 	} );
 
 	contentElement.addEventListener( 'click', function( e ) {
-		if ( e.target && 'A' === e.target.nodeName ) {
+		var hash, slotName, refreshNumber, matches, toFocus;
+
+		if ( e.target && 'A' === e.target.nodeName && e.target.hash ) {
 			var rel = e.target.getAttribute( 'rel' );
 			if ( ! rel || 'panel' !== rel ) {
 				return;
 			}
 			e.preventDefault();
+			hash = e.target.hash.replace( '#', '' );
+			matches = hash.match( /^refresh\-(\d+)_?(.+)?$/ );
+
+			if ( matches ) {
+				// Jumping to refreshes screen.
+				slotName = matches[2];
+				refreshNumber = matches[1];
+				if ( slotName ) {
+					requestAnimationFrame( function() {
+						changeScreen( 'refreshes', [ hash ] );
+						toFocus = document.getElementById( hash );
+						if ( toFocus ) {
+							toFocus.scrollIntoView( 1 );
+						}
+					} );
+
+				} else {
+					requestAnimationFrame( function() {
+						changeScreen( 'refreshes' );
+						toFocus = document.getElementById( hash );
+						if ( toFocus ) {
+							toFocus.scrollIntoView( 1 );
+						}
+					} );
+				}
+			} else {
+				// Try jumping to a slot.
+				// Maybe see if the slot exists before jump.
+			}
 			var targetScreen = e.target.hash.replace( '#', '' );
 			var id = e.target.getAttribute( 'data-ref' );
 			if ( id ) {
@@ -1906,9 +1946,9 @@ function checkForRefreshWhenNotFocused() {
 	}
 
 	var offendingRefreshes = [],
-		text;
+		text, links, i, length;
 
-	for ( var i = 0, length = adData.refreshes.length; i < length; i++ ) {
+	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 		if ( ! adData.refreshes[ i ].windowHadFocus ) {
 			offendingRefreshes.push( i + 1 );
 		}
@@ -1918,8 +1958,22 @@ function checkForRefreshWhenNotFocused() {
 		var fragment = document.createDocumentFragment();
 		var description = document.createElement( 'p' );
 		text = 'The following refreshes occurred while the page was not focused, likely because you had changed to another browser tab. This can lead to fetches without giving users an opportunity to view an ad, so you should confirm the following refreshes were intentional: ';
-		text += offendingRefreshes.join( ', ' );
 		description.appendChild( document.createTextNode( text ) );
+
+		links = document.createDocumentFragment();
+		for ( i = 0, length = offendingRefreshes.length; i < length; i++ ) {
+			if ( i > 0 ) {
+				links.appendChild( document.createTextNode( ', ' ) );
+			}
+			links.appendChild(
+				makePanelLink(
+					offendingRefreshes[ i ],
+					'refresh-' + offendingRefreshes[ i ]
+				)
+			);
+		}
+
+		description.appendChild( links );
 		fragment.appendChild( description );
 
 		issues.warnings.refreshWhenNotFocused = {
@@ -2061,4 +2115,20 @@ function createLabelAndValue( label, value ) {
 		fragment.appendChild( document.createTextNode( value ) );
 	}
 	return fragment;
+}
+
+/**
+ * Build a link designed to jump to another panel of DFPeep.
+ *
+ * @param {string} text     The text for the link.
+ * @param {string} targetId The ID of the element being jumped to.
+ *
+ * @return {HTMLElement} Link element.
+ */
+function makePanelLink( text, targetId ) {
+	var link = document.createElement( 'a' );
+	link.innerText = text;
+	link.href = '#' + targetId;
+	link.rel = 'panel';
+	return link;
 }
