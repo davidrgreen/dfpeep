@@ -580,9 +580,8 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
 		if ( 'undefined' !== typeof refreshIndex &&
-				refreshResults[ i ] &&
-				refreshResults[ i ].overallRefreshIndex &&
-				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+				'undefined' !== typeof adData.slots[ slotId ].refreshedIndexes[ i ] &&
+				adData.slots[ slotId ].refreshedIndexes[ i ] !== refreshIndex ) {
 			// This is being shown for a specific refresh, so skip this entry if
 			// this is not data for that refresh.
 			continue;
