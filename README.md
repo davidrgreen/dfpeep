@@ -1,6 +1,6 @@
 ![DFPeep](./img/dfpeep-logo.svg)
 
-Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extension that collects data about DoubleClick for Publishers(DFP) ads that are implemented with Google Publisher Tags(GPT). Beyond collecting the data and presenting it to you in a Chrome DevTools panel for easy review, I also make recommendations based on the data collected.
+Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extension that collects data about DoubleClick for Publishers(DFP) ads implemented with Google Publisher Tags(GPT). Beyond collecting the data and presenting it to you in a Chrome DevTools panel for easy review, I also make recommendations based on the data collected.
 
 ## How to Install
 1. Download the zip file from https://github.com/davidrgreen/dfpeep/archive/master.zip and unzip it or git clone this locally: git clone https://github.com/davidrgreen/dfpeep.git
@@ -17,6 +17,8 @@ Once open you'll see menu options within the panel.
 - Refreshes - Shows when refreshes occur and what slots are within each batch, along with info on the creative displayed due to the fetch.
 - Slots - View all info collected so far about a slot, including its history of fetches.
 - Issues - View warnings and errors DFPeep has detected. Where possible the issues detail exactly what slot or setting is having the problem and recommends how to fix it.
+
+At times you'll see blue text. That is a link, most of which will jump you to another panel to focus on a specific slot or refresh.
 
 Possible problems when using DFPeep:
 - If the DFPeep panel does not seem to be receiving data then close DevTools completely and reopen them. That will attempt to sync the data. If that fails reload the page.
