@@ -448,7 +448,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 	var slotListItem = document.createElement( 'div' );
 	slotListItem.className = 'tree-with-children card';
 
-	if ( refreshIndex ) {
+	if ( 'undefined' !== typeof refreshIndex ) {
 		slotListItem.id = 'refresh-' + ( refreshIndex + 1 ) + '_' + slot.elementId;
 	} else {
 		slotListItem.id = slot.elementId;
