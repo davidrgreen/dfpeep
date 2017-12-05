@@ -3,6 +3,11 @@ Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extensio
 ## Issues I Can Recognize
 Issues are categorized as either warnings or errors. Warnings are most likely a problem, but there are cases where it may not be a concern. Errors are most definitely an issue.
 
+### Errors
+- Enabled single request mode after enabling services.
+- Set key-value targeting values as comma dilineated strings instead of arrays of strings.
+- Enabled collapseEmptyDivs too late.
+
 ### Warnings
 - Disabled initial load too late.
 - Moved an ad slot in the DOM after the slot was fetched.
@@ -12,11 +17,7 @@ Issues are categorized as either warnings or errors. Warnings are most likely a 
 - Fetches for a slot occurred less than 10 seconds apart.
 - Refreshed ad slot(s) when the page was not in focus.
 - A creative is wider than the viewport when rendered.
-
-### Errors
-- Enabled single request mode after enabling services.
-- Set key-value targeting values as comma dilineated strings instead of arrays of strings.
-- Enabled collapseEmptyDivs too late.
+- Page-wide key-value targeting set after enabling services.
 
 ## How to Install
 1. Download the zip file from https://github.com/davidrgreen/dfpeep/archive/master.zip and unzip it or git clone this locally: git clone https://github.com/davidrgreen/dfpeep.git
