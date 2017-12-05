@@ -1764,7 +1764,7 @@ function checkForDefinedNoFetch() {
  * @return {void}
  */
 function checkForCreativesWiderThanViewport() {
-	var slot, text, i, length, r, rlength,
+	var slot, text, i, length, r, rlength, links, offendingSlotRefreshes,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
 
@@ -1802,9 +1802,24 @@ function checkForCreativesWiderThanViewport() {
 
 		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingNames[ d ] + ' during following fetches: ' +
-			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			text = offendingNames[ d ] + ' during following fetches: ';
 			listItem.appendChild( document.createTextNode( text ) );
+
+			links = document.createDocumentFragment();
+			offendingSlotRefreshes = offendingSlots[ offendingNames[ d ] ].refreshes;
+			for ( i = 0, length = offendingSlotRefreshes.length; i < length; i++ ) {
+				if ( i > 0 ) {
+					links.appendChild( document.createTextNode( ', ' ) );
+				}
+				links.appendChild(
+					makePanelLink(
+						offendingSlotRefreshes[ i ],
+						offendingNames[ d ]
+					)
+				);
+			}
+			listItem.appendChild( links );
+
 			list.appendChild( listItem );
 		}
 		fragment.appendChild( list );
