@@ -177,7 +177,13 @@ ul ul .tree-plus-sign--expanded ~ .slot-options {
 	padding: 0 14px;
 }
 
-.slot-options span:hover {
+#content a {
+	color: dodgerblue;
+	text-decoration: none;
+}
+
+.slot-options span:hover,
+#content a:hover {
 	text-decoration: underline;
 	cursor: pointer;
 }
@@ -272,6 +278,10 @@ li .card {
 	background-color: #f6f2f2;
 }
 
+.card.fetch-error {
+	line-height: 19px;
+}
+
 h2.refresh-label {
 	font-size: 14px;
 	margin: 0;
@@ -291,4 +301,9 @@ h3.fetch-label {
 	max-width: 320px;
 	margin-left: auto;
 	margin-right: auto;
+}
+
+.refresh-jump-to-slot {
+	display: block;
+	margin: -3px 0 7px 5px;
 }

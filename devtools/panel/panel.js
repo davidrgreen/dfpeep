@@ -448,7 +448,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 	var slotListItem = document.createElement( 'div' );
 	slotListItem.className = 'tree-with-children card';
 
-	if ( refreshIndex ) {
+	if ( 'undefined' !== typeof refreshIndex ) {
 		slotListItem.id = 'refresh-' + ( refreshIndex + 1 ) + '_' + slot.elementId;
 	} else {
 		slotListItem.id = slot.elementId;
@@ -496,6 +496,15 @@ function buildSlotListItem( slot, refreshIndex ) {
 			buildRefreshResultList( slot.elementId, refreshIndex )
 		);
 		slotInfoList.appendChild( previousRefreshes );
+
+		if ( 'undefined' !== typeof refreshIndex && count > 1 ) {
+			var link = makePanelLink(
+				'Jump to full slot data',
+				slot.elementId
+			);
+			link.className = 'refresh-jump-to-slot';
+			slotInfoList.appendChild( link );
+		}
 	}
 
 	if ( slot.targeting ) {
@@ -568,7 +577,8 @@ function buildSlotListItem( slot, refreshIndex ) {
  */
 function buildRefreshResultList( slotId, refreshIndex ) {
 	var item, text, detailList, detail, ms, seconds, card, refreshResultList,
-		fragment, labelValue, label, timeListItem,
+		fragment, labelValue, label, timeListItem, currentRefresh, previousRefresh,
+		refreshToDisplay,
 		cardsInserted = 0;
 
 	if ( ! adData.slots[ slotId ] ) {
@@ -579,23 +589,21 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 	fragment = document.createDocumentFragment();
 
 	for ( var i = 0, length = refreshResults.length; i < length; i++ ) {
-		if ( ! refreshResults[ i ] ) {
-			continue;
-		}
-
 		if ( 'undefined' !== typeof refreshIndex &&
-				refreshResults[ i ].overallRefreshIndex &&
-				refreshResults[ i ].overallRefreshIndex !== refreshIndex ) {
+				'undefined' !== typeof adData.slots[ slotId ].refreshedIndexes[ i ] &&
+				adData.slots[ slotId ].refreshedIndexes[ i ] !== refreshIndex ) {
 			// This is being shown for a specific refresh, so skip this entry if
 			// this is not data for that refresh.
 			continue;
 		}
 
-		if ( cardsInserted > 0 && refreshResults[ i - 1 ] &&
-				refreshResults[ i - 1 ].renderEndedTimestamp &&
-				refreshResults[ i ].renderEndedTimestamp ) {
-			ms = refreshResults[ i ].renderEndedTimestamp -
-					refreshResults[ i - 1 ].renderEndedTimestamp;
+		currentRefresh = adData.refreshes[ adData.slots[ slotId ].refreshedIndexes[ i ] ];
+		if ( adData.refreshes[ adData.slots[ slotId ].refreshedIndexes[ i - 1 ] ] ) {
+			previousRefresh = adData.refreshes[ adData.slots[ slotId ].refreshedIndexes[ i - 1 ] ];
+		}
+		if ( cardsInserted > 0 && currentRefresh && currentRefresh.timestamp &&
+					previousRefresh && previousRefresh.timestamp ) {
+			ms = currentRefresh.timestamp - previousRefresh.timestamp;
 			seconds = Math.round( ms / 1000 * 100 ) / 100;
 			if ( 0 !== ms % 1000 ) {
 				text = seconds + ' seconds (' + ms + 'ms)';
@@ -611,10 +619,32 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		card = document.createElement( 'div' );
 		card.className = 'card';
 
-		if ( refreshResults[ i ].onloadTimestamp &&
+		if ( ! refreshResults[ i ] || refreshResults[ i ].onloadTimestamp &&
 				! refreshResults[ i ].renderEndedTimestamp ||
 				refreshResults[ i ].isEmpty ) {
-			text = 'Error. No creative data returned';
+			label = document.createElement( 'h3' );
+			label.className = 'fetch-label';
+			text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch ';
+			refreshToDisplay = adData.slots[ slotId ].refreshedIndexes[ i ] + 1;
+			if ( 'undefined' !== typeof refreshIndex ) {
+				text += '#' + refreshToDisplay;
+				label.appendChild( document.createTextNode( text ) );
+			} else {
+				label.appendChild( document.createTextNode( text ) );
+				label.appendChild(
+					makePanelLink(
+						'#' + refreshToDisplay,
+						'refresh-' + refreshToDisplay
+					)
+				);
+			}
+			card.appendChild( label );
+			card.className += ' fetch-error';
+			if ( refreshResults[ i ] && refreshResults[ i ].isEmpty ) {
+				text = 'No creative filled for this fetch.';
+			} else {
+				text = 'No creative data returned. May have been an error or a subsequent fetch happened too quickly.';
+			}
 			card.appendChild( document.createTextNode( text ) );
 			fragment.appendChild( card );
 			cardsInserted += 1;
@@ -625,9 +655,21 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		item = document.createElement( 'li' );
 		label = document.createElement( 'h3' );
 		label.className = 'fetch-label';
-		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch #' +
-			( refreshResults[ i ].overallRefreshIndex + 1 );
-		label.appendChild( document.createTextNode( text ) );
+		text = 'Fetch #' + ( i + 1 ) + ', part of refresh batch ';
+		refreshToDisplay = adData.slots[ slotId ].refreshedIndexes[ i ] + 1;
+		if ( 'undefined' !== typeof refreshIndex ) {
+			text += '#' + refreshToDisplay;
+			label.appendChild( document.createTextNode( text ) );
+		} else {
+			label.appendChild( document.createTextNode( text ) );
+			label.appendChild(
+				makePanelLink(
+					'#' + refreshToDisplay,
+					'refresh-' + refreshToDisplay
+				)
+			);
+		}
+			// ( refreshResults[ i ].overallRefreshIndex + 1 );
 		card.appendChild( label );
 		detailList = document.createDocumentFragment();
 
@@ -1130,11 +1172,12 @@ function buildIssueList( issueData, type ) {
 /**
  * Change the screen being displayed.
  *
- * @param {string} screen Name of the screen to show.
+ * @param {string} screen           Name of the screen to show.
+ * @param {string} elementsToExpand Ids of element to expand on the next screen.
  *
  * @return {void}
  */
-function changeScreen( screen ) {
+function changeScreen( screen, elementsToExpand ) {
 	var nextScreen = screen;
 	switch ( screen ) {
 		case 'init':
@@ -1143,10 +1186,18 @@ function changeScreen( screen ) {
 			displayContent( generateOverviewScreen(), nextScreen );
 			break;
 		case 'refreshes':
-			displayContent( generateRefreshesScreen(), nextScreen );
+			displayContent(
+				generateRefreshesScreen(),
+				nextScreen,
+				elementsToExpand
+			);
 			break;
 		case 'slots':
-			displayContent( generateSlotsScreen(), nextScreen );
+			displayContent(
+				generateSlotsScreen(),
+				nextScreen,
+				elementsToExpand
+			);
 			break;
 		case 'issues':
 			displayContent( generateIssuesScreen(), nextScreen );
@@ -1200,12 +1251,12 @@ function changeSelectedMenuItem( menuItem ) {
  * displayed then preserve expanded elements and make the screen update
  * as smooth as possible.
  *
- * @param {DocumentFragment} content    The DOM nodes to insert into the content
- *                                      element.
- * @param {string}           nextScreen Name of screen being changed to.
+ * @param {DocumentFragment} content            The DOM nodes to insert into the
+ *                                              content element.
+ * @param {string}           nextScreen         Name of screen being changed to.
+ * @param {array}            expandedElementIds List of element Ids to expand.
  */
-function displayContent( content, nextScreen ) {
-	var expandedElementIds;
+function displayContent( content, nextScreen, expandedElementIds ) {
 	if ( ! content ) {
 		console.error( 'No content passed to displayContent' );
 		return;
@@ -1222,7 +1273,7 @@ function displayContent( content, nextScreen ) {
 	}
 	emptyElement( contentElement );
 	makeCollapsible( content, nextScreen );
-	if ( nextScreen === currentScreen && expandedElementIds ) {
+	if ( expandedElementIds ) {
 		reExpandElements( content, expandedElementIds );
 	}
 	contentElement.appendChild( content );
@@ -1327,12 +1378,50 @@ function setupContentArea() {
 	} );
 
 	contentElement.addEventListener( 'click', function( e ) {
-		if ( e.target && 'A' === e.target.nodeName ) {
+		var hash, slotName, refreshNumber, matches, toFocus;
+
+		if ( e.target && 'A' === e.target.nodeName && e.target.hash ) {
 			var rel = e.target.getAttribute( 'rel' );
 			if ( ! rel || 'panel' !== rel ) {
 				return;
 			}
 			e.preventDefault();
+			hash = e.target.hash.replace( '#', '' );
+			matches = hash.match( /^refresh\-(\d+)_?(.+)?$/ );
+
+			if ( matches ) {
+				// Jumping to refreshes screen.
+				slotName = matches[2];
+				refreshNumber = matches[1];
+				if ( slotName ) {
+					requestAnimationFrame( function() {
+						changeScreen( 'refreshes', [ hash ] );
+						toFocus = document.getElementById( hash );
+						if ( toFocus ) {
+							toFocus.scrollIntoView( 1 );
+						}
+					} );
+
+				} else {
+					requestAnimationFrame( function() {
+						changeScreen( 'refreshes' );
+						toFocus = document.getElementById( hash );
+						if ( toFocus ) {
+							toFocus.scrollIntoView( 1 );
+						}
+					} );
+				}
+			} else {
+				// Try jumping to a slot.
+				// Maybe see if the slot exists before jump.
+				requestAnimationFrame( function() {
+					changeScreen( 'slots', [ hash ] );
+					toFocus = document.getElementById( hash );
+					if ( toFocus ) {
+						toFocus.scrollIntoView( 1 );
+					}
+				} );
+			}
 			var targetScreen = e.target.hash.replace( '#', '' );
 			var id = e.target.getAttribute( 'data-ref' );
 			if ( id ) {
@@ -1636,9 +1725,14 @@ function checkForDuplicateFetches() {
 
 		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingSlots[ d ].id + ' ' + dash + ' ' +
-				offendingSlots[ d ].count + ' fetches';
+			text = offendingSlots[ d ].id + ' ' + dash + ' ';
 			listItem.appendChild( document.createTextNode( text ) );
+			listItem.appendChild(
+				makePanelLink(
+					offendingSlots[ d ].count + ' fetches',
+					offendingSlots[ d ].id
+				)
+			);
 			list.appendChild( listItem );
 		}
 		fragment.appendChild( list );
@@ -1708,7 +1802,7 @@ function checkForDefinedNoFetch() {
  * @return {void}
  */
 function checkForCreativesWiderThanViewport() {
-	var slot, text, i, length, r, rlength,
+	var slot, text, i, length, r, rlength, links, offendingSlotRefreshes,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
 
@@ -1746,9 +1840,24 @@ function checkForCreativesWiderThanViewport() {
 
 		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingNames[ d ] + ' during following fetches: ' +
-			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			text = offendingNames[ d ] + ' during following fetches: ';
 			listItem.appendChild( document.createTextNode( text ) );
+
+			links = document.createDocumentFragment();
+			offendingSlotRefreshes = offendingSlots[ offendingNames[ d ] ].refreshes;
+			for ( i = 0, length = offendingSlotRefreshes.length; i < length; i++ ) {
+				if ( i > 0 ) {
+					links.appendChild( document.createTextNode( ', ' ) );
+				}
+				links.appendChild(
+					makePanelLink(
+						offendingSlotRefreshes[ i ],
+						offendingNames[ d ]
+					)
+				);
+			}
+			listItem.appendChild( links );
+
 			list.appendChild( listItem );
 		}
 		fragment.appendChild( list );
@@ -1769,7 +1878,7 @@ function checkForCreativesWiderThanViewport() {
  * @return {void}
  */
 function checkForRefreshOfNonViewedAd() {
-	var slot, text, i, length, r, rlength,
+	var slot, text, i, length, r, rlength, links, offendingSlotRefresh,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
 
@@ -1804,10 +1913,25 @@ function checkForRefreshOfNonViewedAd() {
 
 		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingNames[ d ] + ' during following fetches: ' +
-			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			text = offendingNames[ d ] + ' during its following fetches: ';
 			listItem.appendChild( document.createTextNode( text ) );
 			list.appendChild( listItem );
+
+
+			links = document.createDocumentFragment();
+			offendingSlotRefresh = offendingSlots[ offendingNames[ d ] ].refreshes;
+			for ( i = 0, length = offendingSlotRefresh.length; i < length; i++ ) {
+				if ( i > 0 ) {
+					links.appendChild( document.createTextNode( ', ' ) );
+				}
+				links.appendChild(
+					makePanelLink(
+						offendingSlotRefresh[ i ],
+						offendingNames[ d ]
+					)
+				);
+			}
+			listItem.appendChild( links );
 		}
 		fragment.appendChild( list );
 
@@ -1836,7 +1960,7 @@ function checkForRefreshOfNonViewedAd() {
  * @return {void}
  */
 function checkForFetchTooQuickly() {
-	var slot, text, i, length, r, rlength,
+	var slot, text, i, length, r, rlength, d, dlength, offendingSlotRefreshes, links,
 		offendingSlots = {},
 		slotNames = Object.keys( adData.slots ).sort();
 
@@ -1876,12 +2000,27 @@ function checkForFetchTooQuickly() {
 		var list = document.createElement( 'ul' ),
 			listItem;
 
-		for ( var d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
+		for ( d = 0, dlength = offendingNames.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			text = offendingNames[ d ] + ' during following fetches: ' +
-			offendingSlots[ offendingNames[ d ] ].refreshes.join( ', ' );
+			text = offendingNames[ d ] + ' during following fetches: ';
 			listItem.appendChild( document.createTextNode( text ) );
 			list.appendChild( listItem );
+			links = document.createDocumentFragment();
+			offendingSlotRefreshes = offendingSlots[ offendingNames[ d ] ].refreshes;
+			for ( i = 0, length = offendingSlotRefreshes.length; i < length; i++ ) {
+				if ( i > 0 ) {
+					links.appendChild( document.createTextNode( ', ' ) );
+				}
+				links.appendChild(
+					makePanelLink(
+						offendingSlotRefreshes[ i ],
+						offendingNames[ d ]
+					)
+				);
+			}
+
+			listItem.appendChild( links );
+
 		}
 		fragment.appendChild( list );
 
@@ -1906,9 +2045,9 @@ function checkForRefreshWhenNotFocused() {
 	}
 
 	var offendingRefreshes = [],
-		text;
+		text, links, i, length;
 
-	for ( var i = 0, length = adData.refreshes.length; i < length; i++ ) {
+	for ( i = 0, length = adData.refreshes.length; i < length; i++ ) {
 		if ( ! adData.refreshes[ i ].windowHadFocus ) {
 			offendingRefreshes.push( i + 1 );
 		}
@@ -1918,8 +2057,22 @@ function checkForRefreshWhenNotFocused() {
 		var fragment = document.createDocumentFragment();
 		var description = document.createElement( 'p' );
 		text = 'The following refreshes occurred while the page was not focused, likely because you had changed to another browser tab. This can lead to fetches without giving users an opportunity to view an ad, so you should confirm the following refreshes were intentional: ';
-		text += offendingRefreshes.join( ', ' );
 		description.appendChild( document.createTextNode( text ) );
+
+		links = document.createDocumentFragment();
+		for ( i = 0, length = offendingRefreshes.length; i < length; i++ ) {
+			if ( i > 0 ) {
+				links.appendChild( document.createTextNode( ', ' ) );
+			}
+			links.appendChild(
+				makePanelLink(
+					offendingRefreshes[ i ],
+					'refresh-' + offendingRefreshes[ i ]
+				)
+			);
+		}
+
+		description.appendChild( links );
 		fragment.appendChild( description );
 
 		issues.warnings.refreshWhenNotFocused = {
@@ -2061,4 +2214,20 @@ function createLabelAndValue( label, value ) {
 		fragment.appendChild( document.createTextNode( value ) );
 	}
 	return fragment;
+}
+
+/**
+ * Build a link designed to jump to another panel of DFPeep.
+ *
+ * @param {string} text     The text for the link.
+ * @param {string} targetId The ID of the element being jumped to.
+ *
+ * @return {HTMLElement} Link element.
+ */
+function makePanelLink( text, targetId ) {
+	var link = document.createElement( 'a' );
+	link.innerText = text;
+	link.href = '#' + targetId;
+	link.rel = 'panel';
+	return link;
 }
