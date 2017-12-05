@@ -41,3 +41,10 @@ Issues are categorized as either warnings or errors. Warnings are most likely a 
 - Refreshed ad slot(s) when the page was not in focus.
 - A creative is wider than the viewport when rendered.
 - Page-wide key-value targeting set after enabling services.
+
+## Screenshots
+![Slots panel](./img/dfpeep-screenshot-slot.png)
+
+![Issues panel](./img/dfpeep-screenshot-issues.png)
+
+![Refreshes panel](./img/dfpeep-screenshot-refreshes.png)
