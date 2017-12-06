@@ -517,7 +517,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 		slotInfoList.appendChild( targeting );
 	}
 
-	if ( slot.sizeMappings ) {
+	if ( slot.sizeMappings && slot.sizeMappings[0] ) {
 		var sizeMapping = document.createElement( 'li' );
 		labelValue = createLabelAndValue(
 			'Size Mapping:',
