@@ -2108,10 +2108,14 @@ function checkForTargetingValuesThatShouldBeArrays() {
 	pageKeys = Object.keys( adData.pageTargeting ).sort();
 
 	for ( i = 0, length = pageKeys.length; i < length; i++ ) {
-		if ( 'string' !== typeof adData.pageTargeting[ pageKeys[ i ] ] ) {
-			continue;
+		toCheck = undefined;
+		if ( 'string' === typeof adData.pageTargeting[ pageKeys[ i ] ] ) {
+			toCheck = adData.pageTargeting[ pageKeys[ i ] ];
+		} else if ( Array.isArray( adData.pageTargeting[ pageKeys[ i ] ] ) &&
+				1 === adData.pageTargeting[ pageKeys[ i ] ].length ) {
+			toCheck = adData.pageTargeting[ pageKeys[ i ] ][0];
 		}
-		if ( -1 !== adData.pageTargeting[ pageKeys[ i ] ].indexOf( ',' ) ) {
+		if ( -1 !== toCheck.indexOf( ',' ) ) {
 			offendingPageKeys.push( pageKeys[ i ] );
 		}
 	}
@@ -2126,7 +2130,8 @@ function checkForTargetingValuesThatShouldBeArrays() {
 			toCheck = undefined;
 			if ( 'string' === typeof slot.targeting[ slotKeys[ r ] ] ) {
 				toCheck = slot.targeting[ slotKeys[ r ] ];
-			} else if ( Array.isArray( slot.targeting[ slotKeys[ r ] ] ) ) {
+			} else if ( Array.isArray( slot.targeting[ slotKeys[ r ] ] ) &&
+					1 === slot.targeting[ slotKeys[ r ] ].length ) {
 				toCheck = slot.targeting[ slotKeys[ r ] ][0];
 			}
 
