@@ -4,6 +4,7 @@ Hello! I'm Douglas Frederick Peepington, DFPeep for short. I'm a Chrome extensio
 
 ## How to Install
 1. Download the zip file from https://github.com/davidrgreen/dfpeep/archive/master.zip and unzip it or git clone this locally: git clone https://github.com/davidrgreen/dfpeep.git
+2. Open the Chrome Extensions page by opening Window > Extensions or going to the URL chrome://extensions/.
 3. Click the "Developer mode" checkbox in the top-right.
 4. Click "Load unpacked extensions..."
 5. Select the folder holding the extension(the unzipped folder or folder created when you ran git clone).
