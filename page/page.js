@@ -201,6 +201,10 @@ var DFPeep = ( function() {
 			activeAdIds.push( elementId );
 		}
 
+		if ( ! adData.slots[ elementId ] ) {
+			setupNewSlotData( elementId );
+		}
+
 		if ( 0 !== adData.slots[ elementId ].refreshedIndexes.length ) {
 			whichRefresh = adData.slots[ elementId ].refreshedIndexes.length - 1;
 		} else {
@@ -368,6 +372,7 @@ var DFPeep = ( function() {
 					continue;
 				}
 				slotElementId = slotsRefreshed[ i ].getSlotElementId();
+				setupNewSlotData( slotElementId );
 				slot = adData.slots[ slotElementId ];
 				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
 				slot.elementId = slotElementId;
