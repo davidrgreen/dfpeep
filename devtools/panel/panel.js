@@ -2117,7 +2117,7 @@ function checkForTargetingValuesThatShouldBeArrays() {
 				1 === adData.pageTargeting[ pageKeys[ i ] ].length ) {
 			toCheck = adData.pageTargeting[ pageKeys[ i ] ][0];
 		}
-		if ( -1 !== toCheck.indexOf( ',' ) ) {
+		if ( toCheck && -1 !== toCheck.indexOf( ',' ) ) {
 			offendingPageKeys.push( pageKeys[ i ] );
 		}
 	}
