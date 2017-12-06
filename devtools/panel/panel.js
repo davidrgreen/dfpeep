@@ -364,7 +364,9 @@ function outputDataToScreen( data ) {
  * @return {DocumentFragment} The DOM nodes for the refresh screen.
  */
 function generateRefreshesScreen() {
-	if ( ! adData || ! adData.refreshes ) {
+
+	if ( ! adData || ! adData.refreshes ||
+			0 === Object.keys( adData.refreshes ).length ) {
 		var noRefreshes = document.createElement( 'p' );
 		var explanation = document.createTextNode( 'No ad refreshes yet.' );
 		noRefreshes.appendChild( explanation );
