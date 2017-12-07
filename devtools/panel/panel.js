@@ -500,7 +500,7 @@ function buildSlotListItem( slot, refreshIndex ) {
 		slotInfoList.appendChild( previousRefreshes );
 
 		if ( 'undefined' !== typeof refreshIndex && count > 1 ) {
-			var link = makePanelLink(
+			var link = buildPanelLink(
 				'Jump to full slot data',
 				slot.elementId
 			);
@@ -634,7 +634,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 			} else {
 				label.appendChild( document.createTextNode( text ) );
 				label.appendChild(
-					makePanelLink(
+					buildPanelLink(
 						'#' + refreshToDisplay,
 						'refresh-' + refreshToDisplay
 					)
@@ -665,7 +665,7 @@ function buildRefreshResultList( slotId, refreshIndex ) {
 		} else {
 			label.appendChild( document.createTextNode( text ) );
 			label.appendChild(
-				makePanelLink(
+				buildPanelLink(
 					'#' + refreshToDisplay,
 					'refresh-' + refreshToDisplay
 				)
@@ -1730,7 +1730,7 @@ function checkForDuplicateFetches() {
 			text = offendingSlots[ d ].id + ' ' + dash + ' ';
 			listItem.appendChild( document.createTextNode( text ) );
 			listItem.appendChild(
-				makePanelLink(
+				buildPanelLink(
 					offendingSlots[ d ].count + ' fetches',
 					offendingSlots[ d ].id
 				)
@@ -1783,7 +1783,7 @@ function checkForDefinedNoFetch() {
 		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
 			listItem.appendChild(
-				makePanelLink(
+				buildPanelLink(
 					offendingSlots[ d ],
 					offendingSlots[ d ]
 				)
@@ -1857,7 +1857,7 @@ function checkForCreativesWiderThanViewport() {
 					links.appendChild( document.createTextNode( ', ' ) );
 				}
 				links.appendChild(
-					makePanelLink(
+					buildPanelLink(
 						offendingSlotRefreshes[ i ],
 						offendingNames[ d ]
 					)
@@ -1932,7 +1932,7 @@ function checkForRefreshOfNonViewedAd() {
 					links.appendChild( document.createTextNode( ', ' ) );
 				}
 				links.appendChild(
-					makePanelLink(
+					buildPanelLink(
 						offendingSlotRefresh[ i ],
 						offendingNames[ d ]
 					)
@@ -2019,7 +2019,7 @@ function checkForFetchTooQuickly() {
 					links.appendChild( document.createTextNode( ', ' ) );
 				}
 				links.appendChild(
-					makePanelLink(
+					buildPanelLink(
 						offendingSlotRefreshes[ i ],
 						offendingNames[ d ]
 					)
@@ -2072,7 +2072,7 @@ function checkForRefreshWhenNotFocused() {
 				links.appendChild( document.createTextNode( ', ' ) );
 			}
 			links.appendChild(
-				makePanelLink(
+				buildPanelLink(
 					offendingRefreshes[ i ],
 					'refresh-' + offendingRefreshes[ i ]
 				)
@@ -2236,7 +2236,7 @@ function createLabelAndValue( label, value ) {
  *
  * @return {HTMLElement} Link element.
  */
-function makePanelLink( text, targetId ) {
+function buildPanelLink( text, targetId ) {
 	var link = document.createElement( 'a' );
 	link.innerText = text;
 	link.href = '#' + targetId;
