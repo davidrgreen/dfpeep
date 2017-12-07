@@ -1782,7 +1782,12 @@ function checkForDefinedNoFetch() {
 
 		for ( var d = 0, dlength = offendingSlots.length; d < dlength; d++ ) {
 			listItem = document.createElement( 'li' );
-			listItem.appendChild( document.createTextNode( offendingSlots[ d ] ) );
+			listItem.appendChild(
+				makePanelLink(
+					offendingSlots[ d ],
+					offendingSlots[ d ]
+				)
+			);
 			list.appendChild( listItem );
 		}
 		fragment.appendChild( list );
