@@ -593,6 +593,7 @@ var DFPeep = ( function() {
 				} )( proto );
 				// End googletag.Slot.setCollapseEmptyDiv
 			}
+			sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
 			return definedSlot;
 		};
 	};
