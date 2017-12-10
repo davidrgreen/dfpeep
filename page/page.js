@@ -372,7 +372,9 @@ var DFPeep = ( function() {
 					continue;
 				}
 				slotElementId = slotsRefreshed[ i ].getSlotElementId();
-				setupNewSlotData( slotElementId );
+				if ( ! adData.slots[ slotElementId ] ) {
+					setupNewSlotData( slotElementId );
+				}
 				slot = adData.slots[ slotElementId ];
 				slot.adUnitPath = slotsRefreshed[ i ].getAdUnitPath();
 				slot.elementId = slotElementId;
