@@ -497,6 +497,11 @@ var DFPeep = ( function() {
 		var oldVersion = googletag.display;
 		googletag.display = function() {
 			var elementId = arguments[0];
+			if ( 'string' !== typeof elementId ) {
+				// Bail early if googletag.display was not passed a string.
+				var result = oldVersion.apply( this, arguments );
+				return result;
+			}
 			if ( ! adData.slots[ elementId ] ) {
 				setupNewSlotData( elementId );
 			}
