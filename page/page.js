@@ -551,7 +551,7 @@ var DFPeep = ( function() {
 				adData.slots[ elementId ].fallbackSize = arguments[1];
 			}
 			if ( ! wrappedSlotFunctions ) {
-				wrappedSlotFunctions = 1;
+				// wrappedSlotFunctions = 1;
 				var proto = Object.getPrototypeOf( definedSlot );
 
 				// googletag.Slot.setTargeting
@@ -617,7 +617,7 @@ var DFPeep = ( function() {
 			adData.slots[ elementId ].adUnitPath = definedSlot.getAdUnitPath();
 			adData.slots[ elementId ].outOfPage = 1;
 			if ( ! wrappedOutOfPageSlotFunctions ) {
-				wrappedOutOfPageSlotFunctions = 1;
+				// wrappedOutOfPageSlotFunctions = 1;
 				var proto = Object.getPrototypeOf( definedSlot );
 
 				// googletag.Slot.setTargeting
