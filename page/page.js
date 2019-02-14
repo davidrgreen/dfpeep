@@ -562,7 +562,7 @@ var DFPeep = ( function() {
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
-				} )( proto );
+				} )( definedSlot );
 				// End googletag.Slot.setTargeting
 
 				// googletag.Slot.defineSizeMapping
@@ -579,7 +579,7 @@ var DFPeep = ( function() {
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
-				} )( proto );
+				} )( definedSlot );
 				// End googletag.Slot.defineSizeMapping
 
 				// googletag.Slot.setCollapseEmptyDiv
@@ -597,7 +597,7 @@ var DFPeep = ( function() {
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
-				} )( proto );
+				} )( definedSlot );
 				// End googletag.Slot.setCollapseEmptyDiv
 			}
 			sendSlotDataToDevTools( elementId, adData.slots[ elementId ] );
@@ -628,7 +628,7 @@ var DFPeep = ( function() {
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
-				} )( proto );
+				} )( definedSlot );
 				// End googletag.Slot.setTargeting
 
 				// googletag.Slot.defineSizeMapping
@@ -645,7 +645,7 @@ var DFPeep = ( function() {
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
-				} )( proto );
+				} )( definedSlot );
 				// End googletag.Slot.defineSizeMapping
 
 				// googletag.Slot.setCollapseEmptyDiv
@@ -663,7 +663,7 @@ var DFPeep = ( function() {
 						var result = oldVersion.apply( this, arguments );
 						return result;
 					};
-				} )( proto );
+				} )( definedSlot );
 				// End googletag.Slot.setCollapseEmptyDiv
 			}
 			return definedSlot;
